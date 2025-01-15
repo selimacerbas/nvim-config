@@ -1,0 +1,7 @@
+.DS_Store
+
+lazy-lock.json
+
+# Ignore all venv folders recursively
+**/venv/
+
