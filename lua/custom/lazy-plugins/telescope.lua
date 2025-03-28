@@ -1,6 +1,4 @@
 return {
-
-
     -- telescope for FuzzyFinder and built-in functions
     {
         "nvim-telescope/telescope.nvim",

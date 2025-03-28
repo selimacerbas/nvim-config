@@ -1,0 +1,47 @@
+-- {
+--     "jay-babu/mason-null-ls.nvim", -- Now mason-none-ls.nvim
+--     event = { "BufReadPre", "BufNewFile" },
+--     dependencies = {
+--         "williamboman/mason.nvim",
+--         "nvimtools/none-ls.nvim",
+--     },
+--     config = function()
+--         require("mason-null-ls").setup({ -- Now mason-none-ls
+--             ensure_installed = {
+--                 "yamlfmt",
+--                 "yamllint",
+--                 "jsonlint",
+--                 "fixjson",
+--                 "flake8",
+--                 "black",
+--                 "golangci-lint",
+--                 "gci",
+--                 "dcm",
+--                 "shellharden",
+--                 "tflint",
+--                 "hcl",
+--             },
+--             automatic_installation = true,
+--         })
+--         require("none-ls").setup({
+--             sources = {
+--                 require("none-ls").builtins.diagnostics.flake8.with({
+--                     args = { "--config", vim.fn.stdpath("config") .. "/lua/custom/lazy-plugins/lint-config/flake8-config.ini" },
+--                 }),
+--                 require("none-ls").builtins.formatting.black,
+--                 require("none-ls").builtins.diagnostics.yamllint.with({
+--                     args = { "-c", vim.fn.stdpath("config") .. "/lua/custom/lazy-plugins/lint-config/yamllint-config.yaml", "-" },
+--                 }),
+--                 require("none-ls").builtins.formatting.yamlfmt,
+--                 require("none-ls").builtins.diagnostics.jsonlint,
+--                 require("none-ls").builtins.formatting.fixjson,
+--                 require("none-ls").builtins.diagnostics.golangci_lint,
+--                 require("none-ls").builtins.diagnostics.shellcheck,
+--                 require("none-ls").builtins.formatting.shellharden,
+--             },
+--         })
+--     end,
+-- }
+--
+--
+-- CHECK LATER

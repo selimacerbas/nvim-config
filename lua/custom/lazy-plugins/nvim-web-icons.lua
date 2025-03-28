@@ -1,5 +1,4 @@
 return {
-
     -- nvim-web-devicons for filetype icons
     {
         'nvim-tree/nvim-web-devicons',
