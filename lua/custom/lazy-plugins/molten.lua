@@ -20,7 +20,8 @@ return {
             },
             config = function()
                 require("image").setup({
-                    backend = "magick_cli", -- or "viu" if you prefer ImageMagick
+                    backend = "kitty", -- Or ueberzug, but Ghostty already support kitty.
+                    processor = "magick_cli"
                 })
             end,
         },
