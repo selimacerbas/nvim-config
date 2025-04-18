@@ -8,8 +8,8 @@ return {
             'neovim/nvim-lspconfig',             -- LSP configurations
             'b0o/schemastore.nvim',              -- JSON/YAML Schema Store
             'nvimtools/none-ls.nvim',            -- None-ls integration
+            "nvimtools/none-ls-extras.nvim",
             'jayp0521/mason-null-ls.nvim',       -- Manage null-ls tools via Mason
-            'jose-elias-alvarez/null-ls.nvim',
             "mfussenegger/nvim-dap",             -- Required for debugging functionality
             "jayp0521/mason-nvim-dap.nvim",      -- Bridge for Mason and nvim-dap
             'towolf/vim-helm',                   -- Ensure Helm syntax highlighting is available
@@ -34,13 +34,14 @@ return {
                     "lemminx",       -- XML
                     "cmake",         -- CMake
                     "bzl",           -- Starlark
+                    "texlab"         -- LaTeX
                 },
                 automatic_installation = true
             })
 
             require("mason-null-ls").setup({
                 ensure_installed = {
-                    "yamlfmt",       -- YAML Formatter
+                    "yamlfix",       -- YAML Formatter
                     "yamllint",      -- YAML Linter
                     "jsonlint",      -- JSON Linter
                     "fixjson",       -- JSON Formatter
@@ -49,44 +50,17 @@ return {
                     "golangci-lint", -- Go Linter
                     "gci",           -- Go Formatter
                     "dcm",           -- Dart Linter/Formatter
-                    "shellharden",   -- Shell Linter/Formatter
+                    "shellharden",   -- Shell Formatter
+                    "shellcheck",    -- Shell Linter
                     "tflint",        -- Terraform Linter
                     "hcl",           -- HCL Formatter
+                    "vale",          -- LaTeX Linter
+                    "tex-fmt",       -- LaTeX Formatter
 
                 },
                 automatic_installation = true, -- Automatically install tools if not present
             })
 
-            -----------------------
-            -- Lint & Formatters --
-            -----------------------
-            require("null-ls").setup({
-                sources = {
-                    -- Python
-                    require("null-ls").builtins.diagnostics.flake8.with({
-                        args = { "--config", vim.fn.stdpath("config") .. "/lua/custom/lazy-plugins/lint-config/flake8-config.ini" },
-                    }),                                           -- Python Linter
-                    require("null-ls").builtins.formatting.black, -- Python Formatter
-
-                    -- YAML
-                    require("null-ls").builtins.diagnostics.yamllint.with({
-                        args = { "-c", vim.fn.stdpath("config") .. "/lua/custom/lazy-plugins/lint-config/yamllint-config.yaml", "-" },
-                    }),                                             -- YAML Linter
-                    require("null-ls").builtins.formatting.yamlfmt, -- YAML Formatter
-
-                    -- JSON
-                    require("null-ls").builtins.diagnostics.jsonlint, -- JSON Linter
-                    require("null-ls").builtins.formatting.fixjson,   -- JSON Formatter
-
-                    -- Go
-                    require("null-ls").builtins.diagnostics.golangci_lint, -- Go Linter
-
-                    -- Shell
-                    require("null-ls").builtins.diagnostics.shellcheck, -- Shell Linter
-                    require("null-ls").builtins.formatting.shellharden, -- Shell Formatter
-
-                },
-            })
             ------------------------
             -- Configure the LSPs --
             ------------------------
@@ -126,7 +100,7 @@ return {
                 },
             }
             lspconfig.yamlls.setup {
-                filetypes = { "Kptfile" },
+                filetypes = { "Kptfile", "yaml", "yml" },
                 settings = {
                     yaml = {
                         schemas = vim.tbl_extend("force", schemastore.yaml.schemas(), {
@@ -143,6 +117,7 @@ return {
             lspconfig.bzl.setup {
                 filetypes = { "star" },
             }
+            lspconfig.texlab.setup {}
             lspconfig.clangd.setup {}
             lspconfig.pyright.setup {}
             lspconfig.ts_ls.setup {}
