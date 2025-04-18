@@ -13,7 +13,7 @@ vim.opt.rtp:prepend(lazypath)
 vim.g.mapleader = " "
 
 -- Map localleader, needed for lazy.
-vim.g.maplocalleader = "\\"
+vim.g.maplocalleader = ","
 
 -- Setup lazy.nvim
 require("lazy").setup({
@@ -41,6 +41,7 @@ require("lazy").setup({
         { import = "custom.lazy-plugins.markdown-preview" },
         { import = "custom.lazy-plugins.bookmarks" },
         { import = "custom.lazy-plugins.vimtex" },
+        { import = "custom.lazy-plugins.molten" },
         { import = "custom.lazy-plugins.theme.rose-pine" }, -- Change here if you want new theme.
 
 

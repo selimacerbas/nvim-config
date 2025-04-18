@@ -38,7 +38,7 @@ vim.api.nvim_create_autocmd({ "BufRead", "BufNewFile" }, {
 vim.g.mapleader = " "
 
 -- Map localleader.
-vim.g.maplocalleader = "\\"
+vim.g.maplocalleader = ","
 
 -- Line numbers
 vim.opt.number = true         -- Show line numbers
