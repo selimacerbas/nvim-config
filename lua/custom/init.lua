@@ -14,7 +14,7 @@ require("custom.keymaps")
 
 -- > /Users/selim/.local/state/nvim/lsp.log
 -- > /Users/selim/.local/state/nvim/mason.log
-
+--
 -- LSP log level
 vim.lsp.set_log_level("ERROR")
 
@@ -22,7 +22,7 @@ vim.lsp.set_log_level("ERROR")
 vim.g.loaded_perl_provider = 0
 
 -- pynvim Dependency. The venv is created under lua/custom folder.
-vim.g.python3_host_prog = vim.fn.expand('~/.config/nvim/lua/custom/venv/bin/python')
+vim.g.python3_host_prog = vim.fn.expand('~/.pyenv/versions/nvim-env/bin/python')
 
 
 -- Treat Kptfiles as YAML files.
