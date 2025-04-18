@@ -40,6 +40,9 @@ vim.g.mapleader = " "
 -- Map localleader.
 vim.g.maplocalleader = ","
 
+-- Cell delimeter for molten
+vim.g.molten_cell_delimiter = "# %%"
+
 -- Line numbers
 vim.opt.number = true         -- Show line numbers
 vim.opt.relativenumber = true -- Show relative line numbers
