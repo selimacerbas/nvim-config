@@ -1,95 +1,133 @@
 return {
-
-    -- LSP configuration with Mason for managing LSP servers
     {
         'williamboman/mason.nvim',
         dependencies = {
-            'williamboman/mason-lspconfig.nvim', -- Bridge between mason.nvim and nvim-lspconfig
-            'neovim/nvim-lspconfig',             -- LSP configurations
-            'b0o/schemastore.nvim',              -- JSON/YAML Schema Store
-            'nvimtools/none-ls.nvim',            -- None-ls integration
-            "nvimtools/none-ls-extras.nvim",
-            'jayp0521/mason-null-ls.nvim',       -- Manage null-ls tools via Mason
-            "mfussenegger/nvim-dap",             -- Required for debugging functionality
-            "jayp0521/mason-nvim-dap.nvim",      -- Bridge for Mason and nvim-dap
-            'towolf/vim-helm',                   -- Ensure Helm syntax highlighting is available
+            -- LSP Core
+            'williamboman/mason-lspconfig.nvim',
+            'neovim/nvim-lspconfig',
+            'b0o/schemastore.nvim',
+
+            -- DAP
+            'mfussenegger/nvim-dap',
+            'jayp0521/mason-nvim-dap.nvim',
+
+            -- Helm
+            'towolf/vim-helm',
+
+            -- ✅ FORMATTER + LINTER
+            'stevearc/conform.nvim',      -- Formatting
+            'zapling/mason-conform.nvim', -- Bridge for Conform
+            'mfussenegger/nvim-lint',     -- Linting
+            'rshkarin/mason-nvim-lint',   -- Bridge for nvim-lint
         },
+
         config = function()
+            ---------------------
+            -- Mason Setup
+            ---------------------
             require("mason").setup()
+
             require("mason-lspconfig").setup({
                 ensure_installed = {
-                    "rust_analyzer", -- Rust
-                    "clangd",        -- C, C++
-                    "terraformls",   -- Terraform
-                    "pyright",       -- Python
-                    "jsonls",        -- JSON
-                    "yamlls",        -- YAML
-                    "ts_ls",         -- JavaScript, TypeScript
-                    "lua_ls",        -- Lua
-                    "gopls",         -- Go
-                    "dockerls",      -- Docker
-                    "bashls",        -- Bash
-                    "helm_ls",       -- Helm
-                    "html",          -- HTML
-                    "lemminx",       -- XML
-                    "cmake",         -- CMake
-                    "bzl",           -- Starlark
-                    "texlab"         -- LaTeX
+                    "rust_analyzer",
+                    "clangd",
+                    "terraformls",
+                    "pyright",
+                    "jsonls",
+                    "yamlls",
+                    "ts_ls",
+                    "lua_ls",
+                    "gopls",
+                    "dockerls",
+                    "bashls",
+                    "helm_ls",
+                    "html",
+                    "lemminx",
+                    "cmake",
+                    "bzl",
+                    "texlab"
                 },
                 automatic_installation = true
             })
 
-            require("mason-null-ls").setup({
-                ensure_installed = {
-                    "yamlfix",       -- YAML Formatter
-                    "yamllint",      -- YAML Linter
-                    "jsonlint",      -- JSON Linter
-                    "fixjson",       -- JSON Formatter
-                    "flake8",        -- Python Linter
-                    "black",         -- Python Formatter
-                    "golangci-lint", -- Go Linter
-                    "gci",           -- Go Formatter
-                    "dcm",           -- Dart Linter/Formatter
-                    "shellharden",   -- Shell Formatter
-                    "shellcheck",    -- Shell Linter
-                    "tflint",        -- Terraform Linter
-                    "hcl",           -- HCL Formatter
-                    "vale",          -- LaTeX Linter
-                    "tex-fmt",       -- LaTeX Formatter
-
+            ---------------------
+            -- Formatting: Conform
+            ---------------------
+            require("conform").setup({
+                formatters_by_ft = {
+                    python = { "ruff_format" },
+                    yaml = { "yamlfix" },
+                    json = { "fixjson" },
+                    lua = { "stylua" },
+                    sh = { "shfmt" },
+                    javascript = { "prettier" },
+                    typescript = { "prettier" },
+                    go = { "gofumpt" },
                 },
-                automatic_installation = true, -- Automatically install tools if not present
             })
 
-            ------------------------
-            -- Configure the LSPs --
-            ------------------------
+            require("mason-conform").setup({
+                ensure_installed = {
+                    "ruff",
+                    "yamlfix",
+                    "fixjson",
+                    "stylua",
+                    "shfmt",
+                    "prettier",
+                    "gofumpt",
+                },
+            })
+
+            ---------------------
+            -- Linting: nvim-lint
+            ---------------------
+            local lint = require("lint")
+            lint.linters_by_ft = {
+                python = { "ruff" },
+                yaml = { "yamllint" },
+                json = { "jsonlint" },
+                terraform = { "tflint" },
+                sh = { "shellcheck" },
+                go = { "golangcilint" },
+            }
+
+            require("mason-nvim-lint").setup({
+                ensure_installed = {
+                    "ruff",
+                    "yamllint",
+                    "jsonlint",
+                    "tflint",
+                    "shellcheck",
+                    "golangci-lint",
+                },
+                automatic_installation = true,
+            })
+
+            -- Automatically trigger linting
+            vim.api.nvim_create_autocmd({ "BufWritePost", "BufReadPost" }, {
+                callback = function()
+                    require("lint").try_lint()
+                end,
+            })
+
+            ---------------------
+            -- LSP Setup
+            ---------------------
             local lspconfig = require('lspconfig')
             local schemastore = require('schemastore')
 
-            -- Existing LSP configurations
             lspconfig.rust_analyzer.setup {
                 settings = {
                     ["rust-analyzer"] = {
-                        checkOnSave = {
-                            command = "clippy", -- Optional: Run `clippy` during save
-                        },
-                        diagnostics = {
-                            enable = true,
-                        },
-                        cargo = {
-                            allFeatures = true,
-                        },
-                        rustfmt = {
-                            enable = true,
-                        },
+                        checkOnSave = { command = "clippy" },
+                        diagnostics = { enable = true },
+                        cargo = { allFeatures = true },
+                        rustfmt = { enable = true },
                     },
                 },
             }
 
-            lspconfig.terraformls.setup {
-                filetypes = { "terraform", "tf", "tfvars", },
-            }
+            lspconfig.terraformls.setup { filetypes = { "terraform", "tf", "tfvars" } }
 
             lspconfig.jsonls.setup {
                 settings = {
@@ -99,6 +137,7 @@ return {
                     },
                 },
             }
+
             lspconfig.yamlls.setup {
                 filetypes = { "Kptfile", "yaml", "yml" },
                 settings = {
@@ -110,13 +149,12 @@ return {
                         validate = true,
                         hover = true,
                         completion = true,
-
                     },
                 },
             }
-            lspconfig.bzl.setup {
-                filetypes = { "star" },
-            }
+
+            -- Other LSPs
+            lspconfig.bzl.setup { filetypes = { "star" } }
             lspconfig.texlab.setup {}
             lspconfig.clangd.setup {}
             lspconfig.pyright.setup {}
@@ -129,8 +167,6 @@ return {
             lspconfig.html.setup {}
             lspconfig.lemminx.setup {}
             lspconfig.cmake.setup {}
-        end
+        end,
     },
-
-    -- Add more plugins below as needed
 }
