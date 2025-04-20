@@ -43,20 +43,22 @@ return {
         -- 🔁 Optional keymaps (you can tweak the prefixes to your liking)
         vim.keymap.set("n", "<localleader>mi", ":MoltenInit<CR>",
             { silent = true, desc = "Init Molten kernel" })
-        vim.keymap.set("n", "<localleader>meo", ":MoltenEvaluateOperator<CR>",
+        vim.keymap.set("n", "<localleader>mo", ":MoltenEvaluateOperator<CR>",
             { silent = true, desc = "Run operator selection" })
-        vim.keymap.set("n", "<localleader>mel", ":MoltenEvaluateLine<CR>",
+        vim.keymap.set("n", "<localleader>ml", ":MoltenEvaluateLine<CR>",
             { silent = true, desc = "Run current line" })
-        vim.keymap.set("n", "<localleader>mrc", ":MoltenReevaluateCell<CR>",
+        vim.keymap.set("n", "<localleader>mc", ":MoltenReevaluateCell<CR>",
             { silent = true, desc = "Re-evaluate current cell" })
-        vim.keymap.set("n", "<localleader>mso", ":MoltenEnterOutput<CR>",
+        vim.keymap.set("n", "<localleader>ms", ":MoltenEnterOutput<CR>",
             { silent = true, desc = "Show output" })
-        vim.keymap.set("v", "<localleader>mev", ":<C-u>MoltenEvaluateVisual<CR>gv",
+        vim.keymap.set("v", "<localleader>mv", ":<C-u>MoltenEvaluateVisual<CR>gv",
             { silent = true, desc = "Run visual selection" })
         -- Less suggested,
         vim.keymap.set("n", "<localleader>md", ":MoltenDelete<CR>",
             { silent = true, desc = "molten delete cell" })
-        vim.keymap.set("n", "<localleader>mho", ":MoltenHideOutput<CR>",
+        vim.keymap.set("n", "<localleader>mh", ":MoltenHideOutput<CR>",
             { silent = true, desc = "hide output" })
+        vim.keymap.set("n", "<localleader>me", ":noautocmd MoltenEnterOutput<CR>",
+            { silent = true, desc = "show/enter output" })
     end,
 }
