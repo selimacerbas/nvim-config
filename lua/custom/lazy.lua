@@ -42,6 +42,8 @@ require("lazy").setup({
         { import = "custom.lazy-plugins.bookmarks" },
         { import = "custom.lazy-plugins.vimtex" },
         { import = "custom.lazy-plugins.molten" },
+        { import = "custom.lazy-plugins.twilight" },
+        { import = "custom.lazy-plugins.zen-mode" },
         { import = "custom.lazy-plugins.theme.rose-pine" }, -- Change here if you want new theme.
 
 
