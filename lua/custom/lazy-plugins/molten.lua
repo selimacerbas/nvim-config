@@ -26,7 +26,7 @@ return {
             "3rd/image.nvim",
             opts = {
                 rocks = {
-                    hererocks = true, -- ✅ This enables automatic Lua 5.1 + LuaRocks install
+                    hererocks = true, -- This enables automatic Lua 5.1 + LuaRocks install
                 },
             },
             config = function()
