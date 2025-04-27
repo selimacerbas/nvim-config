@@ -45,7 +45,7 @@ return {
                     "lemminx",
                     "cmake",
                     "bzl",
-                    "texlab"
+                    "texlab",
                 },
                 automatic_installation = true
             })
@@ -56,7 +56,7 @@ return {
             require("conform").setup({
                 formatters_by_ft = {
                     python = { "ruff_format" },
-                    yaml = { "yamlfix" },
+                    yaml = { "yamlfmt" },
                     json = { "fixjson" },
                     lua = { "stylua" },
                     sh = { "shfmt" },
@@ -69,7 +69,7 @@ return {
             require("mason-conform").setup({
                 ensure_installed = {
                     "ruff",
-                    "yamlfix",
+                    "yamlfmt",
                     "fixjson",
                     "stylua",
                     "shfmt",
