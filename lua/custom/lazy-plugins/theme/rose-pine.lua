@@ -58,8 +58,8 @@ return {
             vim.cmd('colorscheme rose-pine')
 
             -- Custom highlights for Tree-sitter syntax groups
-            vim.api.nvim_set_hl(0, "@type", { fg = "#869688" })         -- Classes
-            vim.api.nvim_set_hl(0, "@variable", { fg = "#b4bce0" })     -- Variables
+            vim.api.nvim_set_hl(0, "@type", { fg = "#869688" })     -- Classes
+            vim.api.nvim_set_hl(0, "@variable", { fg = "#b4bce0" }) -- Variables
         end
     },
 
@@ -67,14 +67,24 @@ return {
     -- Statusline
     {
         'nvim-lualine/lualine.nvim',
+        dependencies = { 'nvim-tree/nvim-web-devicons' },
         config = function()
             require('lualine').setup {
                 options = {
-                    theme = 'rose-pine'
-                }
+                    theme = 'rose-pine',
+                },
+                sections = {
+                    -- add mcphub’s status component here
+                    lualine_x = {
+                        { require('mcphub.extensions.lualine') },
+                        -- any other components you already had can go after
+                    },
+                    -- keep your other sections (a, b, c, y, z) as-is
+                },
             }
-        end
+        end,
     },
+
 
     -- Add more plugins below as needed
 }

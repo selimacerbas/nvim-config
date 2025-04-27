@@ -21,7 +21,7 @@ require("lazy").setup({
         -- Import custom plugin configurations
         { import = "custom.lazy-plugins.telescope" },
         { import = "custom.lazy-plugins.lspsaga" },
-        { import = "custom.lazy-plugins.copilot" },
+        -- { import = "custom.lazy-plugins.copilot" },
         { import = "custom.lazy-plugins.treesitter" },
         { import = "custom.lazy-plugins.nvim-cmp" },
         { import = "custom.lazy-plugins.toggleterm" },
@@ -44,6 +44,8 @@ require("lazy").setup({
         { import = "custom.lazy-plugins.molten" },
         { import = "custom.lazy-plugins.twilight" },
         { import = "custom.lazy-plugins.zen-mode" },
+        { import = "custom.lazy-plugins.mcphub" },
+        { import = "custom.lazy-plugins.avante" },
         { import = "custom.lazy-plugins.theme.rose-pine" }, -- Change here if you want new theme.
 
 

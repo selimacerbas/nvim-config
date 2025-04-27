@@ -15,7 +15,15 @@ return {
                 require('lualine').setup {
                     options = {
                         theme = 'nord'
-                    }
+                    },
+                    sections = {
+                        -- add mcphub’s status component here
+                        lualine_x = {
+                            { require('mcphub.extensions.lualine') },
+                            -- any other components you already had can go after
+                        },
+                        -- keep your other sections (a, b, c, y, z) as-is
+                    },
                 }
             end
         },
