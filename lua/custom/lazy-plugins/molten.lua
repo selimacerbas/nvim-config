@@ -8,7 +8,7 @@
 
 -- Create your penv specific Jupyter Kernel
 -- pyenv activate tf2-env (change the name)
--- pythkn -m ipykernel install --user --name=tf2-env --display-name "TensorFlow 2"
+-- python -m ipykernel install --user --name=tf2-env --display-name "TensorFlow 2"
 -- jupyter console --kernel tf2-env
 --
 -- Check which kernels you have in your system
