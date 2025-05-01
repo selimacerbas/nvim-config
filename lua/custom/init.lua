@@ -64,3 +64,6 @@ vim.opt.winblend = 5
 
 -- Transparency level for popup menus (completion menus, etc.)
 vim.opt.pumblend = 5
+
+-- To open splits are going be opened at right side.
+vim.opt.splitright = true
