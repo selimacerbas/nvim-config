@@ -20,8 +20,8 @@ return {
             require("copilot.suggestion").toggle_auto_trigger()
         end, { desc = "Toggle Copilot Suggestions" })
     end,
-
-- -- GitHub Copilot NVIM
+}
+-- GitHub Ckpilot NVIM
 -- {
 --     "github/copilot.vim",
 --     config = function()
