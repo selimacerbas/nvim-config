@@ -1,10 +1,18 @@
 -- To get this shit worked;
 -- Install zathura from here: https://github.com/homebrew-zathura/homebrew-zathura
+-- brew install --cask skim (instead of zathura)
 -- Install basictex from here: brew install --cask basictex
 -- Put binary to Path: export PATH="/Library/TeX/texbin:$PATH"
 -- Test: which latex
 -- Run; sudo tlmgr update --self
 -- Install: sudo tlmgr install latexmk
+-- OR
+-- brew install --cask mactex
+-- export PATH="/Library/TeX/texbin:$PATH"
+-- brew install --cask skim
+-- which latex
+-- which tlmgr
+
 
 return {
     {
