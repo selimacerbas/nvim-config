@@ -8,7 +8,7 @@ return {
         -- build = "make BUILD_FROM_SOURCE=true"
         -- if you want to force a source build
         opts         = {
-            provider = "copilot",
+            provider = "openai",
 
             copilot  = {
                 -- no extra config needed if you're already running copilot.lua;
