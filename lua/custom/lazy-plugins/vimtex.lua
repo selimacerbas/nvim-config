@@ -20,12 +20,28 @@ return {
         lazy = false, -- we don't want to lazy load VimTeX
         -- tag = "v2.15", -- uncomment to pin to a specific release
         init = function()
-            -- VimTeX configuration goes here, e.g.
+            -- VimTeX viewer configuration (Skim)
             vim.g.vimtex_view_method = "skim"
             vim.g.vimtex_view_skim_sync = 1
             vim.g.vimtex_view_skim_activate = 1 -- Auto-focus Skim when view opens
+
+            -- VimTeX compile settings
             vim.g.vimtex_compiler_method = "latexmk"
             vim.g.vimtex_compile_on_save = 1
+
+            -- Force XeLaTeX
+            vim.g.vimtex_compiler_latexmk = {
+                build_dir = '',
+                callback = 1,
+                continuous = 1,
+                executable = 'latexmk',
+                options = {
+                    '-xelatex',
+                    '-file-line-error',
+                    '-synctex=1',
+                    '-interaction=nonstopmode',
+                },
+            }
         end
     }
 }
