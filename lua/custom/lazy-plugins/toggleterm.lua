@@ -1,18 +1,65 @@
+-- return {
+--     -- toggleterm Terminal
+--     {
+--         'akinsho/toggleterm.nvim',
+--         config = function()
+--             require('toggleterm').setup {
+--                 direction = 'float',   -- Terminal opens in a floating window
+--                 float_opts = {
+--                     border = 'curved', -- Border style for the floating terminal
+--                     winblend = 5,
+--                     pumblend = 5,
+--                 },
+--             }
+--         end
+--     },
+--
+--     -- Add more plugins below as needed
+-- }
+--
+
+
 return {
-    -- toggleterm Terminal
     {
         'akinsho/toggleterm.nvim',
+        version = "*",
         config = function()
             require('toggleterm').setup {
-                direction = 'float',   -- Terminal opens in a floating window
+                size = function(term)
+                    if term.direction == "horizontal" then
+                        return 15
+                    elseif term.direction == "vertical" then
+                        return 60
+                    end
+                end,
+                direction = 'float',
                 float_opts = {
-                    border = 'curved', -- Border style for the floating terminal
+                    border = 'curved',
                     winblend = 5,
-                    pumblend = 5,
                 },
             }
-        end
-    },
 
-    -- Add more plugins below as needed
+            local Terminal   = require('toggleterm.terminal').Terminal
+
+            local float_term = Terminal:new({ direction = "float", hidden = true })
+            local horiz_term = Terminal:new({ direction = "horizontal", hidden = true })
+            local vert_term  = Terminal:new({ direction = "vertical", hidden = true })
+
+            vim.keymap.set("n", "<leader>tt", function() float_term:toggle() end, { desc = "Float Terminal" })
+            vim.keymap.set("n", "<leader>th", function() horiz_term:toggle() end, { desc = "Horizontal Terminal" })
+            vim.keymap.set("n", "<leader>tv", function() vert_term:toggle() end, { desc = "Vertical Terminal" })
+
+            require("which-key").register({
+                t = {
+                    name = "Terminal",
+                    t = "Float Terminal", -- Later change it to tf after fixing treesitter tff function.
+                    h = "Horizontal Terminal",
+                    v = "Vertical Terminal",
+                },
+            }, { prefix = "<leader>" })
+
+            -- Fix: Make <Esc> exit terminal mode
+            vim.api.nvim_set_keymap('t', '<Esc>', [[<C-\><C-n>]], { noremap = true, silent = true })
+        end,
+    }
 }
