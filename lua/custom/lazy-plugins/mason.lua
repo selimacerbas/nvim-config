@@ -127,7 +127,7 @@ return {
                 },
             }
 
-            lspconfig.terraformls.setup { filetypes = { "terraform", "tf", "tfvars" } }
+            -- lspconfig.terraformls.setup { filetypes = { "terraform", "tf", "tfvars" } }
 
             lspconfig.jsonls.setup {
                 settings = {
@@ -157,7 +157,6 @@ return {
             lspconfig.bzl.setup { filetypes = { "star" } }
             lspconfig.texlab.setup {}
             lspconfig.clangd.setup {}
-            lspconfig.pyright.setup {}
             lspconfig.ts_ls.setup {}
             lspconfig.lua_ls.setup {}
             -- lspconfig.gopls.setup {}   -- This was causing duplications with "gd" command.
