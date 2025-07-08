@@ -2,6 +2,7 @@
 -- Required; pip install pynvim jupyter_client jupyter_console ipykernel matplotlib pandas
 -- Optional: pip install nbformat cairosvg plotly kaleido pyperclip pillow requests
 -- brew install imagemagick
+-- brew install pngpaste
 -- Put this in ~/.zshrc: export DYLD_FALLBACK_LIBRARY_PATH="$(brew --prefix)/lib:$DYLD_FALLBACK_LIBRARY_PATH"
 -- source ~/.zshrc
 

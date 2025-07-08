@@ -24,34 +24,6 @@ return {
                     align = "center",
                 },
             })
-
-            -- Flutter tools keybindings under <leader>f
-            wk.register({
-                f = {
-                    name = "Flutter",
-                    r = { ":FlutterRun<CR>", "Run Project" },
-                    d = { ":FlutterDebug<CR>", "Debug Run" },
-                    v = { ":FlutterDevices<CR>", "Select Device" },
-                    e = { ":FlutterEmulators<CR>", "Select Emulator" },
-                    l = { ":FlutterReload<CR>", "Hot Reload" },
-                    s = { ":FlutterRestart<CR>", "Hot Restart" },
-                    q = { ":FlutterQuit<CR>", "Quit Flutter" },
-                    a = { ":FlutterAttach<CR>", "Attach to App" },
-                    x = { ":FlutterDetach<CR>", "Detach Session" },
-                    o = { ":FlutterOutlineToggle<CR>", "Toggle Outline" },
-                    O = { ":FlutterOutlineOpen<CR>", "Open Outline" },
-                    t = { ":FlutterDevTools<CR>", "Start DevTools" },
-                    T = { ":FlutterDevToolsActivate<CR>", "Activate DevTools" },
-                    c = { ":FlutterCopyProfilerUrl<CR>", "Copy Profiler URL" },
-                    L = { ":FlutterLspRestart<CR>", "Restart Dart LSP" },
-                    S = { ":FlutterSuper<CR>", "Go to Super" },
-                    n = { ":FlutterRename<CR>", "Rename & Update Imports" },
-                    u = { ":FlutterReanalyze<CR>", "Force Reanalyze" },
-                    C = { ":FlutterLogClear<CR>", "Clear Logs" },
-                    G = { ":FlutterLogToggle<CR>", "Toggle Logs" },
-                }
-            }, { prefix = "<leader>" })
-
         end,
     },
 }

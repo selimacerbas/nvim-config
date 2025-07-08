@@ -1,6 +1,4 @@
 require("custom.lazy")
-require("custom.functions")
-require("custom.keymaps")
 
 -- BREW BINARY DEPENDENCIES --
 -- neovim
@@ -27,10 +25,10 @@ vim.g.python3_host_prog = vim.fn.expand('~/.pyenv/versions/nvim-env/bin/python')
 
 -- Treat Kptfiles as YAML files.
 vim.api.nvim_create_autocmd({ "BufRead", "BufNewFile" }, {
-    pattern = "Kptfile",
-    callback = function()
-        vim.bo.filetype = "yaml"
-    end,
+	pattern = "Kptfile",
+	callback = function()
+		vim.bo.filetype = "yaml"
+	end,
 })
 
 

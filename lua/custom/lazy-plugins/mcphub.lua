@@ -22,11 +22,33 @@ return
 --   }
 -- }
 
+-- MCP Hub: manage local MCP servers and expose Avante integration
 {
     "ravitemer/mcphub.nvim",
-    dependencies = { "nvim-lua/plenary.nvim" },
-    build        = "npm install -g mcp-hub@latest",
-    config       = function()
-        require("mcphub").setup()
+    dependencies = {
+        "nvim-lua/plenary.nvim",
+        "folke/which-key.nvim",
+    },
+    build = "npm install -g mcp-hub@latest",
+    config = function()
+        require("mcphub").setup({
+            extensions = {
+                avante = {
+                    make_slash_commands = true, -- expose `/mcp:` slash-commands in Avante
+                },
+            },
+            auto_approve = true, -- globally auto-approve MCP tool calls
+        })
+
+        -- Which-key for MCP Hub UI toggling
+        local wk_ok, which_key = pcall(require, "which-key")
+        if not wk_ok then return end
+        which_key.register({
+            m = {
+                name = "Molten/MCPHub",
+                b = { "<cmd>MCPHub<CR>", "Toggle MCP Hub UI" },
+                a = { "<cmd>lua require('mcphub').toggle_auto_approve()<CR>", "Toggle Auto-Approve" },
+            },
+        }, { prefix = "<leader>" })
     end,
 }
