@@ -52,27 +52,6 @@ return {
                 }
             }, { prefix = "<leader>" })
 
-            -- Molten keybindings under <localleader>m
-            wk.register({
-                m = {
-                    name = "Molten",
-                    i = { ":MoltenInit<CR>", "Init Kernel" },
-                    o = { ":MoltenEvaluateOperator<CR>", "Run Operator Selection" },
-                    l = { ":MoltenEvaluateLine<CR>", "Run Current Line" },
-                    c = { ":MoltenReevaluateCell<CR>", "Re-evaluate Cell" },
-                    s = { ":MoltenEnterOutput<CR>", "Show Output" },
-                    d = { ":MoltenDelete<CR>", "Delete Cell" },
-                    h = { ":MoltenHideOutput<CR>", "Hide Output" },
-                    e = { ":noautocmd MoltenEnterOutput<CR>", "Enter Output (noautocmd)" },
-                }
-            }, { prefix = "<leader>" })
-
-            -- Visual mode binding for MoltenEvaluateVisual
-            wk.register({
-                m = {
-                    v = { ":<C-u>MoltenEvaluateVisual<CR>gv", "Run Visual Selection" },
-                }
-            }, { prefix = "<leader>", mode = "v" })
         end,
     },
 }

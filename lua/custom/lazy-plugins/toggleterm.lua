@@ -30,14 +30,14 @@ return {
 
             require("which-key").register({
                 t = {
-                    name = "Terminal",
+                    name = "Terminal/Telescope/Twilight",
                     t = "Float Terminal", -- Later change it to tf after fixing treesitter tff function.
                     h = "Horizontal Terminal",
                     v = "Vertical Terminal",
                 },
             }, { prefix = "<leader>" })
 
-            -- Fix: Make <Esc> exit terminal mode
+            -- Fix: Make <Esc> exit terminal mode. IMPORTANT!
             vim.api.nvim_set_keymap('t', '<Esc>', [[<C-\><C-n>]], { noremap = true, silent = true })
         end,
     }

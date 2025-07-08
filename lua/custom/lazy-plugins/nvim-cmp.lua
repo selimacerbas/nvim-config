@@ -63,12 +63,4 @@ return {
             }
         end
     },
-
-    -- {
-    --     "L3MON4D3/LuaSnip",
-    --     build = "make install_jsregexp", -- Optional build step for jsregexp support
-    --     config = function()
-    --         require("luasnip").setup()
-    --     end,
-    -- },
 }

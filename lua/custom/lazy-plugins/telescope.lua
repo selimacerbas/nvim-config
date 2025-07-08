@@ -49,8 +49,8 @@ return {
             end
 
             which_key.register({
-                g = {
-                    name = "Telescope",
+                t = {
+                    name = "Terminal/Telescope/Twilight",
                     f = { "<cmd>Telescope find_files<CR>", "Find Files" },
                     g = { "<cmd>Telescope live_grep<CR>", "Live Grep" },
                     s = { "<cmd>Telescope grep_string<CR>", "Grep String" },
