@@ -12,17 +12,24 @@ return {
                 lightbulb = { enable = false },
             })
 
-            -- General-purpose mappings
             local map = vim.keymap.set
+            -- core mappings
             -- map('n', 'K', '<cmd>Lspsaga hover_doc<CR>', { silent = true, desc = "Saga: Hover Doc" })
             map('n', 'gh', '<cmd>Lspsaga lsp_finder<CR>', { silent = true, desc = "Saga: Finder" })
             map('n', 'gd', '<cmd>Lspsaga goto_definition<CR>', { silent = true, desc = "Saga: Definition" })
             map('n', 'gD', '<cmd>Lspsaga goto_declaration<CR>', { silent = true, desc = "Saga: Declaration" })
             map('n', 'gp', '<cmd>Lspsaga peek_definition<CR>', { silent = true, desc = "Saga: Peek Definition" })
-
-            -- Format with a single F keystroke
             map('n', 'F', '<cmd>lua vim.lsp.buf.format({ async = true })<CR>', { silent = true, desc = "Format Buffer" })
-            
+            --
+            -- make <Esc> and q close the hover window when it's focused
+            vim.api.nvim_create_autocmd("FileType", {
+                pattern = "LspsagaHover",
+                callback = function()
+                    vim.keymap.set("n", "<Esc>", "<cmd>Lspsaga hover_doc<CR>", { buffer = true, silent = true })
+                    vim.keymap.set("n", "q", "<cmd>Lspsaga hover_doc<CR>", { buffer = true, silent = true })
+                end,
+            })
+
             -- Which-key group under <leader>l
             local wk_ok, which_key = pcall(require, 'which-key')
             if not wk_ok then return end
