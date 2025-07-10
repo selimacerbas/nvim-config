@@ -15,7 +15,7 @@ return {
             local map = vim.keymap.set
             -- core mappings
             -- map('n', 'K', '<cmd>Lspsaga hover_doc<CR>', { silent = true, desc = "Saga: Hover Doc" })
-            map('n', 'gh', '<cmd>Lspsaga lsp_finder<CR>', { silent = true, desc = "Saga: Finder" })
+            map('n', 'gh', '<cmd>Lspsaga finder<CR>', { silent = true, desc = "Saga: Finder" })
             map('n', 'gd', '<cmd>Lspsaga goto_definition<CR>', { silent = true, desc = "Saga: Definition" })
             map('n', 'gD', '<cmd>Lspsaga goto_declaration<CR>', { silent = true, desc = "Saga: Declaration" })
             map('n', 'gp', '<cmd>Lspsaga peek_definition<CR>', { silent = true, desc = "Saga: Peek Definition" })
@@ -37,6 +37,11 @@ return {
             which_key.register({
                 l = {
                     name = "LSP",
+                    h = { '<cmd>Lspsaga hover_doc<CR>', "Hover Doc" },
+                    f = { '<cmd>Lspsaga finder<CR>', "Finder / References" },
+                    g = { '<cmd>Lspsaga goto_definition<CR>', "Definition" },
+                    D = { '<cmd>Lspsaga goto_declaration<CR>', "Declaration" },
+                    p = { '<cmd>Lspsaga peek_definition<CR>', "Peek Definition" },
                     r = { '<cmd>Lspsaga rename<CR>', "Rename Symbol" },
                     a = { '<cmd>Lspsaga code_action<CR>', "Code Action" },
                     s = { '<cmd>Lspsaga signature_help<CR>', "Signature Help" },
