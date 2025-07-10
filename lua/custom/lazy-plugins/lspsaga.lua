@@ -20,6 +20,7 @@ return {
             map('n', 'gD', '<cmd>Lspsaga goto_declaration<CR>', { silent = true, desc = "Saga: Declaration" })
             map('n', 'gp', '<cmd>Lspsaga peek_definition<CR>', { silent = true, desc = "Saga: Peek Definition" })
             map('n', 'F', '<cmd>lua vim.lsp.buf.format({ async = true })<CR>', { silent = true, desc = "Format Buffer" })
+            vim.keymap.set('i', '<C-k>', '<cmd>Lspsaga signature_help<CR>', { silent = true, desc = "Saga: Signature Help" })
             --
             -- make <Esc> and q close the hover window when it's focused
             vim.api.nvim_create_autocmd("FileType", {

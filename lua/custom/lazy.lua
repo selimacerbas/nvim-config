@@ -47,6 +47,8 @@ require("lazy").setup({
         { import = "custom.lazy-plugins.zen-mode" },
         { import = "custom.lazy-plugins.mcphub" },
         { import = "custom.lazy-plugins.avante" },
+        { import = "custom.lazy-plugins.luasnip" },
+        -- { import = "custom.lazy-plugins.nvim-lspconfig" },
         -- { import = "custom.lazy-plugins.chatgpt" },
         { import = "custom.lazy-plugins.theme.rose-pine" }, -- Change here if you want new theme.
 
