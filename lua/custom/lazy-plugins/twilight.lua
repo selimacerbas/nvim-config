@@ -10,7 +10,7 @@ return {
 
             which_key.register({
                 t = {
-                    name = "Terminal/Telescope/Twilight",
+                    name = "Terminal/Telescope/Twilight/Treesitter",
                     w = { '<cmd>Twilight<CR>', 'Toggle Twilight' },
                 },
             }, { prefix = '<leader>' })

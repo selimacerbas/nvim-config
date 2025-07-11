@@ -42,7 +42,7 @@ return {
                 },
             }
 
-            -- Which-key mappings for Telescope under <leader>g
+            -- Which-key mappings for Telescope under <leader>t
             local wk_ok, which_key = pcall(require, "which-key")
             if not wk_ok then
                 return
@@ -50,7 +50,7 @@ return {
 
             which_key.register({
                 t = {
-                    name = "Terminal/Telescope/Twilight",
+                    name = "Terminal/Telescope/Twilight/Treesitter",
                     f = { "<cmd>Telescope find_files<CR>", "Find Files" },
                     g = { "<cmd>Telescope live_grep<CR>", "Live Grep" },
                     s = { "<cmd>Telescope grep_string<CR>", "Grep String" },

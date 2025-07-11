@@ -30,7 +30,7 @@ return {
 
             require("which-key").register({
                 t = {
-                    name = "Terminal/Telescope/Twilight",
+                    name = "Terminal/Telescope/Twilight/Treesitter",
                     t = "Float Terminal", -- Later change it to tf after fixing treesitter tff function.
                     h = "Horizontal Terminal",
                     v = "Vertical Terminal",
