@@ -155,7 +155,6 @@ return {
             lspconfig.bzl.setup { filetypes = { "star" } }
             lspconfig.texlab.setup {}
             lspconfig.clangd.setup {}
-            lspconfig.ts_ls.setup {}
             lspconfig.dockerls.setup {}
             lspconfig.bashls.setup {}
             lspconfig.helm_ls.setup {}
