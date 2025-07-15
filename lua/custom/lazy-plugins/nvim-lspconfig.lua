@@ -75,8 +75,8 @@ return {
 
             -- -- list of LSP servers to auto-configure
             local servers = {
-            --     'pyright', 'tsserver', 'gopls', 'rust_analyzer',
-            --     'clangd', 'bashls', 'jsonls', 'yamlls',
+                --     'pyright', 'tsserver', 'gopls', 'rust_analyzer',
+                --     'clangd', 'bashls', 'jsonls', 'yamlls',
             }
             for _, name in ipairs(servers) do
                 lspconfig[name].setup {
