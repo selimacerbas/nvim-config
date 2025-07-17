@@ -33,8 +33,6 @@ return {
             map('n', 'F', '<cmd>lua vim.lsp.buf.format({ async = true })<CR>', { silent = true, desc = "Format Buffer" })
             vim.keymap.set('i', '<C-k>', function() vim.lsp.buf.signature_help() end,
                 { silent = true, desc = "LSP: Signature Help" })
-            -- vim.keymap.set('i', '<C-k>', '<cmd>Lspsaga signature_help<CR>', { silent = true, desc = "Saga: Signature Help" })
-            --
             -- make <Esc> and q close the hover window when it's focused
             vim.api.nvim_create_autocmd("FileType", {
                 pattern = "LspsagaHover",
@@ -58,7 +56,6 @@ return {
                     p = { '<cmd>Lspsaga peek_definition<CR>', "Peek Definition" },
                     r = { '<cmd>Lspsaga rename<CR>', "Rename Symbol" },
                     a = { '<cmd>Lspsaga code_action<CR>', "Code Action" },
-                    s = { '<cmd>Lspsaga signature_help<CR>', "Signature Help" },
                     R = { '<cmd>Lspsaga show_line_diagnostics<CR>', "Line Diagnostics" },
                     d = { '<cmd>Lspsaga show_cursor_diagnostics<CR>', "Cursor Diagnostics" },
                     o = { '<cmd>Lspsaga outline<CR>', "Symbol Outline" },
