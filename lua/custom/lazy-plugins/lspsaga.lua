@@ -30,7 +30,7 @@ return {
             map('n', 'gd', '<cmd>Lspsaga goto_definition<CR>', { silent = true, desc = "Saga: Definition" })
             map('n', 'gD', '<cmd>Lspsaga goto_declaration<CR>', { silent = true, desc = "Saga: Declaration" })
             map('n', 'gp', '<cmd>Lspsaga peek_definition<CR>', { silent = true, desc = "Saga: Peek Definition" })
-            map('n', 'F', '<cmd>lua vim.lsp.buf.format({ async = true })<CR>', { silent = true, desc = "Format Buffer" })
+            -- map('n', 'F', '<cmd>lua vim.lsp.buf.format({ async = true })<CR>', { silent = true, desc = "Format Buffer" })
             vim.keymap.set('i', '<C-k>', function() vim.lsp.buf.signature_help() end,
                 { silent = true, desc = "LSP: Signature Help" })
             -- make <Esc> and q close the hover window when it's focused
@@ -59,6 +59,7 @@ return {
                     R = { '<cmd>Lspsaga show_line_diagnostics<CR>', "Line Diagnostics" },
                     d = { '<cmd>Lspsaga show_cursor_diagnostics<CR>', "Cursor Diagnostics" },
                     o = { '<cmd>Lspsaga outline<CR>', "Symbol Outline" },
+                    F = {'<cmd>lua vim.lsp.buf.format({ async = true })<CR>', "Format Buffer" },
                 },
             }, { prefix = '<leader>' })
         end,
