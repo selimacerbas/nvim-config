@@ -45,6 +45,10 @@ return {
                     cmd             = 'trash',
                     require_confirm = true,
                 },
+                git           = {
+                    enable = true,
+                    ignore = false, -- 👈 Show files ignored by .gitignore (like node_modules)
+                },
                 on_attach     = on_attach,
             }
 
