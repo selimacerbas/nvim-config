@@ -131,7 +131,7 @@ return {
                 json = { "jsonlint" },
                 terraform = { "tflint" },
                 sh = { "shellcheck" },
-                go = { "golangci-lint" },
+                go = { "golangcilint" },
             }
 
             require("mason-nvim-lint").setup({
