@@ -41,15 +41,16 @@ return {
         opts = {
             provider  = "openai",
             providers = {
-                openai = {
+                openai  = {
                     endpoint           = "https://api.openai.com/v1",
-                    model              = "gpt-4.1-mini",
+                    model              = "gpt-5-mini-2025-08-07",
                     timeout            = 30000,
                     extra_request_body = {
-                        temperature           = 0,
+                        temperature           = 1,
                         max_completion_tokens = 8192,
                     },
                 },
+
                 copilot = {},
             },
             -- Activate here if there is conflict between Avante Tools anc MCP Servers.

@@ -54,7 +54,6 @@ return {
                     g = { '<cmd>Lspsaga goto_definition<CR>', "Definition" },
                     D = { '<cmd>Lspsaga goto_declaration<CR>', "Declaration" },
                     p = { '<cmd>Lspsaga peek_definition<CR>', "Peek Definition" },
-                    r = { '<cmd>Lspsaga rename<CR>', "Rename Symbol" },
                     a = { '<cmd>Lspsaga code_action<CR>', "Code Action" },
                     R = { '<cmd>Lspsaga show_line_diagnostics<CR>', "Line Diagnostics" },
                     d = { '<cmd>Lspsaga show_cursor_diagnostics<CR>', "Cursor Diagnostics" },

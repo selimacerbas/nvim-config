@@ -51,6 +51,7 @@ require("lazy").setup({
         { import = "custom.lazy-plugins.typr" },
         { import = "custom.lazy-plugins.lsp-signature" },
         { import = "custom.lazy-plugins.bufferline" },
+        { import = "custom.lazy-plugins.smear-cursor" },
         -- { import = "custom.lazy-plugins.nvim-lspconfig" },
         { import = "custom.lazy-plugins.theme.rose-pine" }, -- Change here if you want new theme.
 
