@@ -3,7 +3,7 @@ return {
         'williamboman/mason.nvim',
         dependencies = {
             -- LSP Core
-            'williamboman/mason-lspconfig.nvim',
+            'mason-org/mason-lspconfig.nvim',
             'neovim/nvim-lspconfig',
             'b0o/schemastore.nvim',
 
