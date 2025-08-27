@@ -5,8 +5,12 @@
 -- Put binary to Path: export PATH="/Library/TeX/texbin:$PATH"
 -- Test: which latex
 -- Run; sudo tlmgr update --self
--- Install: sudo tlmgr install latexmk
--- OR
+-- Install:
+-- sudo tlmgr install latexmk xetex biber bibtex
+-- # (Optional but often useful)
+-- sudo tlmgr install fontspec filehook unicode-math
+--
+-- OR install bigger package
 -- brew install --cask mactex
 -- export PATH="/Library/TeX/texbin:$PATH"
 -- brew install --cask skim

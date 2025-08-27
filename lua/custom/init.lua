@@ -1,18 +1,21 @@
 require("custom.lazy")
 
 -- BREW BINARY DEPENDENCIES --
--- neovim
--- tree-sitter
--- ripgrep
--- fd
+-- brew install neovim
+-- brew install tree-sitter
+-- brew install tree-sitter-cli
+-- brew install ripgrep
+-- brew install fd
+
 --  LuaSnip Dependency --
 -- cd ~/.local/share/nvim/lazy/LuaSnip  # Adjust the path if you're using a different plugin manager
 -- make install_jsregexp
+
 -- END BREW BINARY DEPENDENCIES --
 
--- > /Users/selim/.local/state/nvim/lsp.log
--- > /Users/selim/.local/state/nvim/mason.log
---
+--  /Users/selim/.local/state/nvim/lsp.log
+--  /Users/selim/.local/state/nvim/mason.log
+
 -- LSP log level
 vim.lsp.set_log_level("ERROR")
 
