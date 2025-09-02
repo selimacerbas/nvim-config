@@ -6,37 +6,57 @@ return {
             "Piolib", "Piomon", "Piodebug", "Piodb",
         },
         dependencies = {
-            "akinsho/nvim-toggleterm.lua",
+            "akinsho/toggleterm.nvim",
             "nvim-telescope/telescope.nvim",
             "nvim-telescope/telescope-ui-select.nvim",
             "nvim-lua/plenary.nvim",
             "folke/which-key.nvim",
         },
+        -- ⬇️ These create real mappings, so <leader>P shows up in WhichKey
+        keys = {
+            -- Group label (WhichKey v3 will show it)
+            { "<leader>P",  desc = "PlatformIO", mode = "n" },
+
+            -- Menu key: try the plugin’s menu if exposed; fall back to help panel
+            {
+                "<leader>Pm",
+                function()
+                    local ok, pio = pcall(require, "platformio")
+                    if ok and type(pio.menu) == "function" then
+                        pio.menu()
+                    else
+                        vim.cmd("Piocmdh")
+                    end
+                end,
+                desc = "Menu",
+                mode = "n",
+            },
+
+            -- Common actions
+            { "<leader>Pi", "<cmd>Pioinit<CR>",  desc = "Init Project",     mode = "n" },
+            { "<leader>Pr", "<cmd>Piorun<CR>",   desc = "Build & Upload",   mode = "n" },
+            { "<leader>Pl", "<cmd>Piolib<CR>",   desc = "Manage Libraries", mode = "n" },
+            { "<leader>Ps", "<cmd>Piomon<CR>",   desc = "Serial Monitor",   mode = "n" },
+            { "<leader>Pd", "<cmd>Piodebug<CR>", desc = "Debug",            mode = "n" },
+            { "<leader>Pb", "<cmd>Piodb<CR>",    desc = "Debug DB",         mode = "n" },
+            { "<leader>Ph", "<cmd>Piocmdh<CR>",  desc = "Help",             mode = "n" },
+            { "<leader>Pf", "<cmd>Piocmdf<CR>",  desc = "Flags / Commands", mode = "n" },
+        },
         opts = {
-            lsp      = "clangd", -- or "ccls"
-            menu_key = "<leader>p", -- key to open the PlatformIO menu
+            lsp       = "clangd",     -- or "ccls"
+            menu_key  = "<leader>Pm", -- plugin will also bind this after load (harmless if we map it too)
+            menu_name = "PlatformIO",
         },
         config = function(_, opts)
-            -- initialize PlatformIO support
             require("platformio").setup(opts)
+            pcall(function() require("telescope").load_extension("ui-select") end)
 
-            -- which-key mappings under <leader>p
-            local ok, which_key = pcall(require, "which-key")
-            if not ok then return end
-
-            which_key.register({
-                p = {
-                    name = "PlatformIO",
-                    i = { "<cmd>Pioinit<CR>", "Init Project" },
-                    r = { "<cmd>Piorun<CR>", "Build & Upload" },
-                    h = { "<cmd>Piocmdh<CR>", "Show Help" },
-                    f = { "<cmd>Piocmdf<CR>", "Show Flags" },
-                    l = { "<cmd>Piolib<CR>", "Manage Libraries" },
-                    m = { "<cmd>Piomon<CR>", "Serial Monitor" },
-                    d = { "<cmd>Piodebug<CR>", "Debug" },
-                    b = { "<cmd>Piodb<CR>", "Debug DB" },
-                },
-            }, { prefix = "<leader>" })
+            -- Optional: reinforce WhichKey group (nice in older which-key)
+            local ok, wk = pcall(require, "which-key")
+            if ok then
+                local add = wk.add or wk.register
+                add({ { "<leader>P", group = "PlatformIO" } })
+            end
         end,
     },
 }
