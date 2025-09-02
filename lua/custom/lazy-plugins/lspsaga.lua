@@ -1,66 +1,83 @@
 return {
-    -- LSP Saga for enhanced LSP UI
     {
-        'glepnir/lspsaga.nvim',
+        "nvimdev/lspsaga.nvim",
+        event = "LspAttach",
         dependencies = {
-            'nvim-tree/nvim-web-devicons',
-            'folke/which-key.nvim',
+            "nvim-tree/nvim-web-devicons",
+            "folke/which-key.nvim",
+            -- "nvim-treesitter/nvim-treesitter", -- optional but recommended by Saga docs
         },
-        config = function()
-            -- Saga setup: use <CR> to open/close finder entries
-            require('lspsaga').setup({
-                finder = {
-                    keys = {
-                        toggle_or_open = 'o',
-                        vsplit         = 's',
-                        split          = 'i',
-                        tabe           = 't',
-                        tabnew         = 'r',
-                        quit           = 'q',
-                        close          = '<C-c>k',
-                    },
+        opts = {
+            -- your finder keys (these match Saga’s documented defaults)
+            finder = {
+                keys = {
+                    toggle_or_open = "o",
+                    vsplit         = "s",
+                    split          = "i",
+                    tabe           = "t",
+                    tabnew         = "r",
+                    quit           = "q",
+                    close          = "<C-c>k",
+                    -- shuttle = "[w", -- default; switch focus between panes if you want
                 },
-                lightbulb = { enable = false },
-            })
+            },
+            lightbulb = { enable = false },
+
+            -- Required for Outline to work (breadcrumbs in winbar)
+            symbols_in_winbar = { enable = true },
+            -- outline = { layout = "normal" }, -- defaults are fine; switch to "float" if you prefer
+        },
+
+        config = function(_, opts)
+            require("lspsaga").setup(opts)
 
             local map = vim.keymap.set
-            -- core mappings
-            -- map('n', 'K', '<cmd>Lspsaga hover_doc<CR>', { silent = true, desc = "Saga: Hover Doc" })
-            map('n', 'gh', '<cmd>Lspsaga finder<CR>', { silent = true, desc = "Saga: Finder" })
-            map('n', 'gd', '<cmd>Lspsaga goto_definition<CR>', { silent = true, desc = "Saga: Definition" })
-            map('n', 'gD', '<cmd>Lspsaga goto_declaration<CR>', { silent = true, desc = "Saga: Declaration" })
-            map('n', 'gp', '<cmd>Lspsaga peek_definition<CR>', { silent = true, desc = "Saga: Peek Definition" })
-            -- map('n', 'F', '<cmd>lua vim.lsp.buf.format({ async = true })<CR>', { silent = true, desc = "Format Buffer" })
-            vim.keymap.set('i', '<C-k>', function() vim.lsp.buf.signature_help() end,
-                { silent = true, desc = "LSP: Signature Help" })
-            -- make <Esc> and q close the hover window when it's focused
-            vim.api.nvim_create_autocmd("FileType", {
-                pattern = "LspsagaHover",
-                callback = function()
-                    vim.keymap.set("n", "<Esc>", "<cmd>Lspsaga hover_doc<CR>", { buffer = true, silent = true })
-                    vim.keymap.set("n", "q", "<cmd>Lspsaga hover_doc<CR>", { buffer = true, silent = true })
-                end,
-            })
 
-            -- Which-key group under <leader>l
-            local wk_ok, which_key = pcall(require, 'which-key')
-            if not wk_ok then return end
+            -- Core motions (keep your choices; no conflict with earlier groups)
+            map('n', 'gh', '<cmd>Lspsaga finder<CR>', { silent = true, desc = 'Saga: Finder' })
+            map('n', 'gd', '<cmd>Lspsaga goto_definition<CR>', { silent = true, desc = 'Saga: Definition' })
+            map('n', 'gD', '<cmd>Lspsaga goto_declaration<CR>', { silent = true, desc = 'Saga: Declaration' })
+            map('n', 'gp', '<cmd>Lspsaga peek_definition<CR>', { silent = true, desc = 'Saga: Peek Definition' })
 
-            which_key.register({
-                l = {
-                    name = "LSP",
-                    h = { '<cmd>Lspsaga hover_doc<CR>', "Hover Doc" },
-                    f = { '<cmd>Lspsaga finder<CR>', "Finder / References" },
-                    g = { '<cmd>Lspsaga goto_definition<CR>', "Definition" },
-                    D = { '<cmd>Lspsaga goto_declaration<CR>', "Declaration" },
-                    p = { '<cmd>Lspsaga peek_definition<CR>', "Peek Definition" },
-                    a = { '<cmd>Lspsaga code_action<CR>', "Code Action" },
-                    R = { '<cmd>Lspsaga show_line_diagnostics<CR>', "Line Diagnostics" },
-                    d = { '<cmd>Lspsaga show_cursor_diagnostics<CR>', "Cursor Diagnostics" },
-                    o = { '<cmd>Lspsaga outline<CR>', "Symbol Outline" },
-                    F = {'<cmd>lua vim.lsp.buf.format({ async = true })<CR>', "Format Buffer" },
-                },
-            }, { prefix = '<leader>' })
+            -- Diagnostics: non-conflicting with gitsigns ([c ]c)
+            map('n', ']e', '<cmd>Lspsaga diagnostic_jump_next<CR>', { silent = true, desc = 'Diagnostics: Next' })
+            map('n', '[e', '<cmd>Lspsaga diagnostic_jump_prev<CR>', { silent = true, desc = 'Diagnostics: Prev' })
+
+            -- Hover: toggle by default; use ++keep to pin (optional helper under <leader>lH)
+            -- map('n', 'K', '<cmd>Lspsaga hover_doc<CR>', { silent = true, desc = 'Saga: Hover Doc' })
+
+            -- Which-key group under <leader>l (LSP UI via Saga)
+            local ok, wk = pcall(require, 'which-key')
+            if ok then
+                local add = wk.add or wk.register
+                add({
+                    { '<leader>l',  group = 'LSP' },
+
+                    { '<leader>lh', '<cmd>Lspsaga hover_doc<CR>',                        desc = 'Hover Doc' },
+                    { '<leader>lH', '<cmd>Lspsaga hover_doc ++keep<CR>',                 desc = 'Hover (pin)' },
+
+                    { '<leader>lf', '<cmd>Lspsaga finder<CR>',                           desc = 'Finder / References' },
+                    { '<leader>lg', '<cmd>Lspsaga goto_definition<CR>',                  desc = 'Go to Definition' },
+                    { '<leader>lD', '<cmd>Lspsaga goto_declaration<CR>',                 desc = 'Go to Declaration' },
+                    { '<leader>lp', '<cmd>Lspsaga peek_definition<CR>',                  desc = 'Peek Definition' },
+
+                    { '<leader>la', '<cmd>Lspsaga code_action<CR>',                      desc = 'Code Action' },
+                    { '<leader>lr', '<cmd>Lspsaga rename<CR>',                           desc = 'Rename Symbol' },
+
+                    { '<leader>lR', '<cmd>Lspsaga show_line_diagnostics<CR>',            desc = 'Line Diagnostics' },
+                    { '<leader>ld', '<cmd>Lspsaga show_cursor_diagnostics<CR>',          desc = 'Cursor Diagnostics' },
+
+                    { '<leader>li', '<cmd>Lspsaga incoming_calls<CR>',                   desc = 'Incoming Calls' },
+                    { '<leader>lO', '<cmd>Lspsaga outgoing_calls<CR>',                   desc = 'Outgoing Calls' },
+
+                    { '<leader>lo', '<cmd>Lspsaga outline<CR>',                          desc = 'Symbols Outline' },
+
+                    { '<leader>lF', function() vim.lsp.buf.format({ async = true }) end, desc = 'Format Buffer' },
+                }, { mode = 'n', silent = true, noremap = true })
+            end
+
+            -- (Optional) If you *do* pin Hover, closing it is easy:
+            -- :Lspsaga hover_doc (toggles), or use q inside the window.
         end,
     },
 }
