@@ -65,14 +65,14 @@ return {
             if ok then
                 local register = wk.add or wk.register
                 register({
-                    { "<leader>u",  group = "AutoSave" },
-                    { "<leader>ut", "<cmd>ASToggle<CR>",                       desc = "Toggle AutoSave" },
-                    { "<leader>uo", function() require("auto-save").on() end,  desc = "Enable AutoSave" },
-                    { "<leader>ux", function() require("auto-save").off() end, desc = "Disable AutoSave" },
-                    { "<leader>us", status,                                    desc = "Show AutoSave Status" },
+                    { "<leader>ua",  group = "AutoSave" },
+                    { "<leader>uat", "<cmd>ASToggle<CR>",                       desc = "Toggle AutoSave" },
+                    { "<leader>uao", function() require("auto-save").on() end,  desc = "Enable AutoSave" },
+                    { "<leader>uax", function() require("auto-save").off() end, desc = "Disable AutoSave" },
+                    { "<leader>uas", status,                                    desc = "Show AutoSave Status" },
                     -- Optional: quick writes
-                    { "<leader>uw", "<cmd>write<CR>",                          desc = "Write Current File" },
-                    { "<leader>uW", "<cmd>wall<CR>",                           desc = "Write All Files" },
+                    { "<leader>uaw", "<cmd>write<CR>",                          desc = "Write Current File" },
+                    { "<leader>uaW", "<cmd>wall<CR>",                           desc = "Write All Files" },
                 }, { mode = "n", silent = true, noremap = true })
             end
         end,
