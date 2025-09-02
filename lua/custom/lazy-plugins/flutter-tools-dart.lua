@@ -1,46 +1,74 @@
 return {
-    -- Flutter tools (manages run/debug/devices/outline/logs + Dart LSP setup)
+    -- Flutter tools (manages Dart LSP + run/debug/devices/etc.)
     {
         "nvim-flutter/flutter-tools.nvim",
-        ft = { "dart" }, -- load when you open Dart
-        cmd = {          -- or when you call any Flutter command from anywhere
-            "FlutterRun", "FlutterDebug", "FlutterDevices", "FlutterEmulators",
-            "FlutterReload", "FlutterRestart", "FlutterQuit", "FlutterAttach",
-            "FlutterDetach", "FlutterOutlineToggle", "FlutterOutlineOpen",
-            "FlutterDevTools", "FlutterDevToolsActivate", "FlutterCopyProfilerUrl",
-            "FlutterLspRestart", "FlutterSuper", "FlutterReanalyze", "FlutterRename",
+        ft = { "dart" },
+        cmd = {
+            "FlutterRun", "FlutterDebug", "FlutterDevices", "FlutterEmulators", "FlutterReload", "FlutterRestart",
+            "FlutterQuit",
+            "FlutterAttach", "FlutterDetach", "FlutterOutlineToggle", "FlutterOutlineOpen", "FlutterDevTools",
+            "FlutterDevToolsActivate",
+            "FlutterCopyProfilerUrl", "FlutterLspRestart", "FlutterSuper", "FlutterReanalyze", "FlutterRename",
             "FlutterLogClear", "FlutterLogToggle",
         },
         dependencies = {
             "nvim-lua/plenary.nvim",
-            "stevearc/dressing.nvim",        -- nicer vim.ui.select
+            "stevearc/dressing.nvim",
             "folke/which-key.nvim",
-            "nvim-telescope/telescope.nvim", -- optional: flutter Telescope pickers
+            "nvim-telescope/telescope.nvim",
+            -- DAP stack
+            "mfussenegger/nvim-dap",
+            { "rcarriga/nvim-dap-ui", dependencies = { "nvim-neotest/nvim-nio" } },
+            "theHamsta/nvim-dap-virtual-text",
         },
         opts = function()
-            -- keep defaults; uncomment below to enable tasteful extras
             return {
-                -- widget_guides = { enabled = true },      -- subtle guides in Dart buffers
-                -- closing_tags = { highlight = "Comment" }, -- closing tag virtual text
-                -- debugger = { enabled = true },            -- if you also install nvim-dap
+                -- tasteful UX extras
+                widget_guides = { enabled = true }, -- experimental but handy
+                closing_tags  = {                   -- annotate closing widgets
+                    enabled = true,
+                    highlight = "Comment",
+                    prefix = ">",
+                    priority = 10,
+                },
+                debugger      = {               -- integrates with nvim-dap
+                    enabled = true,
+                    exception_breakpoints = {}, -- keep default (none)
+                    evaluate_to_string_in_debug_views = true,
+                    -- You can also add register_configurations here if you want custom flavors/targets later
+                },
+                -- you can enable these later if you like:
+                -- dev_log = { enabled = true },
+                -- outline = { auto_open = false },
             }
         end,
         config = function(_, opts)
             require("flutter-tools").setup(opts)
 
-            -- Telescope integration (commands & FVM switcher)
-            pcall(function()
-                require("telescope").load_extension("flutter")
-            end)
+            -- Telescope extension
+            pcall(function() require("telescope").load_extension("flutter") end)
 
-            -- which-key group
+            -- DAP UI & virtual text
+            local dap_ok, dap = pcall(require, "dap")
+            if dap_ok then
+                local dapui = require("dapui")
+                require("dapui").setup()
+                require("nvim-dap-virtual-text").setup() -- inline values
+
+                -- auto-open/close UI on session start/stop
+                dap.listeners.after.event_initialized["dapui_flutter"] = function() dapui.open() end
+                dap.listeners.before.event_terminated["dapui_flutter"] = function() dapui.close() end
+                dap.listeners.before.event_exited["dapui_flutter"]     = function() dapui.close() end
+            end
+
+            -- which-key: Flutter group (keeps your previous layout)
             local ok, wk = pcall(require, "which-key")
             if ok then
                 local add = wk.add or wk.register
                 add({
                     { "<leader>f",  group = "Flutter" },
                     { "<leader>fr", "<cmd>FlutterRun<CR>",              desc = "Run Project" },
-                    { "<leader>fd", "<cmd>FlutterDebug<CR>",            desc = "Debug Run" },
+                    { "<leader>fd", "<cmd>FlutterDebug<CR>",            desc = "Debug Run (DAP)" },
                     { "<leader>fv", "<cmd>FlutterDevices<CR>",          desc = "Select Device" },
                     { "<leader>fe", "<cmd>FlutterEmulators<CR>",        desc = "Select Emulator" },
                     { "<leader>fl", "<cmd>FlutterReload<CR>",           desc = "Hot Reload" },
@@ -59,17 +87,12 @@ return {
                     { "<leader>fu", "<cmd>FlutterReanalyze<CR>",        desc = "Force Reanalyze" },
                     { "<leader>fC", "<cmd>FlutterLogClear<CR>",         desc = "Clear Logs" },
                     { "<leader>fG", "<cmd>FlutterLogToggle<CR>",        desc = "Toggle Logs" },
-                    -- Telescope helpers (if telescope present)
+                    -- Telescope helpers
                     {
                         "<leader>ff",
                         function()
                             local ok_t = pcall(require, "telescope")
-                            if ok_t then
-                                require("telescope").extensions.flutter.commands()
-                            else
-                                vim.cmd(
-                                    "Telescope flutter commands")
-                            end
+                            if ok_t then require("telescope").extensions.flutter.commands() end
                         end,
                         desc = "Telescope: Flutter Commands"
                     },
@@ -77,14 +100,10 @@ return {
                         "<leader>fF",
                         function()
                             local ok_t = pcall(require, "telescope")
-                            if ok_t then
-                                local ext = require("telescope").extensions.flutter
-                                if ext.fvm then
-                                    ext.fvm()
-                                else
-                                    vim.notify(
-                                        "FVM picker unavailable (enable fvm in flutter-tools)", vim.log.levels.INFO)
-                                end
+                            if ok_t and require("telescope").extensions.flutter.fvm then
+                                require("telescope").extensions.flutter.fvm()
+                            else
+                                vim.notify("FVM picker unavailable (enable fvm in flutter-tools)", vim.log.levels.INFO)
                             end
                         end,
                         desc = "Telescope: Flutter FVM"
