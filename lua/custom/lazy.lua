@@ -54,7 +54,7 @@ require("lazy").setup({
         { import = "custom.lazy-plugins.smear-cursor" },
         { import = "custom.lazy-plugins.key-analyzer" },
         { import = "custom.lazy-plugins.nvim-dap" },
-        -- { import = "custom.lazy-plugins.nvim-lspconfig" },
+        { import = "custom.lazy-plugins.nvim-lspconfig" },
         { import = "custom.lazy-plugins.theme.rose-pine" }, -- Change here if you want new theme.
 
 

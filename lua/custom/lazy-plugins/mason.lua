@@ -42,7 +42,6 @@ return {
                     "pyright",
                     "jsonls",
                     "yamlls",
-                    "tsserver", -- old name
                     "ts_ls", -- new name in lspconfig
                     "lua_ls",
                     "gopls",
