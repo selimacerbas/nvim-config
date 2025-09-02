@@ -23,53 +23,49 @@ return {
     {
         "benlubas/molten-nvim",
         ft = { "python", "julia", "r" },
+        cmd = { "MoltenInit", "MoltenEvaluateLine", "MoltenEvaluateVisual", "MoltenEvaluateOperator",
+            "MoltenReevaluateCell", "MoltenEnterOutput", "MoltenHideOutput", "MoltenDelete" },
         build = ":UpdateRemotePlugins",
         dependencies = {
             {
                 "3rd/image.nvim",
                 opts = {
-                    rocks = {
-                        enabled = true,
-                        hererocks = true, -- enable automatic Lua 5.1 + LuaRocks install
-                    },
+                    rocks = { enabled = true, hererocks = true }, -- auto-install Lua5.1 + luarocks
                 },
                 config = function()
                     require("image").setup({
-                        backend   = "kitty", -- or "ueberzug"
-                        processor = "magick_cli",
+                        backend   = "kitty",     -- or "ueberzug" if not using Kitty
+                        processor = "magick_cli" -- ImageMagick CLI
                     })
                 end,
             },
             "folke/which-key.nvim",
         },
         config = function()
-            -- use image.nvim as the provider
+            -- Use image.nvim as the renderer for rich outputs
             vim.g.molten_image_provider = "image.nvim"
 
-            -- register Molten commands under <leader>m
-            local wk_ok, which_key = pcall(require, "which-key")
-            if not wk_ok then return end
+            -- which-key: <leader>j ... (Jupyter/Molten)
+            local ok, wk = pcall(require, "which-key")
+            if ok then
+                local add = wk.add or wk.register
+                add({
+                    { "<leader>j",  group = "Jupyter (Molten)" },
+                    { "<leader>ji", ":MoltenInit<CR>",                  desc = "Init Kernel" },
+                    { "<leader>jl", ":MoltenEvaluateLine<CR>",          desc = "Run Line" },
+                    { "<leader>jo", ":MoltenEvaluateOperator<CR>",      desc = "Run Operator" },
+                    { "<leader>jc", ":MoltenReevaluateCell<CR>",        desc = "Re-evaluate Cell" },
+                    { "<leader>js", ":MoltenEnterOutput<CR>",           desc = "Show Output" },
+                    { "<leader>jh", ":MoltenHideOutput<CR>",            desc = "Hide Output" },
+                    { "<leader>jd", ":MoltenDelete<CR>",                desc = "Delete Cell" },
+                    { "<leader>jS", ":noautocmd MoltenEnterOutput<CR>", desc = "Enter Output (noautocmd)" },
+                }, { mode = "n", silent = true, noremap = true })
 
-            which_key.register({
-                m = {
-                    name = "Molten",
-                    i = { ":MoltenInit<CR>", "Init Kernel" },
-                    o = { ":MoltenEvaluateOperator<CR>", "Run Operator" },
-                    l = { ":MoltenEvaluateLine<CR>", "Run Line" },
-                    c = { ":MoltenReevaluateCell<CR>", "Re-evaluate Cell" },
-                    s = { ":MoltenEnterOutput<CR>", "Show Output" },
-                    d = { ":MoltenDelete<CR>", "Delete Cell" },
-                    h = { ":MoltenHideOutput<CR>", "Hide Output" },
-                    e = { ":noautocmd MoltenEnterOutput<CR>", "Enter Output (noautocmd)" },
-                },
-            }, { prefix = "<leader>" })
-
-            -- visual-mode evaluation under <leader>m v
-            which_key.register({
-                m = {
-                    v = { ":<C-u>MoltenEvaluateVisual<CR>gv", "Run Visual Selection" },
-                },
-            }, { prefix = "<leader>", mode = "v" })
+                -- Visual: evaluate selection
+                add({
+                    { "<leader>jv", ":<C-u>MoltenEvaluateVisual<CR>gv", desc = "Run Visual Selection" },
+                }, { mode = "v", silent = true, noremap = true })
+            end
         end,
     },
 }
