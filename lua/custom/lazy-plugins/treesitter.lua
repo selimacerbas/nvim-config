@@ -1,151 +1,140 @@
 return {
     {
-        'nvim-treesitter/nvim-treesitter',
-        build = ':TSUpdate',
+        "nvim-treesitter/nvim-treesitter",
+        build = ":TSUpdate",
         dependencies = {
-            'nvim-treesitter/nvim-treesitter-textobjects',
-            'folke/which-key.nvim',
+            "nvim-treesitter/nvim-treesitter-textobjects",
+            "folke/which-key.nvim",
         },
         opts = {
             ensure_installed = {
-                "rust",
-                "go",
-                "c",
-                "cpp",
-                "python",
-                "json",
-                "yaml",
-                "dart",
-                "javascript",
-                "lua",
-                "vimdoc",
-                "typescript",
-                "vim",
-                "query",
-                "terraform",
-                "dockerfile",
-                "bash",
-                "cmake",
-                "helm",
-                "html",
-                "xml",
-                "hcl",
-                "starlark",
+                -- core langs
+                "bash", "c", "cpp", "cmake", "go", "rust", "python", "lua", "vim", "vimdoc",
+                "javascript", "typescript", "tsx", "json", "yaml", "html", "xml", "dockerfile",
+                "terraform", "hcl", "starlark", "query", "dart",
+                -- editing QoL
+                "markdown", "markdown_inline",
             },
+            auto_install = true, -- install missing parsers when entering buffer
             highlight = {
                 enable = true,
                 additional_vim_regex_highlighting = false,
             },
-            indent = {
-                enable = true,
-            },
-            playground = {
-                enable = true,
-                updatetime = 25,
-                persist_queries = false,
-            },
+            indent = { enable = true },
+            -- Treesitter Playground is configured via its own plugin below
             textobjects = {
                 select = {
                     enable = true,
-                    lookahead = true,
+                    lookahead = true, -- jump forward to nearest textobj
                     keymaps = {
-                        ['af'] = '@function.outer',
-                        ['if'] = '@function.inner',
-                        ['ac'] = '@class.outer',
-                        ['ic'] = '@class.inner',
-                        ['ap'] = '@parameter.outer',
-                        ['ip'] = '@parameter.inner',
+                        ["af"] = "@function.outer",
+                        ["if"] = "@function.inner",
+                        ["ac"] = "@class.outer",
+                        ["ic"] = "@class.inner",
+                        ["ap"] = "@parameter.outer",
+                        ["ip"] = "@parameter.inner",
                     },
                 },
                 move = {
                     enable = true,
                     set_jumps = true,
                     goto_next_start = {
-                        [']f'] = '@function.outer',
-                        [']c'] = '@class.outer',
+                        ["]f"] = "@function.outer",
+                        ["]c"] = "@class.outer",
                     },
                     goto_previous_start = {
-                        ['[f'] = '@function.outer',
-                        ['[c'] = '@class.outer',
+                        ["[f"] = "@function.outer",
+                        ["[c"] = "@class.outer",
                     },
                 },
                 swap = {
                     enable        = true,
-                    swap_next     = { ['<leader>ta'] = '@parameter.inner' },
-                    swap_previous = { ['<leader>tA'] = '@parameter.inner' },
+                    -- use <leader>S… (capital S group) to stay clear of Telescope (<leader>t…)
+                    swap_next     = { ["<leader>Sa"] = "@parameter.inner" },
+                    swap_previous = { ["<leader>SA"] = "@parameter.inner" },
+                },
+            },
+            incremental_selection = {
+                enable = true,
+                keymaps = {
+                    init_selection = "gnn",
+                    node_incremental = "grn",
+                    scope_incremental = "grc",
+                    node_decremental = "grm",
                 },
             },
         },
         config = function(_, opts)
-            require('nvim-treesitter.configs').setup(opts)
+            require("nvim-treesitter.configs").setup(opts)
 
-            local ok, which_key = pcall(require, 'which-key')
+            -- Which-Key docs (no new leader conflicts)
+            local ok, wk = pcall(require, "which-key")
             if not ok then return end
 
-            -- operator-pending & visual mode: text-object selections
-            which_key.register({
-                a = {
-                    name = "Around Textobj",
-                    f = "Function",
-                    c = "Class",
-                    p = "Parameter",
-                },
-            }, { mode = { 'o', 'x' }, prefix = 'a' })
+            -- Operator/visual textobjects
+            wk.add({
+                { "a",  group = "Around Textobj",  mode = { "o", "x" } },
+                { "af", desc = "Around function",  mode = { "o", "x" } },
+                { "ac", desc = "Around class",     mode = { "o", "x" } },
+                { "ap", desc = "Around parameter", mode = { "o", "x" } },
+                { "i",  group = "Inside Textobj",  mode = { "o", "x" } },
+                { "if", desc = "Inside function",  mode = { "o", "x" } },
+                { "ic", desc = "Inside class",     mode = { "o", "x" } },
+                { "ip", desc = "Inside parameter", mode = { "o", "x" } },
+            })
 
-            which_key.register({
-                i = {
-                    name = "Inside Textobj",
-                    f = "Function",
-                    c = "Class",
-                    p = "Parameter",
-                },
-            }, { mode = { 'o', 'x' }, prefix = 'i' })
+            -- Motions between objects
+            wk.add({
+                { "]",  group = "Next object",        mode = "n" },
+                { "[",  group = "Prev object",        mode = "n" },
+                { "]f", desc = "Next function start", mode = "n" },
+                { "]c", desc = "Next class start",    mode = "n" },
+                { "[f", desc = "Prev function start", mode = "n" },
+                { "[c", desc = "Prev class start",    mode = "n" },
+            })
 
-            -- normal mode: moves between functions/classes
-            which_key.register({
-                f = "Next Function Start",
-                c = "Next Class Start",
-            }, { mode = 'n', prefix = ']' })
-
-            which_key.register({
-                f = "Prev Function Start",
-                c = "Prev Class Start",
-            }, { mode = 'n', prefix = '[' })
-
-            -- normal mode: swap parameters
-            which_key.register({
-                ta = "Swap Next Parameter",
-                tA = "Swap Prev Parameter",
-            }, { mode = 'n', prefix = '<leader>' })
+            -- Swaps + incremental selection under <leader>S
+            wk.add({
+                { "<leader>S", group = "Treesitter" },
+                { "<leader>Sa", desc = "Swap parameter → next" },
+                { "<leader>SA", desc = "Swap parameter → prev" },
+                { "gnn", desc = "TS: init selection", mode = "n" },
+                { "grn", desc = "TS: grow node", mode = "n" },
+                { "grm", desc = "TS: shrink node", mode = "n" },
+                { "grc", desc = "TS: grow scope", mode = "n" },
+            })
         end,
     },
 
+    -- Treesitter Playground (separate plugin)
     {
-        'nvim-treesitter/playground',
-        cmd = {
-            'TSHighlightCapturesUnderCursor', -- show which highlight groups apply under the cursor
-            'TSPlaygroundToggle',             -- open/close the interactive Tree-sitter playground
-        },
-        dependencies = { 'folke/which-key.nvim' },
+        "nvim-treesitter/playground",
+        cmd = { "TSHighlightCapturesUnderCursor", "TSPlaygroundToggle" },
+        dependencies = { "folke/which-key.nvim" },
         config = function()
-            -- no setup() needed—Playground works out of the box
+            -- Keymaps under <leader>S to avoid Telescope (<leader>t…)
+            local function safe_map(lhs, rhs, desc)
+                if vim.fn.maparg(lhs, "n") == "" then
+                    vim.keymap.set("n", lhs, rhs, { noremap = true, silent = true, desc = desc })
+                end
+            end
+            safe_map("<leader>Sp", "<cmd>TSPlaygroundToggle<CR>", "Playground toggle")
+            safe_map("<leader>Sc", "<cmd>TSHighlightCapturesUnderCursor<CR>", "Highlight captures")
 
-            -- Which-Key menu under <leader>t (Treesitter)
-            local ok, which_key = pcall(require, 'which-key')
-            if not ok then return end
-
-            which_key.register({
-                t = {
-                    name = "Terminal/Telescope/Twilight/Treesitter",
-                    p = { "<cmd>TSPlaygroundToggle<CR>", "Toggle Playground" },
-                    c = { "<cmd>TSHighlightCapturesUnderCursor<CR>", "Highlight Captures" },
-                },
-            }, { prefix = "<leader>" })
+            local ok, wk = pcall(require, "which-key")
+            if ok then
+                wk.add({
+                    { "<leader>S",  group = "Treesitter" },
+                    { "<leader>Sp", desc = "Playground toggle" },
+                    { "<leader>Sc", desc = "Highlight captures" },
+                })
+            end
         end,
     },
 
+    -- Helm syntax (Tree-sitter doesn't ship an official 'helm' parser)
     {
-        'towolf/vim-helm',
-        ft = { 'helm', 'yaml' },
+        "towolf/vim-helm",
+        ft = { "helm", "yaml" },
     },
 }
