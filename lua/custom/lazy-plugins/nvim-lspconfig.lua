@@ -129,22 +129,40 @@ return {
                     map("n", "]d", vim.diagnostic.goto_next, "Next Diagnostic")
                     map("n", "<C-W>d", vim.diagnostic.open_float, "Line Diagnostics")
 
+
                     -- Insert-mode which-key hints
                     local ok, wk = pcall(require, "which-key")
                     if ok then
-                        local add = wk.add or wk.register
-                        add({
-                            { "<C-n>", desc = "Next Completion" },
-                            { "<C-p>", desc = "Prev Completion" },
-                        }, { mode = "i", buffer = bufnr })
-                        add({
-                            name  = "Complete (<C-x>)",
-                            o     = { "<C-x><C-o>", "Omni (LSP)" },
-                            f     = { "<C-x><C-f>", "File Name" },
-                            d     = { "<C-x><C-d>", "Dictionary" },
-                            t     = { "<C-x><C-t>", "Tag" },
-                            ["="] = { "<C-x>=", "Spelling" },
-                        }, { mode = "i", prefix = "<C-x>", buffer = bufnr })
+                        if wk.add then
+                            -- which-key v3 style (array of specs)
+                            wk.add({
+                                { "<C-n>",      desc = "Next Completion",   mode = "i", buffer = bufnr },
+                                { "<C-p>",      desc = "Prev Completion",   mode = "i", buffer = bufnr },
+
+                                -- Group header so <C-x> shows a menu in insert mode
+                                { "<C-x>",      group = "Complete (<C-x>)", mode = "i", buffer = bufnr },
+                                { "<C-x><C-o>", desc = "Omni (LSP)",        mode = "i", buffer = bufnr },
+                                { "<C-x><C-f>", desc = "File Name",         mode = "i", buffer = bufnr },
+                                { "<C-x><C-d>", desc = "Dictionary",        mode = "i", buffer = bufnr },
+                                { "<C-x><C-t>", desc = "Tag",               mode = "i", buffer = bufnr },
+                                { "<C-x>=",     desc = "Spelling",          mode = "i", buffer = bufnr },
+                            })
+                        else
+                            -- which-key v2 fallback (table + prefix)
+                            wk.register({
+                                ["<C-n>"] = "Next Completion",
+                                ["<C-p>"] = "Prev Completion",
+                            }, { mode = "i", buffer = bufnr })
+
+                            wk.register({
+                                name  = "Complete (<C-x>)",
+                                o     = { "<C-x><C-o>", "Omni (LSP)" },
+                                f     = { "<C-x><C-f>", "File Name" },
+                                d     = { "<C-x><C-d>", "Dictionary" },
+                                t     = { "<C-x><C-t>", "Tag" },
+                                ["="] = { "<C-x>=", "Spelling" },
+                            }, { mode = "i", prefix = "<C-x>", buffer = bufnr })
+                        end
                     end
                 end,
             })

@@ -28,7 +28,7 @@ return
         if ok then
             local add = wk.add or wk.register
             add({
-                { "<leader>d",  group = "Debug (DAP)" },
+                -- { "<leader>d",  group = "Debug (DAP)" },
                 { "<leader>dc", function() dap.continue() end,          desc = "Continue/Start" },
                 { "<leader>do", function() dap.step_over() end,         desc = "Step Over" },
                 { "<leader>di", function() dap.step_into() end,         desc = "Step Into" },

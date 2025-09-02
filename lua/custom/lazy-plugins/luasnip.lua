@@ -83,7 +83,7 @@ return {
             if ok then
                 local add = wk.add or wk.register
                 add({
-                    { "<leader>s",  group = "Snippets" },
+                    -- { "<leader>s",  group = "Snippets" },
                     { "<leader>se", desc = "Expand (normal)" },
                     { "<leader>su", desc = "Unlink current" },
                     { "<leader>sr", desc = "Reload snippets" },

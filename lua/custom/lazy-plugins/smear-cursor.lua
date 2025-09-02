@@ -23,7 +23,7 @@ return {
             local ok, wk = pcall(require, "which-key")
             if ok then
                 (wk.add or wk.register)({
-                        { "<leader>u", group = "UI / Toggles" },
+                        -- { "<leader>u", group = "UI / Toggles" },
                     })
             end
         end,

@@ -41,12 +41,12 @@ return {
 
                 -- insert-mode keymaps (handled by the plugin)
                 -- NOTE: <C-s> can freeze some terminals; <M-s> is safer.
-                toggle_key = "<M-s>",                     -- toggle signature popup on/off
-                toggle_key_flip_floatwin_setting = true,  -- persist the float on/off state :contentReference[oaicite:1]{index=1}
-                select_signature_key = "<C-d>",           -- cycle overloads
+                toggle_key = "<M-s>",                             -- toggle signature popup on/off
+                toggle_key_flip_floatwin_setting = true,          -- persist the float on/off state :contentReference[oaicite:1]{index=1}
+                select_signature_key = "<C-d>",                   -- cycle overloads
                 move_signature_window_key = { "<C-k>", "<C-j>" }, -- move float up/down
                 -- avoid shadowing Insert's native <C-w> delete-word
-                move_cursor_key = "<M-p>",                -- jump between code & float (insert mode) :contentReference[oaicite:2]{index=2}
+                move_cursor_key = "<M-p>",                        -- jump between code & float (insert mode) :contentReference[oaicite:2]{index=2}
             }
         end,
         config = function(_, opts)
@@ -57,7 +57,7 @@ return {
             if ok then
                 local add = wk.add or wk.register
                 add({
-                    { "<leader>l",  group = "LSP" },
+                    -- { "<leader>l",  group = "LSP" },
                     { "<leader>ls", function() vim.lsp.buf.signature_help() end,                desc = "Show Signature Help" },
                     { "<leader>lS", function() require("lsp_signature").toggle_float_win() end, desc = "Toggle Signature Float" },
                 }, { mode = "n", silent = true, noremap = true })

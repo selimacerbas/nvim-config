@@ -36,7 +36,7 @@ return {
                 if ok then
                     local add = wk.add or wk.register
                     add({
-                        { "<leader>g",  group = "Git" },
+                        -- { "<leader>g",  group = "Git" },
 
                         { "<leader>gs", "<cmd>Gitsigns stage_hunk<CR>",  desc = "Stage Hunk",           mode = { "n", "v" } },
                         { "<leader>gr", "<cmd>Gitsigns reset_hunk<CR>",  desc = "Reset Hunk",           mode = { "n", "v" } },
@@ -91,7 +91,7 @@ return {
         optional = true,
         dependencies = { "folke/which-key.nvim" },
         keys = {
-            { "<leader>gf",  group = "Git: Find (Telescope)",                            mode = "n" },
+            -- { "<leader>gf",  group = "Git: Find (Telescope)",                            mode = "n" },
 
             { "<leader>gfc", function() require("telescope.builtin").git_commits() end,  desc = "Commits" },
             { "<leader>gfb", function() require("telescope.builtin").git_bcommits() end, desc = "Buffer Commits" },

@@ -42,7 +42,7 @@ return {
             if ok then
                 local register = wk.add or wk.register
                 register({
-                    { "<leader>ui",  group = "Indent Guides" },
+                    -- { "<leader>ui",  group = "Indent Guides" },
                     { "<leader>uit", "<cmd>IBLToggle<CR>",   desc = "Toggle Guides" },
                     { "<leader>uie", "<cmd>IBLEnable<CR>",   desc = "Enable Guides" },
                     { "<leader>uid", "<cmd>IBLDisable<CR>",  desc = "Disable Guides" },

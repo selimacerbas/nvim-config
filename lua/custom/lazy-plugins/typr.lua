@@ -18,10 +18,10 @@ return {
             if not ok then return end
             if wk.add then
                 -- which-key v3
-                wk.add({ { "<leader>w", group = "Typr" } })
+                -- wk.add({ { "<leader>w", group = "Typr" } })
             elseif wk.register then
                 -- which-key v2
-                wk.register({ w = { name = "Typr" } }, { prefix = "<leader>" })
+                -- wk.register({ w = { name = "Typr" } }, { prefix = "<leader>" })
             end
         end,
 

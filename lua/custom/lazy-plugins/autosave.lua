@@ -65,7 +65,7 @@ return {
             if ok then
                 local register = wk.add or wk.register
                 register({
-                    { "<leader>ua",  group = "AutoSave" },
+                    -- { "<leader>ua",  group = "AutoSave" },
                     { "<leader>uat", "<cmd>ASToggle<CR>",                       desc = "Toggle AutoSave" },
                     { "<leader>uao", function() require("auto-save").on() end,  desc = "Enable AutoSave" },
                     { "<leader>uax", function() require("auto-save").off() end, desc = "Disable AutoSave" },

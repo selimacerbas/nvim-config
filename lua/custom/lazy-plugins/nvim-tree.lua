@@ -100,7 +100,7 @@ return {
             if ok then
                 local add = wk.add or wk.register
                 add({
-                    { "<leader>n",  group = "NvimTree" },
+                    -- { "<leader>n",  group = "NvimTree" },
                     { "<leader>nt", desc = "Toggle" },
                     { "<leader>no", desc = "Open" },
                     { "<leader>nc", desc = "Close" },

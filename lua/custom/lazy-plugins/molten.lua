@@ -50,7 +50,7 @@ return {
             if ok then
                 local add = wk.add or wk.register
                 add({
-                    { "<leader>j",  group = "Jupyter (Molten)" },
+                    -- { "<leader>j",  group = "Jupyter (Molten)" },
                     { "<leader>ji", ":MoltenInit<CR>",                  desc = "Init Kernel" },
                     { "<leader>jl", ":MoltenEvaluateLine<CR>",          desc = "Run Line" },
                     { "<leader>jo", ":MoltenEvaluateOperator<CR>",      desc = "Run Operator" },

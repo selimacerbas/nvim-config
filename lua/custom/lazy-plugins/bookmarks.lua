@@ -42,7 +42,7 @@ return {
             local ok, wk = pcall(require, "which-key")
             if ok then
                 local register = wk.add or wk.register
-                register({ { "<leader>b", group = "Bookmarks" } }, { mode = "n" })
+                -- register({ { "<leader>b", group = "Bookmarks" } }, { mode = "n" })
             end
         end,
     },

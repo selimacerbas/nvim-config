@@ -51,7 +51,7 @@ return {
             if ok then
                 local add = wk.add or wk.register
                 add({
-                    { '<leader>l',  group = 'LSP' },
+                    -- { '<leader>l',  group = 'LSP' },
 
                     { '<leader>lh', '<cmd>Lspsaga hover_doc<CR>',                        desc = 'Hover Doc' },
                     { '<leader>lH', '<cmd>Lspsaga hover_doc ++keep<CR>',                 desc = 'Hover (pin)' },

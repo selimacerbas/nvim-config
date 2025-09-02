@@ -25,17 +25,17 @@ return {
             end
 
             -- Put Twilight under <leader>z… to avoid your <leader>t (Telescope) space
-            safe_map("<leader>zw", "<cmd>Twilight<CR>", "Twilight: toggle")
-            safe_map("<leader>zE", "<cmd>TwilightEnable<CR>", "Twilight: enable")
-            safe_map("<leader>zD", "<cmd>TwilightDisable<CR>", "Twilight: disable")
+            safe_map("<leader>Zw", "<cmd>Twilight<CR>", "Twilight: toggle")
+            safe_map("<leader>ZE", "<cmd>TwilightEnable<CR>", "Twilight: enable")
+            safe_map("<leader>ZD", "<cmd>TwilightDisable<CR>", "Twilight: disable")
 
             -- Which-Key labels (we don’t rename the <leader>z group to avoid clobbering your Todo group)
             local ok, wk = pcall(require, "which-key")
             if ok then
                 wk.add({
-                    { "<leader>zw", desc = "Twilight: toggle" },
-                    { "<leader>zE", desc = "Twilight: enable" },
-                    { "<leader>zD", desc = "Twilight: disable" },
+                    { "<leader>Zw", desc = "Twilight: toggle" },
+                    { "<leader>ZE", desc = "Twilight: enable" },
+                    { "<leader>ZD", desc = "Twilight: disable" },
                 })
             end
         end,

@@ -65,7 +65,7 @@ return {
                 local add = wk.add or wk.register
 
                 -- Leader group (helpers we provided)
-                add({ { "<leader>c", group = "Comment" } }, { mode = "n" })
+                -- add({ { "<leader>c", group = "Comment" } }, { mode = "n" })
 
                 -- Show native Comment.nvim maps under the normal `g` prefix
                 add({

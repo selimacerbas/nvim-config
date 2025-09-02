@@ -90,7 +90,7 @@ return {
             local ok, wk = pcall(require, "which-key")
             if ok then
                 wk.add({
-                    { "<leader>T",  group = "Terminal" },
+                    -- { "<leader>T",  group = "Terminal" },
                     { "<leader>Tt", desc = "Terminal (float)" },
                     { "<leader>Th", desc = "Terminal (horizontal)" },
                     { "<leader>Tv", desc = "Terminal (vertical)" },

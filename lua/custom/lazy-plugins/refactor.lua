@@ -38,7 +38,7 @@ return {
             local ok, wk = pcall(require, "which-key")
             if ok then
                 (wk.add or wk.register)({
-                        { "<leader>r", group = "Refactor" },
+                        -- { "<leader>r", group = "Refactor" },
                     })
             end
         end,

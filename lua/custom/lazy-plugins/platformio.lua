@@ -55,7 +55,7 @@ return {
             local ok, wk = pcall(require, "which-key")
             if ok then
                 local add = wk.add or wk.register
-                add({ { "<leader>P", group = "PlatformIO" } })
+                -- add({ { "<leader>P", group = "PlatformIO" } })
             end
         end,
     },

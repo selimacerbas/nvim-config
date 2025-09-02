@@ -75,7 +75,7 @@ return {
             local ok, wk = pcall(require, "which-key")
             if ok then
                 wk.add({
-                    { "<leader>z", group = "Todos" },
+                    -- { "<leader>z", group = "Todos" },
                     { "]t",        desc = "Next TODO", mode = "n" },
                     { "[t",        desc = "Prev TODO", mode = "n" },
                 })

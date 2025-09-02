@@ -124,7 +124,7 @@ return {
             local ok, wk = pcall(require, "which-key")
             if ok then
                 wk.add({
-                    { "<leader>S",  group = "Treesitter" },
+                    -- { "<leader>S",  group = "Treesitter" },
                     { "<leader>Sp", desc = "Playground toggle" },
                     { "<leader>Sc", desc = "Highlight captures" },
                 })

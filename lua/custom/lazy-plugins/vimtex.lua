@@ -55,7 +55,7 @@ return {
             local ok, wk                    = pcall(require, "which-key")
             if ok then
                 if wk.add then
-                    wk.add({ { "<leader>v", group = "VimTeX / Vim" } })
+                    -- wk.add({ { "<leader>v", group = "VimTeX / Vim" } })
                 else
                     wk.register({ v = { name = "VimTeX / Vim" } }, { prefix = "<leader>" })
                 end

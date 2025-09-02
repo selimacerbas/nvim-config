@@ -66,7 +66,7 @@ return {
             if ok then
                 local add = wk.add or wk.register
                 add({
-                    { "<leader>f",  group = "Flutter" },
+                    -- { "<leader>f",  group = "Flutter" },
                     { "<leader>fr", "<cmd>FlutterRun<CR>",              desc = "Run Project" },
                     { "<leader>fd", "<cmd>FlutterDebug<CR>",            desc = "Debug Run (DAP)" },
                     { "<leader>fv", "<cmd>FlutterDevices<CR>",          desc = "Select Device" },

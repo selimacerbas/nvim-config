@@ -82,7 +82,7 @@ return {
                 -- v3 uses :add, v2 uses :register — support both
                 local register = wk.add or wk.register
                 register({
-                    { '<leader>p',  group = 'Pairs' },
+                    -- { '<leader>p',  group = 'Pairs' },
                     { '<leader>pt', '<cmd>AutoPairsToggle<CR>',                                         desc = 'Toggle enable/disable' },
                     { '<leader>pc', function() require('nvim-autopairs').clear_rules() end,             desc = 'Clear all custom rules' },
                     -- Don’t bind Fast Wrap to a leader key (it’s an insert-mode action);

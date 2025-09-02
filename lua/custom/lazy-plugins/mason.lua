@@ -207,7 +207,7 @@ return {
             if ok then
                 local add = wk.add or wk.register
                 add({
-                    { "<leader>l",  group = "LSP" },
+                    -- { "<leader>l",  group = "LSP" },
                     { "<leader>lm", "<cmd>Mason<CR>",                          desc = "Mason UI" },
                     { "<leader>lI", "<cmd>LspInfo<CR>",                        desc = "LSP Info" },
                     { "<leader>lX", "<cmd>LspRestart<CR>",                     desc = "LSP Restart" },

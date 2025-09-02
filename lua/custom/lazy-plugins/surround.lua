@@ -28,7 +28,7 @@ return {
                 { "gS",         desc = "Surround selection (line-wise gS{char})", mode = "x" },
 
                 -- 3) A tiny leader group so the plugin shows up in <leader> menus too
-                { "<leader>s",  group = "Surround" },
+                -- { "<leader>s",  group = "Surround" },
                 { "<leader>sh", "<cmd>h nvim-surround.usage<cr>",                 desc = "Help / usage" },
             })
         end,

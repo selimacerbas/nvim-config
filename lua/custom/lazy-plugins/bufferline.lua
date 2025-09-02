@@ -46,7 +46,7 @@ return {
             if ok then
                 local register = wk.add or wk.register
                 register({
-                    { "<leader>e",  group = "Tabs" },
+                    -- { "<leader>e",  group = "Tabs" },
                     { "<leader>en", desc = "Tabs: Next" },
                     { "<leader>ep", desc = "Tabs: Prev" },
                     { "<leader>ek", desc = "Tabs: Pick" },

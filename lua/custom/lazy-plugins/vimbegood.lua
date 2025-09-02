@@ -10,7 +10,7 @@ return {
                 local ok, wk = pcall(require, "which-key")
                 if not ok then return end
                 if wk.add then
-                    wk.add({ { "<leader>v", group = "Vim training" } })                     -- which-key v3
+                    -- wk.add({ { "<leader>v", group = "Vim training" } })                     -- which-key v3
                 else
                     wk.register({ v = { name = "Vim training" } }, { prefix = "<leader>" }) -- v2
                 end

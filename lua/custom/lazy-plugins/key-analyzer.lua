@@ -56,7 +56,7 @@ return {
 
             -- group labels (v2/v3 compatible)
             add({
-                { "<leader>k",   group = "Key Analyzer" },
+                -- { "<leader>k",   group = "Key Analyzer" },
                 { "<leader>kk",  desc = "Open (normal)" },
 
                 -- leader & mode analyzers
