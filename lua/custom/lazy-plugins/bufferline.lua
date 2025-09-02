@@ -1,52 +1,63 @@
 return {
     {
         "akinsho/bufferline.nvim",
+        version = "*",
+        event = "VeryLazy",
         dependencies = {
             "nvim-tree/nvim-web-devicons",
             "folke/which-key.nvim",
         },
-        event = "BufWinEnter",
         opts = {
             options = {
-                numbers                 = "none",
-                diagnostics             = "nvim_lsp",
-                separator_style         = "slant",
+                mode = "tabs",            -- show Neovim *tabpages* instead of buffers
+                numbers = "none",
+                diagnostics = "nvim_lsp", -- show LSP counts on tabs
+                separator_style = "slant",
                 show_buffer_close_icons = true,
-                show_close_icon         = false,
-                always_show_bufferline  = false, -- ↓ only when you have more than one tab
-                mode                    = "tabs", -- ↓ switch to tabline mode :contentReference[oaicite:0]{index=0}
+                show_close_icon = false,
+                always_show_bufferline = false, -- hide when only one tab
+                -- keep sidebars tidy so the tabline doesn't jump around
+                offsets = {
+                    { filetype = "neo-tree", text = "Explorer",  highlight = "Directory", separator = true },
+                    { filetype = "NvimTree", text = "Explorer",  highlight = "Directory", separator = true },
+                    { filetype = "undotree", text = "Undo Tree", highlight = "Directory", separator = true },
+                },
+                -- optional hover UI (requires Neovim ≥0.8)
+                hover = { enabled = true, delay = 200, reveal = { "close" } },
             },
         },
         keys = {
-            { "<leader>bn", "<cmd>BufferLineCycleNext<CR>",   desc = "Buffers: Next" },
-            { "<leader>bp", "<cmd>BufferLineCyclePrev<CR>",   desc = "Buffers: Prev" },
-            { "<leader>bk", "<cmd>BufferLinePick<CR>",        desc = "Buffers: Pick" },
-            { "<leader>bK", "<cmd>BufferLinePickClose<CR>",   desc = "Buffers: Pick to Close" },
-            { "<leader>bo", "<cmd>BufferLineCloseOthers<CR>", desc = "Buffers: Close Others" },
-            { "<leader>bl", "<cmd>BufferLineCloseLeft<CR>",   desc = "Buffers: Close Left" },
-            { "<leader>br", "<cmd>BufferLineCloseRight<CR>",  desc = "Buffers: Close Right" },
-            { "<leader>bm", "<cmd>BufferLineMoveNext<CR>",    desc = "Buffers: Move Next" },
-            { "<leader>bM", "<cmd>BufferLineMovePrev<CR>",    desc = "Buffers: Move Prev" },
+            -- Put everything under <leader>t… (Tabs) to avoid <leader>b… (Bookmarks) conflicts
+            { "<leader>en", "<cmd>BufferLineCycleNext<CR>",   desc = "Tabs: Next" },
+            { "<leader>ep", "<cmd>BufferLineCyclePrev<CR>",   desc = "Tabs: Prev" },
+            { "<leader>ek", "<cmd>BufferLinePick<CR>",        desc = "Tabs: Pick" },
+            { "<leader>eK", "<cmd>BufferLinePickClose<CR>",   desc = "Tabs: Pick to Close" },
+            { "<leader>eo", "<cmd>BufferLineCloseOthers<CR>", desc = "Tabs: Close Others" },
+            { "<leader>el", "<cmd>BufferLineCloseLeft<CR>",   desc = "Tabs: Close Left" },
+            { "<leader>er", "<cmd>BufferLineCloseRight<CR>",  desc = "Tabs: Close Right" },
+            { "<leader>em", "<cmd>BufferLineMoveNext<CR>",    desc = "Tabs: Move Next" },
+            { "<leader>eM", "<cmd>BufferLineMovePrev<CR>",    desc = "Tabs: Move Prev" },
         },
         config = function(_, opts)
             require("bufferline").setup(opts)
-            local ok, which_key = pcall(require, "which-key")
-            if not ok then return end
 
-            which_key.register({
-                b = {
-                    name = "Buffers/Bookmarks",
-                    n = { "<cmd>BufferLineCycleNext<CR>", "Next Buffer" },
-                    p = { "<cmd>BufferLineCyclePrev<CR>", "Prev Buffer" },
-                    k = { "<cmd>BufferLinePick<CR>", "Pick Buffer" },
-                    K = { "<cmd>BufferLinePickClose<CR>", "Pick to Close" },
-                    o = { "<cmd>BufferLineCloseOthers<CR>", "Close Others" },
-                    l = { "<cmd>BufferLineCloseLeft<CR>", "Close Left" },
-                    r = { "<cmd>BufferLineCloseRight<CR>", "Close Right" },
-                    m = { "<cmd>BufferLineMoveNext<CR>", "Move Next" },
-                    M = { "<cmd>BufferLineMovePrev<CR>", "Move Prev" },
-                },
-            }, { prefix = "<leader>" })
+            -- which-key group (v2/v3 compatible)
+            local ok, wk = pcall(require, "which-key")
+            if ok then
+                local register = wk.add or wk.register
+                register({
+                    { "<leader>e",  group = "Tabs" },
+                    { "<leader>en", desc = "Tabs: Next" },
+                    { "<leader>ep", desc = "Tabs: Prev" },
+                    { "<leader>ek", desc = "Tabs: Pick" },
+                    { "<leader>eK", desc = "Tabs: Pick to Close" },
+                    { "<leader>eo", desc = "Tabs: Close Others" },
+                    { "<leader>el", desc = "Tabs: Close Left" },
+                    { "<leader>er", desc = "Tabs: Close Right" },
+                    { "<leader>em", desc = "Tabs: Move Next" },
+                    { "<leader>eM", desc = "Tabs: Move Prev" },
+                }, { mode = "n", silent = true, noremap = true })
+            end
         end,
     },
 }
