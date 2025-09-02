@@ -1,30 +1,55 @@
 return {
     {
         "folke/zen-mode.nvim",
+        dependencies = { "folke/which-key.nvim" },
         opts = {
             window = {
-                width   = 80, -- or 100 for wide monitors
+                width = 80, -- default preset
                 options = {
-                    number         = false,
+                    number = false,
                     relativenumber = false,
                 },
             },
             plugins = {
-                twilight = { enabled = true },
+                twilight = { enabled = true }, -- pairs with your twilight setup
             },
+            -- Optional UX polish: temporarily tweak buffer-local opts
+            on_open = function(win)
+                pcall(function()
+                    vim.opt_local.colorcolumn = ""
+                    vim.opt_local.cursorline  = false
+                end)
+            end,
+            on_close = function()
+                -- nothing to restore (keep it simple and non-invasive)
+            end,
         },
         config = function(_, opts)
-            require("zen-mode").setup(opts)
+            local zen = require("zen-mode")
+            zen.setup(opts)
 
-            local wk_ok, which_key = pcall(require, "which-key")
-            if not wk_ok then return end
+            -- safe map helper to avoid overriding user maps
+            local function safe_map(lhs, rhs, desc)
+                if vim.fn.maparg(lhs, "n") == "" then
+                    vim.keymap.set("n", lhs, rhs, { noremap = true, silent = true, desc = desc })
+                end
+            end
 
-            which_key.register({
-                z = {
-                    name = "Todo/Zen",
-                    z = { "<cmd>ZenMode<CR>", "Toggle Zen Mode" },
-                },
-            }, { prefix = "<leader>" })
+            -- Toggle + quick presets (stay within <leader>z namespace)
+            safe_map("<leader>zz", function() zen.toggle() end, "Zen: toggle")
+            safe_map("<leader>z1", function() zen.toggle({ window = { width = 80 } }) end, "Zen: 80 cols")
+            safe_map("<leader>z2", function() zen.toggle({ window = { width = 100 } }) end, "Zen: 100 cols")
+            safe_map("<leader>z3", function() zen.toggle({ window = { width = 120 } }) end, "Zen: 120 cols")
+
+            -- Which-Key labels (don’t rename the group; you already use <leader>z for Todos/Zen)
+            local ok, wk = pcall(require, "which-key")
+            if ok then
+                wk.add({
+                    { "<leader>zz", desc = "Zen: toggle" },
+                    { "<leader>z1", desc = "Zen: 80 cols" },
+                    { "<leader>z2", desc = "Zen: 100 cols" },
+                })
+            end
         end,
     },
 }
