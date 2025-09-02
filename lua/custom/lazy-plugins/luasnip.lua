@@ -1,56 +1,101 @@
 return {
-  {
-    'L3MON4D3/LuaSnip',
-    dependencies = {
-      'rafamadriz/friendly-snippets',  -- a collection of community snippets
-      'folke/which-key.nvim',
-    },
-    build = 'make install_jsregexp',   -- for advanced regex in snippets
-    -- event = 'InsertEnter',             -- load when you start typing
-    opts = {
-      history = true,                  -- keep around last used snippets
-      updateevents = 'TextChanged,TextChangedI',
-    },
-    config = function(_, opts)
-      local ls = require('luasnip')
-      -- apply the opts
-      ls.config.set_config(opts)
-      -- load VSCode-style snippets from friendly-snippets
-      require('luasnip.loaders.from_vscode').lazy_load()
+    {
+        "L3MON4D3/LuaSnip",
+        dependencies = {
+            "rafamadriz/friendly-snippets",
+            "folke/which-key.nvim",
+        },
+        build = "make install_jsregexp",
+        event = "InsertEnter",
+        opts = {
+            history = true,
+            updateevents = "TextChanged,TextChangedI",
+            enable_autosnippets = false,
+        },
+        keys = {
+            -- Insert/Select: expand & navigate snippets (Alt keys to avoid conflicts)
+            {
+                "<M-k>",
+                function()
+                    local ls = require("luasnip")
+                    if ls.expand_or_jumpable() then ls.expand_or_jump() end
+                end,
+                mode = { "i", "s" },
+                desc = "Snippet: Expand / Jump",
+            },
+            {
+                "<M-j>",
+                function()
+                    local ls = require("luasnip")
+                    if ls.jumpable(-1) then ls.jump(-1) end
+                end,
+                mode = { "i", "s" },
+                desc = "Snippet: Jump Back",
+            },
+            {
+                "<M-l>",
+                function()
+                    local ls = require("luasnip")
+                    if ls.choice_active() then ls.change_choice(1) end
+                end,
+                mode = { "i", "s" },
+                desc = "Snippet: Next Choice",
+            },
+            {
+                "<M-h>",
+                function()
+                    local ls = require("luasnip")
+                    if ls.choice_active() then ls.change_choice(-1) end
+                end,
+                mode = { "i", "s" },
+                desc = "Snippet: Prev Choice",
+            },
 
-      local map = vim.keymap.set
-      -- expand or jump in insert & select modes
-      map({ 'i', 's' }, '<C-k>', function()
-        if ls.expand_or_jumpable() then ls.expand_or_jump() end
-      end, { silent = true, desc = 'LuaSnip: Expand or Jump' })
-      -- jump backwards
-      map({ 'i', 's' }, '<C-j>', function()
-        if ls.jumpable(-1) then ls.jump(-1) end
-      end, { silent = true, desc = 'LuaSnip: Jump Backward' })
-      -- cycle forward through choice nodes
-      map('i', '<C-l>', function()
-        if ls.choice_active() then ls.change_choice(1) end
-      end, { silent = true, desc = 'LuaSnip: Next Choice' })
-      -- cycle backward through choice nodes
-      map('i', '<C-h>', function()
-        if ls.choice_active() then ls.change_choice(-1) end
-      end, { silent = true, desc = 'LuaSnip: Prev Choice' })
+            -- Normal-mode helpers under <leader>s
+            { "<leader>se", function() require("luasnip").expand() end,         desc = "Snippets: Expand (if available)" },
+            { "<leader>su", function() require("luasnip").unlink_current() end, desc = "Snippets: Unlink current" },
+            {
+                "<leader>sr",
+                function()
+                    local ls = require("luasnip")
+                    ls.cleanup()
+                    require("luasnip.loaders.from_vscode").lazy_load()
+                    vim.notify("LuaSnip: snippets reloaded")
+                end,
+                desc = "Snippets: Reload",
+            },
+        },
+        config = function(_, opts)
+            local ls = require("luasnip")
+            ls.config.set_config(opts)
 
-      -- -- Which-Key menu under <leader>s for snippet commands
-      -- local ok, which_key = pcall(require, 'which-key')
-      -- if not ok then return end
-      -- which_key.register({
-      --   s = {
-      --     name = "Snippets",
-      --     e = { "<cmd>lua require('luasnip').expand()<CR>",           "Expand Snippet" },
-      --     j = { "<cmd>lua require('luasnip').jump(1)<CR>",            "Jump to Next Field" },
-      --     k = { "<cmd>lua require('luasnip').jump(-1)<CR>",           "Jump to Prev Field" },
-      --     l = { "<cmd>lua require('luasnip').change_choice(1)<CR>",   "Next Choice" },
-      --     h = { "<cmd>lua require('luasnip').change_choice(-1)<CR>",  "Prev Choice" },
-      --   },
-      -- }, { prefix = '<leader>' })
-    end,
-  },
+            -- Load community VSCode snippets
+            require("luasnip.loaders.from_vscode").lazy_load()
+
+            -- Optionally load user Lua snippets if you have ~/.config/nvim/lua/snippets
+            local user_snips = vim.fn.stdpath("config") .. "/lua/snippets"
+            if vim.loop.fs_stat(user_snips) then
+                require("luasnip.loaders.from_lua").lazy_load({ paths = user_snips })
+            end
+
+            -- which-key labels (normal + insert/select)
+            local ok, wk = pcall(require, "which-key")
+            if ok then
+                local add = wk.add or wk.register
+                add({
+                    { "<leader>s",  group = "Snippets" },
+                    { "<leader>se", desc = "Expand (normal)" },
+                    { "<leader>su", desc = "Unlink current" },
+                    { "<leader>sr", desc = "Reload snippets" },
+                }, { mode = "n" })
+
+                add({
+                    { "<M-k>", desc = "Snippet: Expand / Jump" },
+                    { "<M-j>", desc = "Snippet: Jump Back" },
+                    { "<M-l>", desc = "Snippet: Next Choice" },
+                    { "<M-h>", desc = "Snippet: Prev Choice" },
+                }, { mode = { "i", "s" } })
+            end
+        end,
+    },
 }
-
-
