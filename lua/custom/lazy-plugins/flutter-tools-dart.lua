@@ -1,69 +1,129 @@
 return {
-    -- Flutter tools for Neovim
-    -- Dart LSP comes with it, dont configure it on Mason.
+    -- Flutter tools (manages run/debug/devices/outline/logs + Dart LSP setup)
     {
-        'nvim-flutter/flutter-tools.nvim',
-        lazy = false,
-        dependencies = {
-            'nvim-lua/plenary.nvim', -- required
-            'stevearc/dressing.nvim', -- optional UI
-            'folke/which-key.nvim',
+        "nvim-flutter/flutter-tools.nvim",
+        ft = { "dart" }, -- load when you open Dart
+        cmd = {          -- or when you call any Flutter command from anywhere
+            "FlutterRun", "FlutterDebug", "FlutterDevices", "FlutterEmulators",
+            "FlutterReload", "FlutterRestart", "FlutterQuit", "FlutterAttach",
+            "FlutterDetach", "FlutterOutlineToggle", "FlutterOutlineOpen",
+            "FlutterDevTools", "FlutterDevToolsActivate", "FlutterCopyProfilerUrl",
+            "FlutterLspRestart", "FlutterSuper", "FlutterReanalyze", "FlutterRename",
+            "FlutterLogClear", "FlutterLogToggle",
         },
-        config = function()
-            require("flutter-tools").setup {
-                -- your flutter-tools options here
+        dependencies = {
+            "nvim-lua/plenary.nvim",
+            "stevearc/dressing.nvim",        -- nicer vim.ui.select
+            "folke/which-key.nvim",
+            "nvim-telescope/telescope.nvim", -- optional: flutter Telescope pickers
+        },
+        opts = function()
+            -- keep defaults; uncomment below to enable tasteful extras
+            return {
+                -- widget_guides = { enabled = true },      -- subtle guides in Dart buffers
+                -- closing_tags = { highlight = "Comment" }, -- closing tag virtual text
+                -- debugger = { enabled = true },            -- if you also install nvim-dap
             }
+        end,
+        config = function(_, opts)
+            require("flutter-tools").setup(opts)
 
-            -- register Flutter commands under <leader>f
-            local wk_ok, which_key = pcall(require, "which-key")
-            if not wk_ok then return end
+            -- Telescope integration (commands & FVM switcher)
+            pcall(function()
+                require("telescope").load_extension("flutter")
+            end)
 
-            which_key.register({
-                f = {
-                    name = "Flutter",
-                    r = { "<cmd>FlutterRun<CR>", "Run Project" },
-                    d = { "<cmd>FlutterDebug<CR>", "Debug Run" },
-                    v = { "<cmd>FlutterDevices<CR>", "Select Device" },
-                    e = { "<cmd>FlutterEmulators<CR>", "Select Emulator" },
-                    l = { "<cmd>FlutterReload<CR>", "Hot Reload" },
-                    s = { "<cmd>FlutterRestart<CR>", "Hot Restart" },
-                    q = { "<cmd>FlutterQuit<CR>", "Quit Flutter" },
-                    a = { "<cmd>FlutterAttach<CR>", "Attach to App" },
-                    x = { "<cmd>FlutterDetach<CR>", "Detach Session" },
-                    o = { "<cmd>FlutterOutlineToggle<CR>", "Toggle Outline" },
-                    O = { "<cmd>FlutterOutlineOpen<CR>", "Open Outline" },
-                    t = { "<cmd>FlutterDevTools<CR>", "Start DevTools" },
-                    T = { "<cmd>FlutterDevToolsActivate<CR>", "Activate DevTools" },
-                    c = { "<cmd>FlutterCopyProfilerUrl<CR>", "Copy Profiler URL" },
-                    L = { "<cmd>FlutterLspRestart<CR>", "Restart Dart LSP" },
-                    S = { "<cmd>FlutterSuper<CR>", "Go to Super" },
-                    n = { "<cmd>FlutterRename<CR>", "Rename & Update Imports" },
-                    u = { "<cmd>FlutterReanalyze<CR>", "Force Reanalyze" },
-                    C = { "<cmd>FlutterLogClear<CR>", "Clear Logs" },
-                    G = { "<cmd>FlutterLogToggle<CR>", "Toggle Logs" },
-                },
-            }, { prefix = "<leader>" })
+            -- which-key group
+            local ok, wk = pcall(require, "which-key")
+            if ok then
+                local add = wk.add or wk.register
+                add({
+                    { "<leader>f",  group = "Flutter" },
+                    { "<leader>fr", "<cmd>FlutterRun<CR>",              desc = "Run Project" },
+                    { "<leader>fd", "<cmd>FlutterDebug<CR>",            desc = "Debug Run" },
+                    { "<leader>fv", "<cmd>FlutterDevices<CR>",          desc = "Select Device" },
+                    { "<leader>fe", "<cmd>FlutterEmulators<CR>",        desc = "Select Emulator" },
+                    { "<leader>fl", "<cmd>FlutterReload<CR>",           desc = "Hot Reload" },
+                    { "<leader>fs", "<cmd>FlutterRestart<CR>",          desc = "Hot Restart" },
+                    { "<leader>fq", "<cmd>FlutterQuit<CR>",             desc = "Quit App" },
+                    { "<leader>fa", "<cmd>FlutterAttach<CR>",           desc = "Attach to App" },
+                    { "<leader>fx", "<cmd>FlutterDetach<CR>",           desc = "Detach Session" },
+                    { "<leader>fo", "<cmd>FlutterOutlineToggle<CR>",    desc = "Toggle Outline" },
+                    { "<leader>fO", "<cmd>FlutterOutlineOpen<CR>",      desc = "Open Outline" },
+                    { "<leader>ft", "<cmd>FlutterDevTools<CR>",         desc = "Start DevTools" },
+                    { "<leader>fT", "<cmd>FlutterDevToolsActivate<CR>", desc = "Activate DevTools" },
+                    { "<leader>fc", "<cmd>FlutterCopyProfilerUrl<CR>",  desc = "Copy Profiler URL" },
+                    { "<leader>fL", "<cmd>FlutterLspRestart<CR>",       desc = "Restart Dart LSP" },
+                    { "<leader>fS", "<cmd>FlutterSuper<CR>",            desc = "Go to Super" },
+                    { "<leader>fn", "<cmd>FlutterRename<CR>",           desc = "Rename & Update Imports" },
+                    { "<leader>fu", "<cmd>FlutterReanalyze<CR>",        desc = "Force Reanalyze" },
+                    { "<leader>fC", "<cmd>FlutterLogClear<CR>",         desc = "Clear Logs" },
+                    { "<leader>fG", "<cmd>FlutterLogToggle<CR>",        desc = "Toggle Logs" },
+                    -- Telescope helpers (if telescope present)
+                    {
+                        "<leader>ff",
+                        function()
+                            local ok_t = pcall(require, "telescope")
+                            if ok_t then
+                                require("telescope").extensions.flutter.commands()
+                            else
+                                vim.cmd(
+                                    "Telescope flutter commands")
+                            end
+                        end,
+                        desc = "Telescope: Flutter Commands"
+                    },
+                    {
+                        "<leader>fF",
+                        function()
+                            local ok_t = pcall(require, "telescope")
+                            if ok_t then
+                                local ext = require("telescope").extensions.flutter
+                                if ext.fvm then
+                                    ext.fvm()
+                                else
+                                    vim.notify(
+                                        "FVM picker unavailable (enable fvm in flutter-tools)", vim.log.levels.INFO)
+                                end
+                            end
+                        end,
+                        desc = "Telescope: Flutter FVM"
+                    },
+                }, { mode = "n", silent = true, noremap = true })
+            end
         end,
     },
 
-    -- Flutter Bloc boilerplate generator
+    -- Flutter BLoC boilerplate generator (code actions + commands)
     {
-        'wa11breaker/flutter-bloc.nvim',
-        dependencies = { 'nvimtools/none-ls.nvim' },
-        config = function()
-            require('flutter-bloc').setup({
-                bloc_type = 'equatable',
-                use_sealed_classes = false,
-                enable_code_actions = true,
-            })
+        "wa11breaker/flutter-bloc.nvim",
+        ft = { "dart" },
+        dependencies = { "nvimtools/none-ls.nvim" }, -- required for code actions
+        opts = {
+            bloc_type = "equatable",                 -- 'default' | 'equatable' | 'freezed'
+            use_sealed_classes = false,
+            enable_code_actions = true,
+        },
+        config = function(_, opts)
+            require("flutter-bloc").setup(opts)
+            -- Optional quick creators under <leader>fB… (kept inside Flutter group)
+            local ok, wk = pcall(require, "which-key")
+            if ok then
+                local add = wk.add or wk.register
+                add({
+                    { "<leader>fB",  group = "BLoC" },
+                    { "<leader>fBb", function() require("flutter-bloc").create_bloc() end,  desc = "Create Bloc" },
+                    { "<leader>fBc", function() require("flutter-bloc").create_cubit() end, desc = "Create Cubit" },
+                })
+            end
         end,
     },
 
-    -- Dart data-class generator
+    -- Dart data-class generator (code actions via none-ls)
     {
-        'wa11breaker/dart-data-class-generator.nvim',
-        dependencies = { 'nvimtools/none-ls.nvim' },
-        ft = 'dart',
+        "wa11breaker/dart-data-class-generator.nvim",
+        ft = { "dart" },
+        dependencies = { "nvimtools/none-ls.nvim" }, -- provides the code actions
         config = function()
             require("dart-data-class-generator").setup({})
         end,
