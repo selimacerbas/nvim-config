@@ -61,6 +61,7 @@ return {
                     { "<leader>o",  group = "Pipeline" },
                     { "<leader>ui", group = "Indent Guides" },
                     { "<leader>ua", group = "AutoSave" },
+                    { "<leader>ut", group = "Theme" },
                     { "<leader>v",  group = "VimTeX / Vim training" },
                     { '<leader>p',  group = 'Pairs' },
                 })
@@ -92,6 +93,7 @@ return {
                     o = { name = "Pipeline" },
                     ui = { name = "Indent Guides" },
                     ua = { name = "AutoSave" },
+                    ut = { name = "Theme" },
                     v = { name = "VimTeX / Vim training" },
                     p = { name = "Pairs" },
                 }, { prefix = "<leader>" })

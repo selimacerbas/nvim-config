@@ -6,6 +6,8 @@ require("custom.lazy")
 -- brew install tree-sitter-cli
 -- brew install ripgrep
 -- brew install fd
+-- brew install glab
+-- brew install gh
 
 --  LuaSnip Dependency --
 -- cd ~/.local/share/nvim/lazy/LuaSnip  # Adjust the path if you're using a different plugin manager

@@ -57,34 +57,72 @@ return {
                     path_display         = { "smart" },
                     sorting_strategy     = "ascending",
                     layout_strategy      = "horizontal",
+
+                    -- ✅ strategy-specific layout config
                     layout_config        = {
-                        prompt_position = "top",
-                        preview_width   = 0.55,
-                        results_width   = 0.8,
+                        -- your usual layout
+                        horizontal = {
+                            prompt_position = "top",
+                            preview_width   = 0.55,
+                            results_width   = 0.8,
+                            height          = function(_, _, rows) return math.floor(rows * 0.95) end,
+                            width           = function(_, cols, _) return math.floor(cols * 0.95) end,
+                        },
+
+                        -- used by lots of plugins (e.g. model pickers)
+                        center = {
+                            prompt_position = "top",
+                            preview_cutoff  = 1, -- show preview if there is room
+                            height          = function(_, _, rows) return math.min(20, rows - 4) end,
+                            width           = function(_, cols, _) return math.min(100, cols - 8) end,
+                        },
+
+                        cursor = {
+                            preview_cutoff = 1,
+                            height         = function(_, _, rows) return math.min(20, math.floor(rows * 0.4)) end,
+                            width          = function(_, cols, _) return math.min(120, math.floor(cols * 0.5)) end,
+                        },
+
+                        vertical = {
+                            prompt_position = "top",
+                            preview_height  = 0.5,
+                            height          = function(_, _, rows) return math.floor(rows * 0.95) end,
+                            width           = function(_, cols, _) return math.floor(cols * 0.95) end,
+                        },
+
+                        -- Bottom pane (some extensions might use it)
+                        bottom_pane = {
+                            prompt_position = "top",
+                            preview_cutoff  = 1,
+                            height          = function(_, _, rows) return math.min(15, rows - 4) end,
+                        },
                     },
+
                     vimgrep_arguments    = {
                         "rg", "--color=never", "--no-heading", "--with-filename",
                         "--line-number", "--column", "--smart-case",
                         "--hidden", "--glob", "!**/.git/*", "--glob", "!**/node_modules/*",
                     },
                     file_ignore_patterns = { "%.git/", "node_modules/" },
+
                     mappings             = {
                         i = {
-                            ["<C-j>"] = actions.move_selection_next,
-                            ["<C-k>"] = actions.move_selection_previous,
-                            ["<C-n>"] = actions.cycle_history_next,
-                            ["<C-p>"] = actions.cycle_history_prev,
-                            ["<C-u>"] = actions.preview_scrolling_up,
-                            ["<C-d>"] = actions.preview_scrolling_down,
-                            ["<C-c>"] = actions.close,
-                            ["<Esc>"] = actions.close,
+                            ["<C-j>"] = require("telescope.actions").move_selection_next,
+                            ["<C-k>"] = require("telescope.actions").move_selection_previous,
+                            ["<C-n>"] = require("telescope.actions").cycle_history_next,
+                            ["<C-p>"] = require("telescope.actions").cycle_history_prev,
+                            ["<C-u>"] = require("telescope.actions").preview_scrolling_up,
+                            ["<C-d>"] = require("telescope.actions").preview_scrolling_down,
+                            ["<C-c>"] = require("telescope.actions").close,
+                            ["<Esc>"] = require("telescope.actions").close,
                         },
                         n = {
-                            ["q"]     = actions.close,
-                            ["<Esc>"] = actions.close,
+                            ["q"]     = require("telescope.actions").close,
+                            ["<Esc>"] = require("telescope.actions").close,
                         },
                     },
                 },
+
                 pickers = {
                     find_files  = { hidden = true },
                     live_grep   = {},
@@ -93,8 +131,8 @@ return {
                         sort_lastused = true,
                         ignore_current_buffer = true,
                         mappings = {
-                            i = { ["<C-x>"] = actions.delete_buffer },
-                            n = { ["x"] = actions.delete_buffer },
+                            i = { ["<C-x>"] = require("telescope.actions").delete_buffer },
+                            n = { ["x"] = require("telescope.actions").delete_buffer },
                         },
                     },
                     oldfiles    = { only_cwd = true },

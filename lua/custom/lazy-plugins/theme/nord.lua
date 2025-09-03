@@ -1,36 +1,28 @@
 return {
-
+    -- Nord theme (installed, but not applied automatically)
     {
-        {
-            'shaunsingh/nord.nvim',
-            config = function()
-                vim.cmd('colorscheme nord')
-            end
+        "shaunsingh/nord.nvim",
+        lazy = true,
+    },
+
+    -- Statusline: follow active colorscheme + keep your MCPHub/Pipeline badges
+    {
+        "nvim-lualine/lualine.nvim",
+        dependencies = {
+            "nvim-tree/nvim-web-devicons",
+            { "franco-ruggeri/mcphub-lualine.nvim", lazy = true }, -- MCPHub component
         },
-
-        -- Statusline
-        {
-            'nvim-lualine/lualine.nvim',
-            config = function()
-                require('lualine').setup {
-                    options = {
-                        theme = 'nord'
-                    },
-                    sections = {
-                        -- add mcphub’s status component here
-                        lualine_x = {
-                            { require('mcphub.extensions.lualine') },
-                            -- any other components you already had can go after
-                        },
-                        -- keep your other sections (a, b, c, y, z) as-is
-                    },
-                }
-            end
+        opts = {
+            options = {
+                theme = "auto", -- ← auto-detect from current colorscheme (nord / rose-pine / etc.)
+            },
+            sections = {
+                lualine_x = {
+                    { "mcphub", icon = "󰐻 " }, -- active MCP servers
+                    { "pipeline", icon = "" }, -- latest CI run status (pipeline.nvim)
+                    -- …your other components
+                },
+            },
         },
-    }
-
-
-
-
-    -- Add more plugins below as needed
+    },
 }
