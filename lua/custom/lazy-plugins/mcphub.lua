@@ -28,9 +28,9 @@ return {
         "ravitemer/mcphub.nvim",
         cmd = { "MCPHub" },      -- lazy-load on :MCPHub
         keys = {                 -- and on these leader keys
-            { "<leader>mb", "<cmd>MCPHub<CR>", desc = "MCPHub: Open/Toggle UI" },
+            { "<leader>hb", "<cmd>MCPHub<CR>", desc = "MCPHub: Open/Toggle UI" },
             {
-                "<leader>ma",
+                "<leader>ha",
                 function()       -- toggle auto-approve (runtime-safe)
                     local v = vim.g.mcphub_auto_approve
                     if type(v) ~= "boolean" then v = false end
@@ -40,7 +40,7 @@ return {
                 desc = "MCPHub: Toggle Auto-Approve"
             },
             {
-                "<leader>me",
+                "<leader>he",
                 function()       -- edit servers.json (workspace first)
                     local look_for = { ".mcphub/servers.json", ".vscode/mcp.json", ".cursor/mcp.json" }
                     local cwd = vim.fn.getcwd()
@@ -57,7 +57,7 @@ return {
                 desc = "MCPHub: Edit servers.json"
             },
             {
-                "<leader>mr",
+                "<leader>hr",
                 function()       -- restart hub if running
                     local hub = (pcall(require, "mcphub") and require("mcphub").get_hub_instance()) or nil
                     if hub and hub.restart then hub:restart() else vim.cmd("MCPHub") end
@@ -65,7 +65,7 @@ return {
                 desc = "MCPHub: Restart / Open"
             },
             {
-                "<leader>mR",
+                "<leader>hR",
                 function()       -- hard refresh the hub state
                     local hub = (pcall(require, "mcphub") and require("mcphub").get_hub_instance()) or nil
                     if hub and hub.hard_refresh then

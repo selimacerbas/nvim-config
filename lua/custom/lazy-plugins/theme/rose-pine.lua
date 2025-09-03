@@ -140,6 +140,7 @@ return {
                 sections = {
                     lualine_x = {
                         { "mcphub", icon = "󰐻 " }, -- shows active MCP servers / spinner
+                        { "pipeline", icon = "" }, -- ← latest CI run status
                         -- your other components can follow here
                     },
                 },
