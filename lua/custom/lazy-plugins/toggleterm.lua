@@ -4,29 +4,31 @@ return {
         version = "*",
         dependencies = { "folke/which-key.nvim" },
         config = function()
-            local tt = require("toggleterm")
+            local tt            = require("toggleterm")
+
+            -- defaults (used until you hit a preset)
+            vim.g._tt_horiz_pct = vim.g._tt_horiz_pct or 0.45 -- horizontal height %
+            vim.g._tt_vert_pct  = vim.g._tt_vert_pct or 0.45 -- vertical   width  %
 
             tt.setup({
-                -- Smart split sizing (your logic, kept)
+                -- Size follows our current presets so it persists across toggles
                 size = function(term)
-                    local ratio = 0.45
                     if term.direction == "horizontal" then
-                        return math.floor(vim.o.lines * ratio)
+                        return math.max(3, math.floor(vim.o.lines * (vim.g._tt_horiz_pct or 0.45)))
                     elseif term.direction == "vertical" then
-                        return math.floor(vim.o.columns * ratio)
+                        return math.max(20, math.floor(vim.o.columns * (vim.g._tt_vert_pct or 0.45)))
                     end
                 end,
-                persist_size = false,
-                direction = "float",     -- default for :ToggleTerm; our custom terms set their own
+                persist_size = false, -- we control size ourselves
+                direction = "float",
                 float_opts = { border = "curved", winblend = 5 },
-                shade_terminals = false, -- keep colors intact
+                shade_terminals = false,
                 start_in_insert = true,
                 close_on_exit = true,
             })
 
-            -- Transparent splits: reusable HL
+            -- Transparent splits
             vim.api.nvim_set_hl(0, "ToggleTermTransparent", { bg = "NONE" })
-
             local function make_transparent(term)
                 if term.direction ~= "float" then
                     local win = term.window
@@ -42,14 +44,12 @@ return {
                 end
             end
 
-            -- Buffer-local terminal quality-of-life
+            -- QoL for terminal buffers
             vim.api.nvim_create_autocmd("TermOpen", {
                 pattern = "term://*",
                 callback = function(ev)
-                    -- escape to Normal (buffer-local)
                     vim.keymap.set("t", "<Esc>", [[<C-\><C-n>]],
                         { buffer = ev.buf, silent = true, desc = "Terminal: normal mode" })
-                    -- no line numbers in terminal
                     vim.opt_local.number = false
                     vim.opt_local.relativenumber = false
                 end,
@@ -60,25 +60,41 @@ return {
             local horiz_term = Terminal:new({ direction = "horizontal", hidden = true, on_open = make_transparent })
             local vert_term  = Terminal:new({ direction = "vertical", hidden = true, on_open = make_transparent })
 
-            -- Optional: lazygit (only if available)
+            -- Optional: lazygit
             local lazygit
             if vim.fn.executable("lazygit") == 1 then
-                lazygit = Terminal:new({
-                    cmd = "lazygit",
-                    direction = "float",
-                    hidden = true,
-                    on_open = function(t) t:resize(0.9) end, -- fill most of the screen
-                })
+                lazygit = Terminal:new({ cmd = "lazygit", direction = "float", hidden = true, on_open = function(t) t
+                        :resize(0.9) end })
             end
 
-            -- Safe mappings (no override if user already mapped)
+            -- Helpers ----------------------------------------------------------------
             local function safe_map(mode, lhs, rhs, desc)
                 if vim.fn.maparg(lhs, mode) == "" then
                     vim.keymap.set(mode, lhs, rhs, { noremap = true, silent = true, desc = desc })
                 end
             end
 
-            -- Leader mappings under <leader>T (Terminal)
+            local function horiz_lines(pct) return math.max(3, math.floor(vim.o.lines * pct)) end
+            local function vert_cols(pct) return math.max(20, math.floor(vim.o.columns * pct)) end
+
+            local function set_horiz_pct(pct)
+                vim.g._tt_horiz_pct = pct
+                local win = horiz_term.window
+                if win and vim.api.nvim_win_is_valid(win) then
+                    pcall(horiz_term.resize, horiz_term, horiz_lines(pct))
+                end
+            end
+
+            local function set_vert_pct(pct)
+                vim.g._tt_vert_pct = pct
+                local win = vert_term.window
+                if win and vim.api.nvim_win_is_valid(win) then
+                    pcall(vert_term.resize, vert_term, vert_cols(pct))
+                end
+            end
+
+            -- Mappings ----------------------------------------------------------------
+            -- Toggles
             safe_map("n", "<leader>Tt", function() float_term:toggle() end, "Terminal (float)")
             safe_map("n", "<leader>Th", function() horiz_term:toggle() end, "Terminal (horizontal)")
             safe_map("n", "<leader>Tv", function() vert_term:toggle() end, "Terminal (vertical)")
@@ -86,15 +102,33 @@ return {
                 safe_map("n", "<leader>Tg", function() lazygit:toggle() end, "LazyGit (float)")
             end
 
-            -- Which-Key labels
+            -- Presets: Vertical width
+            safe_map("n", "<leader>T0", function() set_vert_pct(0.40) end, "Vertical width 40%")
+            safe_map("n", "<leader>T1", function() set_vert_pct(0.50) end, "Vertical width 50%")
+            safe_map("n", "<leader>T2", function() set_vert_pct(0.60) end, "Vertical width 60%")
+
+            -- Presets: Horizontal height
+            safe_map("n", "<leader>T3", function() set_horiz_pct(0.40) end, "Horizontal height 40%")
+            safe_map("n", "<leader>T4", function() set_horiz_pct(0.50) end, "Horizontal height 50%")
+            safe_map("n", "<leader>T5", function() set_horiz_pct(0.60) end, "Horizontal height 60%")
+
+            -- Which-Key labels --------------------------------------------------------
             local ok, wk = pcall(require, "which-key")
             if ok then
                 wk.add({
-                    -- { "<leader>T",  group = "Terminal" },
+                    { "<leader>T",  group = "Terminal" },
                     { "<leader>Tt", desc = "Terminal (float)" },
                     { "<leader>Th", desc = "Terminal (horizontal)" },
                     { "<leader>Tv", desc = "Terminal (vertical)" },
                     (lazygit and { "<leader>Tg", desc = "LazyGit (float)" } or nil),
+
+                    { "<leader>T0", desc = "Vertical width 40%" },
+                    { "<leader>T1", desc = "Vertical width 50%" },
+                    { "<leader>T2", desc = "Vertical width 60%" },
+
+                    { "<leader>T3", desc = "Horizontal height 40%" },
+                    { "<leader>T4", desc = "Horizontal height 50%" },
+                    { "<leader>T5", desc = "Horizontal height 60%" },
                 })
             end
         end,
