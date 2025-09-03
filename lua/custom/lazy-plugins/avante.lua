@@ -69,21 +69,95 @@ return {
         },
 
         opts = {
+            -- default selection (you can change this anytime with <leader>ap)
             provider  = "openai",
+
+            -- all providers you want available
             providers = {
-                openai  = {
+                -- OpenAI (default)
+                openai = {
                     endpoint           = "https://api.openai.com/v1",
-                    model              = "gpt-5-mini-2025-08-07", -- your choice
+                    model              = "gpt-5-mini-2025-08-07", -- pick your favorite
                     timeout            = 30000,
+                    -- put request-body fields under extra_request_body
                     extra_request_body = {
                         temperature = 1,
                         max_completion_tokens = 8192,
+                        -- reasoning_effort = "medium", -- for reasoning models
+                    },
+                    -- api_key_name = "OPENAI_API_KEY", -- optional if env var is already named like this
+                },
+
+                -- Anthropic Claude
+                claude = {
+                    -- endpoint is built-in; you usually only need key + model
+                    api_key_name       = "ANTHROPIC_API_KEY",
+                    model              = "claude-3-5-sonnet-latest",
+                    extra_request_body = { temperature = 0.7 },
+                },
+
+                -- Google Gemini
+                gemini = {
+                    api_key_name = "GEMINI_API_KEY",
+                    model        = "gemini-2.5-pro",
+                    -- gemini has its own body shape; Avante handles it internally.
+                    -- extra request options can go here if you need them:
+                    -- extra_request_body = { generationConfig = { stopSequences = {"END"} } }
+                },
+
+                -- Local (Ollama) — first-class provider in Avante now
+                ollama = {
+                    endpoint           = "http://127.0.0.1:11434", -- no trailing /v1
+                    model              = "llama3.1:8b",
+                    timeout            = 60000,
+                    extra_request_body = {
+                        options = { temperature = 0.4, num_ctx = 16384, keep_alive = "5m" },
                     },
                 },
-                copilot = {},
+
+                -- OpenAI-compatible vendors (inherit from 'openai')
+                openrouter = {
+                    __inherited_from = "openai",
+                    endpoint         = "https://openrouter.ai/api/v1",
+                    api_key_name     = "OPENROUTER_API_KEY",
+                    model            = "anthropic/claude-3.5-sonnet",
+                },
+                groq = {
+                    __inherited_from   = "openai",
+                    endpoint           = "https://api.groq.com/openai/v1/",
+                    api_key_name       = "GROQ_API_KEY",
+                    model              = "llama-3.1-70b-versatile",
+                    extra_request_body = { max_tokens = 32768 },
+                },
+                perplexity = {
+                    __inherited_from = "openai",
+                    endpoint         = "https://api.perplexity.ai",
+                    api_key_name     = "PPLX_API_KEY", -- or use secret manager (see note below)
+                    model            = "llama-3.1-sonar-large-128k-online",
+                },
+                deepseek = {
+                    __inherited_from = "openai",
+                    endpoint         = "https://api.deepseek.com",
+                    api_key_name     = "DEEPSEEK_API_KEY",
+                    model            = "deepseek-coder",
+                },
+                qianwen = { -- Qwen (DashScope compatible)
+                    __inherited_from = "openai",
+                    endpoint         = "https://dashscope.aliyuncs.com/compatible-mode/v1",
+                    api_key_name     = "DASHSCOPE_API_KEY",
+                    model            = "qwen-coder-plus-latest",
+                },
+                mistral = {
+                    __inherited_from   = "openai",
+                    endpoint           = "https://api.mistral.ai/v1/",
+                    api_key_name       = "MISTRAL_API_KEY",
+                    model              = "mistral-large-latest",
+                    extra_request_body = { max_tokens = 4096 },
+                },
             },
             -- If Avante's built-ins clash with MCP tools, uncomment to disable:
             -- disabled_tools = { "list_files","search_files","read_file","create_file","rename_file","delete_file","create_dir","rename_dir","delete_dir","bash" },
+
         },
 
         config = function(_, opts)
