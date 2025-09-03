@@ -22,23 +22,49 @@ return {
                     cleaning_interval = 800, -- a bit snappier than default
                 },
                 -- Save on typical IDE-like moments; these are the plugin defaults
-                trigger_events = { "InsertLeave", "TextChanged" }, -- See :h events
+                trigger_events = { "InsertLeave", }, -- See :h events  add if needed, "TextChanged"
                 -- Only save “real” editable buffers
+
                 condition = function(buf)
-                    local fn, bo = vim.fn, vim.bo[buf]
-                    if bo == nil then return false end
-                    -- valid, modifiable file with no special buftype and not ignored filetype
-                    if bo.modifiable ~= true then return false end
-                    if bo.buftype ~= "" and not vim.tbl_contains({ "acwrite" }, bo.buftype) then
+                    -- buffer must be a valid, listed, modifiable file buffer
+                    if type(buf) ~= "number" or not vim.api.nvim_buf_is_valid(buf) then
                         return false
                     end
-                    if vim.tbl_contains(ignore_bt, bo.buftype) then return false end
-                    if vim.tbl_contains(ignore_ft, bo.filetype) then return false end
-                    -- file exists on disk or we’ve set a name (so we don’t spam :saveas prompts)
-                    local name = fn.bufname(buf)
+                    if vim.fn.buflisted(buf) ~= 1 then
+                        return false
+                    end
+
+                    local function bopt(opt, default)
+                        local ok, val = pcall(vim.api.nvim_buf_get_option, buf, opt)
+                        return ok and val or default
+                    end
+
+                    local mod = bopt("modifiable", false)
+                    local ro  = bopt("readonly", false)
+                    local bt  = bopt("buftype", "")
+                    local ft  = bopt("filetype", "")
+
+                    if not mod or ro then return false end
+                    -- only normal/acwrite buffers
+                    if bt ~= "" and bt ~= "acwrite" then return false end
+
+                    -- your ignore lists (keep them in scope)
+                    local ignore_bt = { "nofile", "prompt", "terminal", "quickfix" }
+                    local ignore_ft = {
+                        "gitcommit", "gitrebase", "neo-tree", "oil", "aerial",
+                        "TelescopePrompt", "lazy", "mason", "snacks_picker_input",
+                        "spectre_panel", "help", "Avante", "AvanteInput",
+                    }
+                    if vim.tbl_contains(ignore_bt, bt) then return false end
+                    if vim.tbl_contains(ignore_ft, ft) then return false end
+
+                    -- must have a name (avoid :saveas prompts)
+                    local name = vim.api.nvim_buf_get_name(buf) or ""
                     if name == "" then return false end
+
                     return true
                 end,
+
                 write_all_buffers = false,
                 debounce_delay = 135, -- keep your preferred debounce
                 callbacks = {

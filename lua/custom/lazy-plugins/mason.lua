@@ -6,6 +6,7 @@ return {
             "mason-org/mason-lspconfig.nvim",
             "neovim/nvim-lspconfig",
             "b0o/schemastore.nvim",
+            "WhoIsSethDaniel/mason-tool-installer.nvim",
 
             -- DAP
             "mfussenegger/nvim-dap",
@@ -165,25 +166,53 @@ return {
                 automatic_installation = true,
             })
 
+
             ---------------------
-            -- Linting: nvim-lint
+            -- Linting: nvim-lint (load first)
             ---------------------
             local lint = require("lint")
+
+            -- Keep nvim-lint's own IDs (note: "golangcilint" is the nvim-lint id)
             lint.linters_by_ft = {
-                python = { "ruff" },
-                yaml = { "yamllint" },
-                json = { "jsonlint" },
+                python    = { "ruff" },
+                yaml      = { "yamllint" },
+                json      = { "jsonlint" },
                 terraform = { "tflint" },
-                sh = { "shellcheck" },
-                go = { "golangcilint" },
+                sh        = { "shellcheck" },
+                go        = { "golangcilint" },
             }
 
-            require("mason-nvim-lint").setup({
-                ensure_installed = { "ruff", "yamllint", "jsonlint", "tflint", "shellcheck", "golangci-lint" },
-                automatic_installation = true,
+            ---------------------
+            -- Install tools via mason-tool-installer (explicit Mason names)
+            ---------------------
+            require("mason-tool-installer").setup({
+                ensure_installed = {
+                    "ruff",     -- linter (also formatter)
+                    "yamllint",
+                    "jsonlint", -- ⚠️ optional: only include if you actually see it in :Mason
+                    "tflint",
+                    "shellcheck",
+                    "golangci-lint",
+                },
+                auto_update      = false,
+                run_on_start     = true,
+                start_delay      = 300, -- ms after UI starts
+                debounce_hours   = 0,   -- install every start if missing
             })
 
-            -- Auto-lint (toggleable)
+            ---------------------
+            -- mason-nvim-lint (disable its auto-scanner completely)
+            ---------------------
+            local ok_mnl, mnl = pcall(require, "mason-nvim-lint")
+            if ok_mnl then
+                mnl.setup({
+                    ensure_installed       = {},                             -- <- nothing here
+                    automatic_installation = false,                          -- <- do not scan or map linters
+                    ignore_install         = { "golangcilint", "jsonlint" }, -- belt & suspenders
+                })
+            end
+
+            -- Auto-lint (unchanged)
             local grp = vim.api.nvim_create_augroup("UserLintAutocmds", { clear = true })
             vim.g.autolint_enabled = true
             local function enable_autolint()
@@ -201,6 +230,7 @@ return {
                 vim.notify("nvim-lint: auto-lint OFF")
             end
             enable_autolint()
+
 
             -- which-key: small admin block under <leader>l (doesn’t clash with Saga)
             local ok, wk = pcall(require, "which-key")
