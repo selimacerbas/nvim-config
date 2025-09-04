@@ -8,6 +8,7 @@ require("custom.lazy")
 -- brew install fd
 -- brew install glab
 -- brew install gh
+-- brew install timg
 
 --  LuaSnip Dependency --
 -- cd ~/.local/share/nvim/lazy/LuaSnip  # Adjust the path if you're using a different plugin manager
@@ -30,10 +31,10 @@ vim.g.python3_host_prog = vim.fn.expand('~/.pyenv/versions/nvim-env/bin/python')
 
 -- Treat Kptfiles as YAML files.
 vim.api.nvim_create_autocmd({ "BufRead", "BufNewFile" }, {
-	pattern = "Kptfile",
-	callback = function()
-		vim.bo.filetype = "yaml"
-	end,
+    pattern = "Kptfile",
+    callback = function()
+        vim.bo.filetype = "yaml"
+    end,
 })
 
 
