@@ -6,13 +6,14 @@ return {
             "folke/which-key.nvim",
         },
 
-        -- Lazy-load on commands/keys; plus we create a VimEnter autocmd in `init`
+        -- still lazy on commands/keys; VimEnter will trigger the command to load it
         cmd = {
             "NvimTreeToggle", "NvimTreeOpen", "NvimTreeClose", "NvimTreeRefresh",
-            "NvimTreeFindFile", "NvimTreeCollapse",
+            "NvimTreeFindFile", "NvimTreeCollapse", "NvimTreeResize",
             "NvimTreeCreate", "NvimTreeRemove", "NvimTreeRename",
             "NvimTreeCopy", "NvimTreeCut", "NvimTreePaste",
         },
+
         keys = {
             { "<leader>nt", "<cmd>NvimTreeToggle<CR>",                                              desc = "NvimTree: Toggle" },
             { "<leader>no", "<cmd>NvimTreeOpen<CR>",                                                desc = "NvimTree: Open" },
@@ -26,24 +27,55 @@ return {
             { "<leader>nx", "<cmd>NvimTreeCut<CR>",                                                 desc = "NvimTree: Cut" },
             { "<leader>ny", "<cmd>NvimTreeCopy<CR>",                                                desc = "NvimTree: Copy" },
             { "<leader>np", "<cmd>NvimTreePaste<CR>",                                               desc = "NvimTree: Paste" },
-            -- built-in filter toggles (no re-setup)
+            -- built-in filter toggles
             { "<leader>ng", function() require("nvim-tree.api").tree.toggle_gitignore_filter() end, desc = "NvimTree: Toggle .gitignore" },
             { "<leader>n.", function() require("nvim-tree.api").tree.toggle_hidden_filter() end,    desc = "NvimTree: Toggle Dotfiles" },
+
+            -- 👇 Width presets (percent-of-editor). These open the tree if needed.
+            {
+                "<leader>n0",
+                function()
+                    local api = require("nvim-tree.api")
+                    local w = math.max(20, math.floor(vim.o.columns * 0.15))
+                    if not api.tree.is_visible() then api.tree.open() end
+                    api.tree.resize({ absolute = w })
+                end,
+                desc = "NvimTree: 15% width",
+            },
+            {
+                "<leader>n1",
+                function()
+                    local api = require("nvim-tree.api")
+                    local w = math.max(20, math.floor(vim.o.columns * 0.25))
+                    if not api.tree.is_visible() then api.tree.open() end
+                    api.tree.resize({ absolute = w })
+                end,
+                desc = "NvimTree: 25% width",
+            },
+            {
+                "<leader>n2",
+                function()
+                    local api = require("nvim-tree.api")
+                    local w = math.max(20, math.floor(vim.o.columns * 0.35))
+                    if not api.tree.is_visible() then api.tree.open() end
+                    api.tree.resize({ absolute = w })
+                end,
+                desc = "NvimTree: 35% width",
+            },
+
+
         },
 
-        -- Create the "open on directory" autocmd before the plugin loads
+        -- Always open the tree on startup (and snap to 40% by default)
         init = function()
+            -- in your `init = function()` (auto-open on start)
             vim.api.nvim_create_autocmd("VimEnter", {
                 callback = function()
-                    -- If exactly one CLI arg and it's a directory: cd into it and open the tree.
-                    if vim.fn.argc() == 1 then
-                        local arg = vim.fn.argv(0)
-                        if arg and vim.fn.isdirectory(arg) == 1 then
-                            vim.cmd.cd(arg)
-                            -- this command also lazy-loads the plugin via `cmd` trigger
-                            vim.cmd("NvimTreeOpen")
-                        end
-                    end
+                    vim.schedule(function()
+                        local width = math.max(20, math.floor(vim.o.columns * 0.15)) -- 15% default
+                        vim.cmd("NvimTreeOpen")
+                        vim.cmd("NvimTreeResize " .. width)
+                    end)
                 end,
             })
         end,
@@ -54,7 +86,6 @@ return {
                 local function opts(desc)
                     return { desc = "nvim-tree: " .. desc, buffer = bufnr, noremap = true, silent = true, nowait = true }
                 end
-                -- defaults first
                 api.config.mappings.default_on_attach(bufnr)
                 -- open in tab/splits
                 vim.keymap.set("n", "t", api.node.open.tab, opts("Open in New Tab"))
@@ -68,13 +99,13 @@ return {
             return {
                 disable_netrw       = true,
                 hijack_netrw        = true,
-                view                = { side = "left", width = 40 },
+                view                = { side = "left", width = 15 }, -- initial; we snap to 20% on VimEnter
                 renderer            = { highlight_git = true, highlight_opened_files = "all" },
                 update_focused_file = { enable = true, update_root = true },
                 sync_root_with_cwd  = true,
                 respect_buf_cwd     = true,
                 diagnostics         = { enable = false },
-                git                 = { enable = true, ignore = true }, -- default respect .gitignore (toggle with <leader>ng)
+                git                 = { enable = true, ignore = true },
                 trash               = { cmd = "trash", require_confirm = true },
                 on_attach           = on_attach,
             }
@@ -83,14 +114,12 @@ return {
         config = function(_, opts)
             require("nvim-tree").setup(opts)
 
-            -- Auto-close Neovim when NvimTree is the last window left
+            -- When tree is the last window, just close the tree (don't quit Neovim)
             vim.api.nvim_create_autocmd("BufEnter", {
                 nested = true,
                 callback = function()
-                    -- if the only window left is the tree, quit Neovim
                     if #vim.api.nvim_list_wins() == 1 and vim.bo.filetype == "NvimTree" then
-                        vim.cmd("quit")
-                        -- If you’d rather close just the tree (and keep Neovim running) when it’s the last window, I can swap the autocmd to require("nvim-tree.api").tree.close() instead of :quit.
+                        require("nvim-tree.api").tree.close()
                     end
                 end,
             })
@@ -100,7 +129,7 @@ return {
             if ok then
                 local add = wk.add or wk.register
                 add({
-                    -- { "<leader>n",  group = "NvimTree" },
+                    { "<leader>n",  group = "NvimTree" },
                     { "<leader>nt", desc = "Toggle" },
                     { "<leader>no", desc = "Open" },
                     { "<leader>nc", desc = "Close" },
@@ -115,6 +144,9 @@ return {
                     { "<leader>np", desc = "Paste" },
                     { "<leader>ng", desc = "Toggle .gitignore" },
                     { "<leader>n.", desc = "Toggle Dotfiles" },
+                    { "<leader>n0", desc = "15% width" },
+                    { "<leader>n1", desc = "25% width" },
+                    { "<leader>n2", desc = "35% width" },
                 })
             end
         end,
