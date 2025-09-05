@@ -71,3 +71,6 @@ vim.opt.pumblend = 5
 
 -- To open splits are going be opened at right side.
 vim.opt.splitright = true
+--
+-- Avoid Neovim equalizing splits on open/close (prevents REPL width creep)
+vim.o.equalalways = false
