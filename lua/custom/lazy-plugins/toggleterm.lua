@@ -8,7 +8,7 @@ return {
 
             -- defaults (used until you hit a preset)
             vim.g._tt_horiz_pct = vim.g._tt_horiz_pct or 0.45 -- horizontal height %
-            vim.g._tt_vert_pct  = vim.g._tt_vert_pct or 0.45 -- vertical   width  %
+            vim.g._tt_vert_pct  = vim.g._tt_vert_pct or 0.45  -- vertical   width  %
 
             tt.setup({
                 -- Size follows our current presets so it persists across toggles
@@ -63,8 +63,15 @@ return {
             -- Optional: lazygit
             local lazygit
             if vim.fn.executable("lazygit") == 1 then
-                lazygit = Terminal:new({ cmd = "lazygit", direction = "float", hidden = true, on_open = function(t) t
-                        :resize(0.9) end })
+                lazygit = Terminal:new({
+                    cmd = "lazygit",
+                    direction = "float",
+                    hidden = true,
+                    on_open = function(t)
+                        t
+                            :resize(0.9)
+                    end
+                })
             end
 
             -- Helpers ----------------------------------------------------------------
