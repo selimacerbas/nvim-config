@@ -324,8 +324,6 @@ return {
                 end, { silent = true, noremap = true, desc = "Close REPL (reset)" })
             end
 
-            -- Don’t auto-equalize split sizes
-            vim.o.equalalways = false
         end,
     },
 }
