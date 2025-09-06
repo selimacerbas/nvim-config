@@ -32,58 +32,52 @@ return {
             require("mason").setup({})
 
             ---------------------
-            -- LSP: install list (cover both tsserver/ts_ls)
+            -- LSP: install list
+            ---------------------
+            ---------------------
+            -- LSP: mason-lspconfig (works with official + mason-org fork)
             ---------------------
             local mlsp = require("mason-lspconfig")
+
+            -- keep the list in a variable so we can also iterate it in fallbacks
+            local servers = {
+                "rust_analyzer", "clangd", "terraformls", "pyright", "jsonls", "yamlls",
+                "ts_ls", "lua_ls", "gopls", "dockerls", "bashls", "helm_ls", "html",
+                "lemminx", "cmake", "texlab",
+                -- manage Ruff LSP here so it doesn’t get configured elsewhere
+                "ruff",
+            }
+
             mlsp.setup({
-                ensure_installed = {
-                    "rust_analyzer",
-                    "clangd",
-                    "terraformls",
-                    "pyright",
-                    "jsonls",
-                    "yamlls",
-                    "ts_ls", -- new name in lspconfig
-                    "lua_ls",
-                    "gopls",
-                    "dockerls",
-                    "bashls",
-                    "helm_ls",
-                    "html",
-                    "lemminx",
-                    "cmake",
-                    "texlab",
-                },
+                ensure_installed = servers,
                 automatic_installation = true,
             })
 
-            local lspconfig   = require("lspconfig")
-            local schemastore = require("schemastore")
-            local caps        = require("cmp_nvim_lsp").default_capabilities()
+            local lspconfig       = require("lspconfig")
+            local schemastore     = require("schemastore")
+            local caps            = require("cmp_nvim_lsp").default_capabilities()
 
-            local function on_attach(_, _)
-                -- keep empty to avoid clashing with lspsaga keymaps
+            -- 🧯 global guard to avoid second setup from anywhere else
+            vim.g._lsp_configured = vim.g._lsp_configured or {}
+            local function configured(server)
+                local ok = lspconfig[server] and lspconfig[server].manager ~= nil
+                return ok or vim.g._lsp_configured[server]
+            end
+            local function mark_configured(server)
+                vim.g._lsp_configured[server] = true
             end
 
-            -- per-server setup builder
+            local function on_attach(_, _) end -- keep empty (Saga keys elsewhere)
+
             local function setup_server(server)
-                if not lspconfig[server] then return end
+                if not lspconfig[server] or configured(server) then return end
                 local opts = { capabilities = caps, on_attach = on_attach }
 
                 if server == "jsonls" then
-                    opts.settings = {
-                        json = {
-                            schemas = schemastore.json.schemas(),
-                            validate = { enable = true },
-                        },
-                    }
+                    opts.settings = { json = { schemas = schemastore.json.schemas(), validate = { enable = true } } }
                 elseif server == "yamlls" then
                     opts.settings = {
-                        yaml = {
-                            schemas = schemastore.yaml.schemas(),
-                            keyOrdering = false,
-                            format = { enable = true },
-                        },
+                        yaml = { schemas = schemastore.yaml.schemas(), keyOrdering = false, format = { enable = true } },
                     }
                 elseif server == "lua_ls" then
                     opts.settings = {
@@ -91,7 +85,7 @@ return {
                             workspace = { checkThirdParty = false },
                             telemetry = { enable = false },
                             diagnostics = { globals = { "vim" } },
-                            format = { enable = false }, -- use stylua via conform
+                            format = { enable = false }, -- stylua via conform
                         },
                     }
                 elseif server == "gopls" then
@@ -108,29 +102,77 @@ return {
                     opts.settings = {
                         typescript = { format = { enable = false } },
                         javascript = { format = { enable = false } },
-                    } -- prettier via conform
+                    }
                 elseif server == "clangd" then
                     opts.cmd = { "clangd", "--background-index", "--header-insertion=never", "--clang-tidy" }
                 elseif server == "terraformls" then
                     opts.filetypes = { "terraform", "terraform-vars", "tf", "tfvars", "hcl" }
                 elseif server == "html" then
-                    opts.filetypes = { "html", "templ" } -- include templ if you use it
+                    opts.filetypes = { "html", "templ" }
+                elseif server == "ruff" then
+                    -- Ruff LSP: diagnostics + quickfixes; keep formatting in conform
+                    opts.init_options = { settings = { args = {} } }
                 end
 
                 lspconfig[server].setup(opts)
+                mark_configured(server)
             end
 
-            -- ✅ robust handler: use setup_handlers if present, else fallback loop
+            -- ✅ Compatibility path: prefer setup_handlers if it exists, else fallback
             if type(mlsp.setup_handlers) == "function" then
                 mlsp.setup_handlers({
                     function(server) setup_server(server) end,
                 })
+            elseif type(mlsp.get_installed_servers) == "function" then
+                for _, server in ipairs(mlsp.get_installed_servers()) do
+                    setup_server(server)
+                end
             else
-                -- older mason-lspconfig: configure the servers that are already installed
-                for _, server in ipairs(mlsp.get_installed_servers() or {}) do
+                -- last-resort: just iterate the requested list
+                for _, server in ipairs(servers) do
                     setup_server(server)
                 end
             end
+
+            -- 🔪 Safety net: kill duplicate clients per buffer right on attach
+            vim.g.lsp_dedupe_on_attach = true
+            vim.api.nvim_create_autocmd("LspAttach", {
+                group = vim.api.nvim_create_augroup("LspDedupe", { clear = true }),
+                callback = function(args)
+                    if not vim.g.lsp_dedupe_on_attach then return end
+                    local bufnr = args.buf
+                    local seen = {}
+                    for _, client in ipairs(vim.lsp.get_clients({ bufnr = bufnr })) do
+                        local key = client.name .. "::" .. (client.config.root_dir or "")
+                        if seen[key] then client.stop(true) else seen[key] = true end
+                    end
+                end,
+            })
+
+            -- Handy user commands
+            vim.api.nvim_create_user_command("LspClientsHere", function()
+                local bufnr = vim.api.nvim_get_current_buf()
+                local lines = {}
+                for _, c in ipairs(vim.lsp.get_clients({ bufnr = bufnr })) do
+                    table.insert(lines, string.format("%s (id:%d) root:%s", c.name, c.id, c.config.root_dir or ""))
+                end
+                vim.notify(table.concat(lines, "\n"), vim.log.levels.INFO, { title = "LSP clients" })
+            end, {})
+
+            vim.api.nvim_create_user_command("LspDedupeHere", function()
+                local bufnr = vim.api.nvim_get_current_buf()
+                local seen, killed = {}, {}
+                for _, c in ipairs(vim.lsp.get_clients({ bufnr = bufnr })) do
+                    local key = c.name .. "::" .. (c.config.root_dir or "")
+                    if seen[key] then
+                        c.stop(true); table.insert(killed, c.name)
+                    else
+                        seen[key] = true
+                    end
+                end
+                vim.notify(#killed > 0 and ("Stopped: " .. table.concat(killed, ", ")) or "No duplicates",
+                    vim.log.levels.INFO, { title = "LSP dedupe" })
+            end, {})
 
             ---------------------
             -- DAP via Mason
@@ -238,9 +280,11 @@ return {
                 local add = wk.add or wk.register
                 add({
                     -- { "<leader>l",  group = "LSP" },
-                    { "<leader>lm", "<cmd>Mason<CR>",                          desc = "Mason UI" },
                     { "<leader>lI", "<cmd>LspInfo<CR>",                        desc = "LSP Info" },
                     { "<leader>lX", "<cmd>LspRestart<CR>",                     desc = "LSP Restart" },
+                    { "<leader>lm", "<cmd>Mason<CR>",                          desc = "Mason UI" },
+                    { "<leader>lC", "<cmd>LspClientsHere<CR>",                 desc = "LSP: Clients (buf)" },
+                    { "<leader>lc", "<cmd>LspDedupeHere<CR>",                  desc = "LSP: Dedupe (buf)" },
                     { "<leader>ll", function() require("lint").try_lint() end, desc = "Lint: Run Now" },
                     {
                         "<leader>lT",
