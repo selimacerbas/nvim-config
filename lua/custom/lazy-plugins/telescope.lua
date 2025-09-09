@@ -14,21 +14,21 @@ return {
             local ok, wk = pcall(require, "which-key")
             if not ok then return end
             if wk.add then
-                wk.add({ { "<leader>t", group = "Telescope" } })                     -- which-key v3
+                -- wk.add({ { "<leader>T", group = "Telescope" } })                     -- which-key v3
             else
-                wk.register({ t = { name = "Telescope" } }, { prefix = "<leader>" }) -- v2
+                -- wk.register({ T = { name = "Telescope" } }, { prefix = "<leader>" }) -- v2
             end
         end,
 
         -- 2) Real keymaps are created by lazy.nvim (with desc), so they always exist
         keys = {
-            { "<leader>tt", function() require("telescope.builtin").builtin() end,                                 desc = "Pickers list" },
-            { "<leader>tr", function() require("telescope.builtin").resume() end,                                  desc = "Resume last picker" },
-            { "<leader>tf", function() require("telescope.builtin").find_files({ hidden = true }) end,             desc = "Find files" },
-            { "<leader>tg", function() require("telescope.builtin").live_grep() end,                               desc = "Live grep" },
-            { "<leader>tS", function() require("telescope-live-grep-args.shortcuts").grep_word_under_cursor() end, desc = "Grep word (args)" },
+            { "<leader>Tt", function() require("telescope.builtin").builtin() end,                                 desc = "Pickers list" },
+            { "<leader>Tr", function() require("telescope.builtin").resume() end,                                  desc = "Resume last picker" },
+            { "<leader>Tf", function() require("telescope.builtin").find_files({ hidden = true }) end,             desc = "Find files" },
+            { "<leader>Tg", function() require("telescope.builtin").live_grep() end,                               desc = "Live grep" },
+            { "<leader>TS", function() require("telescope-live-grep-args.shortcuts").grep_word_under_cursor() end, desc = "Grep word (args)" },
             {
-                "<leader>t.",
+                "<leader>T.",
                 function()
                     require("telescope").extensions.live_grep_args.live_grep_args({
                         search_dirs = { vim.fn.expand("%:p:h") },
@@ -36,13 +36,13 @@ return {
                 end,
                 desc = "Live grep (this dir)"
             },
-            { "<leader>tG", function() require("telescope").extensions.live_grep_args.live_grep_args() end, desc = "Live grep (args)" },
-            { "<leader>ts", function() require("telescope.builtin").grep_string() end,                      desc = "Grep string" },
-            { "<leader>tb", function() require("telescope.builtin").buffers() end,                          desc = "Buffers" },
-            { "<leader>to", function() require("telescope.builtin").oldfiles() end,                         desc = "Old files (cwd)" },
-            { "<leader>tk", function() require("telescope.builtin").keymaps() end,                          desc = "Keymaps" },
-            { "<leader>tc", function() require("telescope.builtin").commands() end,                         desc = "Commands" },
-            { "<leader>th", function() require("telescope.builtin").help_tags() end,                        desc = "Help tags" },
+            { "<leader>TG", function() require("telescope").extensions.live_grep_args.live_grep_args() end, desc = "Live grep (args)" },
+            { "<leader>Ts", function() require("telescope.builtin").grep_string() end,                      desc = "Grep string" },
+            { "<leader>Tb", function() require("telescope.builtin").buffers() end,                          desc = "Buffers" },
+            { "<leader>To", function() require("telescope.builtin").oldfiles() end,                         desc = "Old files (cwd)" },
+            { "<leader>Tk", function() require("telescope.builtin").keymaps() end,                          desc = "Keymaps" },
+            { "<leader>Tc", function() require("telescope.builtin").commands() end,                         desc = "Commands" },
+            { "<leader>Th", function() require("telescope.builtin").help_tags() end,                        desc = "Help tags" },
         },
 
         config = function()

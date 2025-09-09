@@ -102,40 +102,40 @@ return {
 
             -- Mappings ----------------------------------------------------------------
             -- Toggles
-            safe_map("n", "<leader>Tt", function() float_term:toggle() end, "Terminal (float)")
-            safe_map("n", "<leader>Th", function() horiz_term:toggle() end, "Terminal (horizontal)")
-            safe_map("n", "<leader>Tv", function() vert_term:toggle() end, "Terminal (vertical)")
+            safe_map("n", "<leader>tt", function() float_term:toggle() end, "Terminal (float)")
+            safe_map("n", "<leader>th", function() horiz_term:toggle() end, "Terminal (horizontal)")
+            safe_map("n", "<leader>tv", function() vert_term:toggle() end, "Terminal (vertical)")
             if lazygit then
-                safe_map("n", "<leader>Tg", function() lazygit:toggle() end, "LazyGit (float)")
+                safe_map("n", "<leader>tg", function() lazygit:toggle() end, "LazyGit (float)")
             end
 
             -- Presets: Vertical width
-            safe_map("n", "<leader>T0", function() set_vert_pct(0.40) end, "Vertical width 40%")
-            safe_map("n", "<leader>T1", function() set_vert_pct(0.50) end, "Vertical width 50%")
-            safe_map("n", "<leader>T2", function() set_vert_pct(0.60) end, "Vertical width 60%")
+            safe_map("n", "<leader>t0", function() set_vert_pct(0.40) end, "Vertical width 40%")
+            safe_map("n", "<leader>t1", function() set_vert_pct(0.50) end, "Vertical width 50%")
+            safe_map("n", "<leader>t2", function() set_vert_pct(0.60) end, "Vertical width 60%")
 
             -- Presets: Horizontal height
-            safe_map("n", "<leader>T3", function() set_horiz_pct(0.40) end, "Horizontal height 40%")
-            safe_map("n", "<leader>T4", function() set_horiz_pct(0.50) end, "Horizontal height 50%")
-            safe_map("n", "<leader>T5", function() set_horiz_pct(0.60) end, "Horizontal height 60%")
+            safe_map("n", "<leader>t3", function() set_horiz_pct(0.40) end, "Horizontal height 40%")
+            safe_map("n", "<leader>t4", function() set_horiz_pct(0.50) end, "Horizontal height 50%")
+            safe_map("n", "<leader>t5", function() set_horiz_pct(0.60) end, "Horizontal height 60%")
 
             -- Which-Key labels --------------------------------------------------------
             local ok, wk = pcall(require, "which-key")
             if ok then
                 wk.add({
-                    { "<leader>T",  group = "Terminal" },
-                    { "<leader>Tt", desc = "Terminal (float)" },
-                    { "<leader>Th", desc = "Terminal (horizontal)" },
-                    { "<leader>Tv", desc = "Terminal (vertical)" },
-                    (lazygit and { "<leader>Tg", desc = "LazyGit (float)" } or nil),
+                    -- { "<leader>t",  group = "Terminal" },
+                    { "<leader>tt", desc = "Terminal (float)" },
+                    { "<leader>th", desc = "Terminal (horizontal)" },
+                    { "<leader>tv", desc = "Terminal (vertical)" },
+                    (lazygit and { "<leader>tg", desc = "LazyGit (float)" } or nil),
 
-                    { "<leader>T0", desc = "Vertical width 40%" },
-                    { "<leader>T1", desc = "Vertical width 50%" },
-                    { "<leader>T2", desc = "Vertical width 60%" },
+                    { "<leader>t0", desc = "Vertical width 40%" },
+                    { "<leader>t1", desc = "Vertical width 50%" },
+                    { "<leader>t2", desc = "Vertical width 60%" },
 
-                    { "<leader>T3", desc = "Horizontal height 40%" },
-                    { "<leader>T4", desc = "Horizontal height 50%" },
-                    { "<leader>T5", desc = "Horizontal height 60%" },
+                    { "<leader>t3", desc = "Horizontal height 40%" },
+                    { "<leader>t4", desc = "Horizontal height 50%" },
+                    { "<leader>t5", desc = "Horizontal height 60%" },
                 })
             end
         end,

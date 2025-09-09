@@ -95,7 +95,7 @@ return {
 
             -- Swaps + incremental selection under <leader>S
             wk.add({
-                { "<leader>S", group = "Treesitter" },
+                -- { "<leader>S", group = "Treesitter" },
                 { "<leader>Sa", desc = "Swap parameter → next" },
                 { "<leader>SA", desc = "Swap parameter → prev" },
                 { "gnn", desc = "TS: init selection", mode = "n" },
@@ -118,7 +118,7 @@ return {
                     vim.keymap.set("n", lhs, rhs, { noremap = true, silent = true, desc = desc })
                 end
             end
-            safe_map("<leader>Sp", "<cmd>TSPlaygroundToggle<CR>", "Playground toggle")
+
             safe_map("<leader>Sc", "<cmd>TSHighlightCapturesUnderCursor<CR>", "Highlight captures")
 
             local ok, wk = pcall(require, "which-key")
