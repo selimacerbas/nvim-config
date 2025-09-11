@@ -124,27 +124,26 @@ return {
             -- vim.o.pumblend = 10
         end,
     },
-
-    -- STATUSLINE ────────────────────────────────────────────────────────────────
-    {
-        "nvim-lualine/lualine.nvim",
-        dependencies = {
-            "nvim-tree/nvim-web-devicons",
-            { "franco-ruggeri/mcphub-lualine.nvim", lazy = true }, -- MCPHub component
-        },
-        config = function()
-            require("lualine").setup({
-                options = {
-                    theme = "rose-pine",
-                },
-                sections = {
-                    lualine_x = {
-                        { "mcphub", icon = "󰐻 " }, -- shows active MCP servers / spinner
-                        { "pipeline", icon = "" }, -- ← latest CI run status
-                        -- your other components can follow here
-                    },
-                },
-            })
-        end,
-    },
 }
+--     -- STATUSLINE ────────────────────────────────────────────────────────────────
+--     {
+--         "nvim-lualine/lualine.nvim",
+--         dependencies = {
+--             "nvim-tree/nvim-web-devicons",
+--             { "franco-ruggeri/mcphub-lualine.nvim", lazy = true }, -- MCPHub component
+--         },
+--         config = function()
+--             require("lualine").setup({
+--                 options = {
+--                     theme = "rose-pine",
+--                 },
+--                 sections = {
+--                     lualine_x = {
+--                         { "mcphub", icon = "󰐻 " }, -- shows active MCP servers / spinner
+--                         { "pipeline", icon = "" }, -- ← latest CI run status
+--                         -- your other components can follow here
+--                     },
+--                 },
+--             })
+--         end,
+--     },

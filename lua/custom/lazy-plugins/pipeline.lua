@@ -269,8 +269,4 @@ return {
             package.loaded["pipeline.telescope"] = M
         end,
     },
-
-    -- LUALINE BADGE (add to your existing lualine spec)
-    -- Put this in your lualine config's sections, e.g. lualine_x or lualine_a:
-    --   { 'pipeline', icon = '' }
 }
