@@ -14,22 +14,25 @@ return {
 
         -- Statusline
         {
-            'nvim-lualine/lualine.nvim',
+            "nvim-lualine/lualine.nvim",
+            dependencies = {
+                "nvim-tree/nvim-web-devicons",
+                { "franco-ruggeri/mcphub-lualine.nvim", lazy = true }, -- MCPHub component
+            },
             config = function()
-                require('lualine').setup {
+                require("lualine").setup({
                     options = {
-                        theme = 'catppuccin'
+                        theme = "catppuccin",
                     },
                     sections = {
-                        -- add mcphub’s status component here
                         lualine_x = {
-                            { require('mcphub.extensions.lualine') },
-                            -- any other components you already had can go after
+                            { "mcphub", icon = "󰐻 " }, -- shows active MCP servers / spinner
+                            { "pipeline", icon = "" }, -- ← latest CI run status
+                            -- your other components can follow here
                         },
-                        -- keep your other sections (a, b, c, y, z) as-is
                     },
-                }
-            end
+                })
+            end,
         },
     }
 
