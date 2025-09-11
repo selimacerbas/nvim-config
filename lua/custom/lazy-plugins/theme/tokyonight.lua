@@ -2,8 +2,7 @@ return {
     -- Colorscheme: TokyoNight
     {
         "folke/tokyonight.nvim",
-        lazy = false,
-        priority = 1000,
+        lazy = true,
         dependencies = { "folke/which-key.nvim" },
         config = function()
             ---------------------------------------------------------------------------

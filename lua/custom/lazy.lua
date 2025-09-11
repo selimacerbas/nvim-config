@@ -57,9 +57,8 @@ require("lazy").setup({
         { import = "custom.lazy-plugins.nvim-dap" },
         { import = "custom.lazy-plugins.nvim-lspconfig" },
         { import = "custom.lazy-plugins.pipeline" },
-        { import = "custom.lazy-plugins.theme.rose-pine" }, -- Change here if you want new theme.
-        { import = "custom.lazy-plugins.theme.lualine" },   -- Change here if you want new theme.
-        -- { import = "custom.lazy-plugins.theme.switcher" }, -- Needs some work later. TODO:
+        { import = "custom.lazy-plugins.theme" } -- pulls every file in that folder
+
     },
-    install = { colorscheme = { "rose-pine" } },
+    install = { colorscheme = { "auto" } },
 })
