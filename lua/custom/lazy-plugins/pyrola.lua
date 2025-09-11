@@ -1,13 +1,18 @@
 return {
     {
         "matarina/pyrola.nvim",
-        build = ":UpdateRemotePlugins",
+        -- build = ":UpdateRemotePlugins", -- remove this
+        build = function()
+            -- Only update remote plugins if the Python host is actually available
+            local ok = pcall(vim.fn.py3eval, "1")
+            if ok then vim.cmd("UpdateRemotePlugins") end
+        end,
         dependencies = {
             "nvim-treesitter/nvim-treesitter",
             "folke/which-key.nvim",
         },
         opts = {
-            kernel_map    = { python = "python3" }, -- sane default
+            kernel_map    = { python = "python3" },
             split_horizen = false,
             split_ratio   = 0.30,
         },
@@ -16,12 +21,11 @@ return {
             local function has_pynvim() return pcall(vim.fn.py3eval, "1") end
             local function have_jupyter() return vim.fn.executable("jupyter") == 1 end
             local function warn(msg) vim.notify(msg, vim.log.levels.WARN, { title = "Pyrola" }) end
-            local function err(msg) vim.notify(msg, vim.log.levels.ERROR, { title = "Pyrola" }) end
 
             vim.api.nvim_create_user_command("PyrolaDoctor", function()
                 local lines = {
-                    "pynvim host: " .. (has_pynvim() and "OK" or "MISSING (pip install --user pynvim)"),
-                    "jupyter cli: " .. (have_jupyter() and "OK" or "MISSING (pip install --user jupyter)"),
+                    "pynvim host: " .. (has_pynvim() and "OK" or "MISSING (install pynvim or set g:python3_host_prog)"),
+                    "jupyter cli: " .. (have_jupyter() and "OK" or "MISSING (pip install jupyter)"),
                     "rplugin.vim: " ..
                     (vim.loop.fs_stat(vim.fn.stdpath("data") .. "/rplugin.vim") and "present" or "missing"),
                     ("kernel_map.python: %s"):format((opts.kernel_map or {}).python or "nil"),
@@ -29,9 +33,14 @@ return {
                 vim.notify(table.concat(lines, "\n"), vim.log.levels.INFO, { title = "Pyrola Doctor" })
             end, {})
 
+            -- If the Python host is missing, *warn once* but don’t error on startup
             if not has_pynvim() then
-                err("Python host not available. Run: pip install --user pynvim, then :UpdateRemotePlugins and restart.")
+                vim.schedule(function()
+                    warn(
+                        "Python provider missing. Set vim.g.python3_host_prog or install pynvim; run :UpdateRemotePlugins.")
+                end)
             end
+
             if not have_jupyter() then
                 warn("Jupyter not on PATH. Kernel picker may fail. Install jupyter for kernelspec listing.")
             end
@@ -307,6 +316,7 @@ return {
                     { "<leader>jl", with_cursor_stay(safe_send_stmt),                             desc = "Send statement/block (stay)",  mode = "n" },
                     { "<leader>jv", with_cursor_stay(safe_send_visual),                           desc = "Send visual selection (stay)", mode = "x" },
                     { "<leader>ji", with_cursor_stay(function() require("pyrola").inspect() end), desc = "Inspect under cursor (stay)",  mode = "n" },
+                    { "<leader>jD", function() vim.cmd("PyrolaDoctor") end,                       desc = "Doctor / Env check",           mode = "n" },
                     {
                         "<leader>jk",
                         function()
@@ -349,12 +359,12 @@ return {
                         desc = "Select kernel…",
                         mode = "n"
                     },
-                    { "<leader>jt", toggle_minimize_repl,                                                                                                  desc = "Toggle REPL (min/restore)", mode = "n" },
+                    { "<leader>jt", toggle_minimize_repl, desc = "Toggle REPL (min/restore)", mode = "n" },
                     {
                         "<leader>jq",
                         function()
                             local w = (state.repl_win and valid_split(state.repl_win)) and state.repl_win or
-                            find_repl_win()
+                                find_repl_win()
                             if w then vim.api.nvim_win_close(w, true) end
                             if state.repl_buf and vim.api.nvim_buf_is_valid(state.repl_buf) then
                                 vim.b[state.repl_buf].pyrola_repl = false
@@ -368,18 +378,36 @@ return {
                         desc = "Close REPL (reset)",
                         mode = "n"
                     },
-                    { "<leader>j0", function()
-                        state.minimized = false; state.ratio = 0.30; local w = find_repl_win(); if w then
-                            park_right_and_size(w) end
-                    end,                                                                                                                                   desc = "Vertical width 30%",        mode = "n" },
-                    { "<leader>j1", function()
-                        state.minimized = false; state.ratio = 0.40; local w = find_repl_win(); if w then
-                            park_right_and_size(w) end
-                    end,                                                                                                                                   desc = "Vertical width 40%",        mode = "n" },
-                    { "<leader>j2", function()
-                        state.minimized = false; state.ratio = 0.50; local w = find_repl_win(); if w then
-                            park_right_and_size(w) end
-                    end,                                                                                                                                   desc = "Vertical width 50%",        mode = "n" },
+                    {
+                        "<leader>j0",
+                        function()
+                            state.minimized = false; state.ratio = 0.30; local w = find_repl_win(); if w then
+                                park_right_and_size(w)
+                            end
+                        end,
+                        desc = "Vertical width 30%",
+                        mode = "n"
+                    },
+                    {
+                        "<leader>j1",
+                        function()
+                            state.minimized = false; state.ratio = 0.40; local w = find_repl_win(); if w then
+                                park_right_and_size(w)
+                            end
+                        end,
+                        desc = "Vertical width 40%",
+                        mode = "n"
+                    },
+                    {
+                        "<leader>j2",
+                        function()
+                            state.minimized = false; state.ratio = 0.50; local w = find_repl_win(); if w then
+                                park_right_and_size(w)
+                            end
+                        end,
+                        desc = "Vertical width 50%",
+                        mode = "n"
+                    },
                 })
             else
                 vim.keymap.set("n", "<leader>jl", with_cursor_stay(safe_send_stmt),
@@ -388,9 +416,12 @@ return {
                     { silent = true, noremap = true, desc = "Send visual selection (stay)" })
                 vim.keymap.set("n", "<leader>ji", with_cursor_stay(function() require("pyrola").inspect() end),
                     { silent = true, noremap = true, desc = "Inspect under cursor (stay)" })
+
                 vim.keymap.set("n", "<leader>jk",
-                    function() vim.notify("Use :PyrolaDoctor to ensure jupyter is installed, then reopen.",
-                            vim.log.levels.INFO) end, { silent = true, noremap = true, desc = "Select kernel…" })
+                    function()
+                        vim.notify("Use :PyrolaDoctor to ensure jupyter is installed, then reopen.",
+                            vim.log.levels.INFO)
+                    end, { silent = true, noremap = true, desc = "Select kernel…" })
                 vim.keymap.set("n", "<leader>jt", toggle_minimize_repl,
                     { silent = true, noremap = true, desc = "Toggle REPL (min/restore)" })
                 vim.keymap.set("n", "<leader>jq", function()
