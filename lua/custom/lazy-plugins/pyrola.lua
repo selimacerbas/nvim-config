@@ -1,31 +1,67 @@
+-- ==============================================================
+-- 2) lua/custom/lazy-plugins/pyrola.lua (full drop-in spec)
+-- ==============================================================
 return {
     {
         "matarina/pyrola.nvim",
-        -- build = ":UpdateRemotePlugins", -- remove this
+        -- Don't always force UpdateRemotePlugins; only run it if the
+        -- configured python host can actually import `pynvim`.
         build = function()
-            -- Only update remote plugins if the Python host is actually available
-            local ok = pcall(vim.fn.py3eval, "1")
-            if ok then vim.cmd("UpdateRemotePlugins") end
+            local py = vim.g.python3_host_prog or vim.fn.exepath("python3")
+            if py ~= "" and vim.fn.executable(py) == 1 then
+                if vim.system then
+                    local r = vim.system({ py, "-c", "import pynvim" }, { text = true }):wait()
+                    if r.code == 0 then vim.cmd("UpdateRemotePlugins") end
+                else
+                    vim.fn.system(py .. [[ -c "import pynvim"]])
+                    if vim.v.shell_error == 0 then vim.cmd("UpdateRemotePlugins") end
+                end
+            end
         end,
+
         dependencies = {
             "nvim-treesitter/nvim-treesitter",
             "folke/which-key.nvim",
         },
+
         opts = {
-            kernel_map    = { python = "python3" },
+            kernel_map    = { python = "python3" }, -- sane default
             split_horizen = false,
             split_ratio   = 0.30,
         },
+
         config = function(_, opts)
-            -- --- env checks / doctor ------------------------------------------------
-            local function has_pynvim() return pcall(vim.fn.py3eval, "1") end
-            local function have_jupyter() return vim.fn.executable("jupyter") == 1 end
-            local function warn(msg) vim.notify(msg, vim.log.levels.WARN, { title = "Pyrola" }) end
+            -- --- env checks / doctor (non-invasive) ------------------------------
+            local function warn(msg)
+                vim.notify(msg, vim.log.levels.WARN, { title = "Pyrola" })
+            end
+
+            local function python_host_ok()
+                local py = vim.g.python3_host_prog or vim.fn.exepath("python3")
+                if py == "" or vim.fn.executable(py) ~= 1 then
+                    return false, "python not found/executable"
+                end
+                if vim.system then
+                    local r = vim.system({ py, "-c", "import pynvim" }, { text = true }):wait()
+                    return r.code == 0, r.stderr or r.stdout
+                else
+                    vim.fn.system(py .. [[ -c "import pynvim"]])
+                    return vim.v.shell_error == 0, nil
+                end
+            end
+
+            local function have_jupyter()
+                return vim.fn.executable("jupyter") == 1
+            end
 
             vim.api.nvim_create_user_command("PyrolaDoctor", function()
+                local py = vim.g.python3_host_prog or "(not set)"
+                local ok = python_host_ok()
+                local has_jup = have_jupyter()
                 local lines = {
-                    "pynvim host: " .. (has_pynvim() and "OK" or "MISSING (install pynvim or set g:python3_host_prog)"),
-                    "jupyter cli: " .. (have_jupyter() and "OK" or "MISSING (pip install jupyter)"),
+                    "python3_host_prog: " .. tostring(py),
+                    "pynvim import: " .. (ok and "OK" or "MISSING"),
+                    "jupyter cli: " .. (has_jup and "OK" or "MISSING (pip install jupyter)"),
                     "rplugin.vim: " ..
                     (vim.loop.fs_stat(vim.fn.stdpath("data") .. "/rplugin.vim") and "present" or "missing"),
                     ("kernel_map.python: %s"):format((opts.kernel_map or {}).python or "nil"),
@@ -33,24 +69,19 @@ return {
                 vim.notify(table.concat(lines, "\n"), vim.log.levels.INFO, { title = "Pyrola Doctor" })
             end, {})
 
-            -- If the Python host is missing, *warn once* but don’t error on startup
-            if not has_pynvim() then
-                vim.schedule(function()
-                    warn(
-                        "Python provider missing. Set vim.g.python3_host_prog or install pynvim; run :UpdateRemotePlugins.")
-                end)
+            -- If provider not ready, just warn once later; do NOT call py3eval.
+            do
+                local ok = python_host_ok()
+                if not ok then
+                    vim.schedule(function()
+                        warn(
+                            "Python provider not ready. Check g:python3_host_prog and that 'pynvim' is installed, then :UpdateRemotePlugins once.")
+                    end)
+                end
             end
 
-            if not have_jupyter() then
-                warn("Jupyter not on PATH. Kernel picker may fail. Install jupyter for kernelspec listing.")
-            end
-            opts.kernel_map = opts.kernel_map or {}
-            if opts.kernel_map.python ~= "python3" then
-                warn(("Overriding kernel_map.python (%s) → python3"):format(tostring(opts.kernel_map.python)))
-                opts.kernel_map.python = "python3"
-            end
 
-            -- --- plugin setup -------------------------------------------------------
+            -- --- plugin setup -----------------------------------------------------
             local pyrola = require("pyrola")
             pyrola.setup(vim.deepcopy and vim.deepcopy(opts) or opts)
 
@@ -61,7 +92,7 @@ return {
                 })
             end)
 
-            -- --- focus helpers ------------------------------------------------------
+            -- --- focus helpers ----------------------------------------------------
             local function restore_focus(prev_win, prev_view)
                 if vim.api.nvim_win_is_valid(prev_win) then
                     pcall(vim.api.nvim_set_current_win, prev_win)
@@ -80,7 +111,7 @@ return {
                 end
             end
 
-            -- --- state --------------------------------------------------------------
+            -- --- state ------------------------------------------------------------
             local state = {
                 ratio            = opts.split_ratio or 0.30,
                 minimized        = false,
@@ -91,7 +122,7 @@ return {
                 expect_repl_open = false, -- adopt TermOpen within window
             }
 
-            -- --- window helpers (hardened) -----------------------------------------
+            -- --- window helpers (hardened) ---------------------------------------
             local function is_floating(win)
                 if not win or not vim.api.nvim_win_is_valid(win) then return false end
                 local cfg = vim.api.nvim_win_get_config(win)
@@ -115,7 +146,7 @@ return {
                 end
             end
 
-            -- --- buffer detection / scope ------------------------------------------
+            -- --- buffer detection / scope ----------------------------------------
             local function is_term(buf)
                 return vim.api.nvim_get_option_value("buftype", { buf = buf }) == "terminal"
             end
@@ -182,7 +213,7 @@ return {
                 vim.defer_fn(function() state.expect_repl_open = false end, 3000) -- generous window
             end
 
-            -- --- user commands: adopt/release --------------------------------------
+            -- --- user commands: adopt/release ------------------------------------
             vim.api.nvim_create_user_command("PyrolaAdopt", function()
                 local win = vim.api.nvim_get_current_win()
                 local buf = vim.api.nvim_win_get_buf(win)
@@ -195,6 +226,7 @@ return {
                     vim.notify("Not a terminal split window.", vim.log.levels.WARN)
                 end
             end, {})
+
             vim.api.nvim_create_user_command("PyrolaRelease", function()
                 if state.repl_buf and vim.api.nvim_buf_is_valid(state.repl_buf) then
                     vim.b[state.repl_buf].pyrola_repl = false
@@ -203,7 +235,7 @@ return {
                 vim.notify("Pyrola released the managed terminal.", vim.log.levels.INFO)
             end, {})
 
-            -- --- autocmds (hardened & float-safe) ----------------------------------
+            -- --- autocmds (hardened & float-safe) --------------------------------
             vim.api.nvim_create_autocmd("TermOpen", {
                 callback = function(args)
                     if not state.expect_repl_open then return end
@@ -235,7 +267,7 @@ return {
                 end,
             })
 
-            -- --- toggle minimize/restore -------------------------------------------
+            -- --- toggle minimize/restore -----------------------------------------
             local function toggle_minimize_repl()
                 local w = (state.repl_win and valid_split(state.repl_win)) and state.repl_win or find_repl_win()
                 if not w then
@@ -272,7 +304,7 @@ return {
                 restore_focus(prev, prev_view)
             end
 
-            -- --- send actions (robust adoption + no race) --------------------------
+            -- --- send actions (robust adoption + no race) ------------------------
             local function post_send_adopt_and_park()
                 vim.defer_fn(function()
                     local w = find_repl_win()
@@ -308,7 +340,7 @@ return {
                 if not ok then vim.notify("Pyrola error: " .. tostring(e), vim.log.levels.ERROR) end
             end
 
-            -- --- which-key / keymaps -----------------------------------------------
+            -- --- which-key / keymaps ---------------------------------------------
             local wk_ok, wk = pcall(require, "which-key")
             if wk_ok and wk.add then
                 wk.add({
@@ -316,7 +348,7 @@ return {
                     { "<leader>jl", with_cursor_stay(safe_send_stmt),                             desc = "Send statement/block (stay)",  mode = "n" },
                     { "<leader>jv", with_cursor_stay(safe_send_visual),                           desc = "Send visual selection (stay)", mode = "x" },
                     { "<leader>ji", with_cursor_stay(function() require("pyrola").inspect() end), desc = "Inspect under cursor (stay)",  mode = "n" },
-                    { "<leader>jD", function() vim.cmd("PyrolaDoctor") end,                       desc = "Doctor / Env check",           mode = "n" },
+                    { "<leader>jD", function() vim.cmd("PyrolaDoctor") end,                       desc = "REPL: Doctor / Env check",     mode = "n" },
                     {
                         "<leader>jk",
                         function()
@@ -359,7 +391,7 @@ return {
                         desc = "Select kernel…",
                         mode = "n"
                     },
-                    { "<leader>jt", toggle_minimize_repl, desc = "Toggle REPL (min/restore)", mode = "n" },
+                    { "<leader>jt", toggle_minimize_repl,                   desc = "Toggle REPL (min/restore)", mode = "n" },
                     {
                         "<leader>jq",
                         function()
@@ -408,20 +440,22 @@ return {
                         desc = "Vertical width 50%",
                         mode = "n"
                     },
+                    { "<leader>jD", function() vim.cmd("PyrolaDoctor") end, desc = "Doctor / Env check",        mode = "n" },
                 })
             else
+                -- Fallback keymaps if which-key is unavailable
                 vim.keymap.set("n", "<leader>jl", with_cursor_stay(safe_send_stmt),
                     { silent = true, noremap = true, desc = "Send statement/block (stay)" })
                 vim.keymap.set("x", "<leader>jv", with_cursor_stay(safe_send_visual),
                     { silent = true, noremap = true, desc = "Send visual selection (stay)" })
                 vim.keymap.set("n", "<leader>ji", with_cursor_stay(function() require("pyrola").inspect() end),
                     { silent = true, noremap = true, desc = "Inspect under cursor (stay)" })
-
                 vim.keymap.set("n", "<leader>jk",
                     function()
                         vim.notify("Use :PyrolaDoctor to ensure jupyter is installed, then reopen.",
                             vim.log.levels.INFO)
-                    end, { silent = true, noremap = true, desc = "Select kernel…" })
+                    end,
+                    { silent = true, noremap = true, desc = "Select kernel…" })
                 vim.keymap.set("n", "<leader>jt", toggle_minimize_repl,
                     { silent = true, noremap = true, desc = "Toggle REPL (min/restore)" })
                 vim.keymap.set("n", "<leader>jq", function()
@@ -436,6 +470,8 @@ return {
                     pyrola.setup(opts)
                     vim.notify("REPL closed. Next send will reopen it.", vim.log.levels.INFO)
                 end, { silent = true, noremap = true, desc = "Close REPL (reset)" })
+                vim.keymap.set("n", "<leader>jD", function() vim.cmd("PyrolaDoctor") end,
+                    { silent = true, noremap = true, desc = "Doctor / Env check" })
             end
         end,
     },
