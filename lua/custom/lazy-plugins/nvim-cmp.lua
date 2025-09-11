@@ -15,8 +15,9 @@ return {
     opts = function()
         local cmp = require('cmp')
         local luasnip = require('luasnip')
+        local compare = cmp.config.compare
 
-        -- your custom comparators (unchanged)
+        -- kind-priority comparator (yours, unchanged)
         local lspkind_comparator = function(conf)
             local lsp_types = require('cmp.types').lsp
             return function(entry1, entry2)
@@ -42,11 +43,41 @@ return {
             end
         end
 
-        local label_comparator = function(entry1, entry2)
-            return entry1.completion_item.label < entry2.completion_item.label
+        -- NEW: push names with leading underscores lower (e.g. _foo, __bar)
+        -- If you started typing an underscore, we don't penalize.
+        local underscore_comparator = function(entry1, entry2)
+            local function leading_uscore_count(label)
+                local m = (label or ''):match('^_+')
+                return m and #m or 0
+            end
+            local function typed_prefix()
+                local line   = vim.api.nvim_get_current_line()
+                local col    = vim.api.nvim_win_get_cursor(0)[2]
+                local before = line:sub(1, col)
+                return (before:match('[_%w]*$') or '')
+            end
+
+            -- don't penalize if the current prefix begins with "_"
+            if typed_prefix():match('^_') then
+                return nil
+            end
+
+            local l1 = entry1.completion_item.label or ''
+            local l2 = entry2.completion_item.label or ''
+            local c1 = leading_uscore_count(l1)
+            local c2 = leading_uscore_count(l2)
+
+            if c1 ~= c2 then
+                -- fewer leading underscores wins
+                return c1 < c2
+            end
+            return nil
         end
 
-        -- SUPER-TAB helpers
+        local label_comparator = function(e1, e2)
+            return e1.completion_item.label < e2.completion_item.label
+        end
+
         local has_words_before = function()
             local line, col = unpack(vim.api.nvim_win_get_cursor(0))
             if col == 0 then return false end
@@ -55,15 +86,12 @@ return {
         end
 
         return {
-            snippet = {
-                expand = function(args) luasnip.lsp_expand(args.body) end,
-            },
+            snippet = { expand = function(args) luasnip.lsp_expand(args.body) end },
             window = {
                 completion    = cmp.config.window.bordered(),
                 documentation = cmp.config.window.bordered(),
             },
             mapping = cmp.mapping.preset.insert({
-                -- SUPER-TAB logic
                 ['<Tab>']      = cmp.mapping(function(fallback)
                     if cmp.visible() then
                         cmp.select_next_item()
@@ -75,7 +103,6 @@ return {
                         fallback()
                     end
                 end, { 'i', 's' }),
-
                 ['<S-Tab>']    = cmp.mapping(function(fallback)
                     if cmp.visible() then
                         cmp.select_prev_item()
@@ -85,8 +112,6 @@ return {
                         fallback()
                     end
                 end, { 'i', 's' }),
-
-                -- keep your other mappings
                 ['<Down>']     = cmp.mapping.select_next_item(),
                 ['<Up>']       = cmp.mapping.select_prev_item(),
                 ['<C-Space>']  = cmp.mapping.complete(),
@@ -119,6 +144,8 @@ return {
             },
             sorting = {
                 comparators = {
+                    compare.exact,         -- keep exact matches on top
+                    underscore_comparator, -- 👈 push _foo / __bar lower
                     lspkind_comparator({
                         kind_priority = {
                             Parameter     = 14,
@@ -149,10 +176,13 @@ return {
                             Value         = 1,
                         },
                     }),
-                    label_comparator,
+                    compare.score, -- baseline LSP scoring
+                    compare.recently_used,
+                    compare.locality,
+                    label_comparator, -- alpha as a final tiebreaker
+                    compare.order,    -- stable order
                 },
             },
-            -- optional, nice on Neovim 0.10+
             experimental = { ghost_text = true },
             completion = { completeopt = 'menu,menuone,noinsert' },
         }
@@ -160,7 +190,7 @@ return {
     config = function(_, opts)
         require('cmp').setup(opts)
 
-        -- which-key labels (insert mode) for discoverability — no remaps
+        -- which-key (insert-mode) discoverability; no remaps
         local ok, wk = pcall(require, 'which-key')
         if ok then
             local add = wk.add or wk.register
