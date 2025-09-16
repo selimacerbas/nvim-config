@@ -45,6 +45,7 @@ require("lazy").setup({
         { import = "custom.lazy-plugins.twilight" },
         { import = "custom.lazy-plugins.zen-mode" },
         { import = "custom.lazy-plugins.mcphub" },
+        { import = "custom.lazy-plugins.hardtime" },
         { import = "custom.lazy-plugins.avante" },
         { import = "custom.lazy-plugins.luasnip" },
         { import = "custom.lazy-plugins.surround" },
