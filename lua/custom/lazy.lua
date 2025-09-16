@@ -37,7 +37,7 @@ require("lazy").setup({
         { import = "custom.lazy-plugins.git-signs" },
         { import = "custom.lazy-plugins.vimbegood" },
         { import = "custom.lazy-plugins.todo-comments" },
-        { import = "custom.lazy-plugins.markdown-preview" },
+        { import = "custom.lazy-plugins.markdown" },
         { import = "custom.lazy-plugins.bookmarks" },
         { import = "custom.lazy-plugins.vimtex" },
         -- { import = "custom.lazy-plugins.molten" },

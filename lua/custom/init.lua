@@ -9,6 +9,9 @@ require("custom.lazy")
 -- brew install glab
 -- brew install gh
 -- brew install timg
+-- brew install mermaid-cli
+-- brew install imagemagick
+-- brew install deno (peek.nvim needs it)
 
 --  LuaSnip Dependency --
 -- cd ~/.local/share/nvim/lazy/LuaSnip  # Adjust the path if you're using a different plugin manager
