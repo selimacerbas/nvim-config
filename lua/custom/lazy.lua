@@ -1,11 +1,15 @@
 -- Bootstrap lazy.nvim
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
 if not vim.loop.fs_stat(lazypath) then
-    -- Clone lazy.nvim repository if it's not already installed
-    vim.fn.system({
-        "git", "clone", "--filter=blob:none", "--branch=stable",
-        "https://github.com/folke/lazy.nvim.git", lazypath
-    })
+	-- Clone lazy.nvim repository if it's not already installed
+	vim.fn.system({
+		"git",
+		"clone",
+		"--filter=blob:none",
+		"--branch=stable",
+		"https://github.com/folke/lazy.nvim.git",
+		lazypath,
+	})
 end
 vim.opt.rtp:prepend(lazypath)
 
@@ -17,49 +21,49 @@ vim.g.maplocalleader = ","
 
 -- Setup lazy.nvim
 require("lazy").setup({
-    spec = {
-        -- Import custom plugin configurations
-        { import = "custom.lazy-plugins.telescope" },
-        { import = "custom.lazy-plugins.lspsaga" },
-        { import = "custom.lazy-plugins.treesitter" },
-        { import = "custom.lazy-plugins.nvim-cmp" },
-        { import = "custom.lazy-plugins.toggleterm" },
-        { import = "custom.lazy-plugins.mason" },
-        { import = "custom.lazy-plugins.nvim-tree" },
-        { import = "custom.lazy-plugins.comment" },
-        { import = "custom.lazy-plugins.autopairs" },
-        { import = "custom.lazy-plugins.blankline" },
-        { import = "custom.lazy-plugins.autosave" },
-        { import = "custom.lazy-plugins.flutter-tools-dart" },
-        { import = "custom.lazy-plugins.nvim-web-icons" },
-        { import = "custom.lazy-plugins.which-key" },
-        { import = "custom.lazy-plugins.platformio" },
-        { import = "custom.lazy-plugins.git-signs" },
-        { import = "custom.lazy-plugins.vimbegood" },
-        { import = "custom.lazy-plugins.todo-comments" },
-        { import = "custom.lazy-plugins.markdown" },
-        { import = "custom.lazy-plugins.bookmarks" },
-        { import = "custom.lazy-plugins.vimtex" },
-        -- { import = "custom.lazy-plugins.molten" },
-        { import = "custom.lazy-plugins.pyrola" },
-        { import = "custom.lazy-plugins.twilight" },
-        { import = "custom.lazy-plugins.zen-mode" },
-        { import = "custom.lazy-plugins.mcphub" },
-        { import = "custom.lazy-plugins.hardtime" },
-        { import = "custom.lazy-plugins.avante" },
-        { import = "custom.lazy-plugins.luasnip" },
-        { import = "custom.lazy-plugins.surround" },
-        { import = "custom.lazy-plugins.refactor" },
-        { import = "custom.lazy-plugins.typr" },
-        { import = "custom.lazy-plugins.lsp-signature" },
-        { import = "custom.lazy-plugins.bufferline" },
-        { import = "custom.lazy-plugins.smear-cursor" },
-        { import = "custom.lazy-plugins.key-analyzer" },
-        { import = "custom.lazy-plugins.nvim-dap" },
-        { import = "custom.lazy-plugins.nvim-lspconfig" },
-        { import = "custom.lazy-plugins.pipeline" },
-        { import = "custom.lazy-plugins.theme" } -- pulls every file in that folder
-
-    },
-    install = { colorscheme = { "auto" } },
+	spec = {
+		-- Import custom plugin configurations
+		{ import = "custom.lazy-plugins.telescope" },
+		{ import = "custom.lazy-plugins.lspsaga" },
+		{ import = "custom.lazy-plugins.treesitter" },
+		{ import = "custom.lazy-plugins.nvim-cmp" },
+		{ import = "custom.lazy-plugins.toggleterm" },
+		{ import = "custom.lazy-plugins.mason" },
+		{ import = "custom.lazy-plugins.nvim-tree" },
+		{ import = "custom.lazy-plugins.comment" },
+		{ import = "custom.lazy-plugins.autopairs" },
+		{ import = "custom.lazy-plugins.blankline" },
+		{ import = "custom.lazy-plugins.autosave" },
+		{ import = "custom.lazy-plugins.flutter-tools-dart" },
+		{ import = "custom.lazy-plugins.nvim-web-icons" },
+		{ import = "custom.lazy-plugins.which-key" },
+		{ import = "custom.lazy-plugins.platformio" },
+		{ import = "custom.lazy-plugins.git-signs" },
+		{ import = "custom.lazy-plugins.vimbegood" },
+		{ import = "custom.lazy-plugins.todo-comments" },
+		{ import = "custom.lazy-plugins.markdown" },
+		{ import = "custom.lazy-plugins.bookmarks" },
+		{ import = "custom.lazy-plugins.vimtex" },
+		-- { import = "custom.lazy-plugins.molten" },
+		{ import = "custom.lazy-plugins.pyrola" },
+		{ import = "custom.lazy-plugins.twilight" },
+		{ import = "custom.lazy-plugins.zen-mode" },
+		{ import = "custom.lazy-plugins.mcphub" },
+		{ import = "custom.lazy-plugins.hardtime" },
+		{ import = "custom.lazy-plugins.avante" },
+		{ import = "custom.lazy-plugins.luasnip" },
+		{ import = "custom.lazy-plugins.surround" },
+		{ import = "custom.lazy-plugins.refactor" },
+		{ import = "custom.lazy-plugins.typr" },
+		{ import = "custom.lazy-plugins.lsp-signature" },
+		{ import = "custom.lazy-plugins.bufferline" },
+		{ import = "custom.lazy-plugins.smear-cursor" },
+		{ import = "custom.lazy-plugins.key-analyzer" },
+		{ import = "custom.lazy-plugins.nvim-dap" },
+		{ import = "custom.lazy-plugins.nvim-lspconfig" },
+		{ import = "custom.lazy-plugins.pipeline" },
+		{ import = "custom.lazy-plugins.live-server" },
+		{ import = "custom.lazy-plugins.theme" }, -- pulls every file in that folder
+	},
+	install = { colorscheme = { "auto" } },
 })
