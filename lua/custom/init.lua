@@ -12,6 +12,7 @@ require("custom.lazy")
 -- brew install mermaid-cli
 -- brew install imagemagick
 -- brew install deno (peek.nvim needs it)
+-- brew install chafa viu (fzf needs these)
 
 --  LuaSnip Dependency --
 -- cd ~/.local/share/nvim/lazy/LuaSnip  # Adjust the path if you're using a different plugin manager
@@ -29,17 +30,18 @@ vim.lsp.set_log_level("ERROR")
 vim.g.loaded_perl_provider = 0
 
 -- pynvim Dependency. The venv is created under lua/custom folder.
-vim.g.python3_host_prog = vim.fn.expand('~/.pyenv/versions/nvim-env/bin/python')
+vim.g.python3_host_prog = vim.fn.expand("~/.pyenv/versions/nvim-env/bin/python")
 
+-- needed for mermaid and diagram.nvim
+vim.env.PATH = vim.fn.expand("~/.local/bin") .. ":" .. vim.env.PATH
 
 -- Treat Kptfiles as YAML files.
 vim.api.nvim_create_autocmd({ "BufRead", "BufNewFile" }, {
-    pattern = "Kptfile",
-    callback = function()
-        vim.bo.filetype = "yaml"
-    end,
+	pattern = "Kptfile",
+	callback = function()
+		vim.bo.filetype = "yaml"
+	end,
 })
-
 
 -- Map leader as space.
 vim.g.mapleader = " "
@@ -51,16 +53,16 @@ vim.g.maplocalleader = ","
 vim.g.molten_cell_delimiter = "# %%"
 
 -- Line numbers
-vim.opt.number = true         -- Show line numbers
+vim.opt.number = true -- Show line numbers
 vim.opt.relativenumber = true -- Show relative line numbers
-vim.opt.signcolumn = "yes"    -- Always show the sign column
+vim.opt.signcolumn = "yes" -- Always show the sign column
 
 -- Enable system clipboard for copy paste
 vim.opt.clipboard:append("unnamedplus")
 
-vim.opt.tabstop = 4        -- Number of spaces for a tab
-vim.opt.shiftwidth = 4     -- Number of spaces for autoindent
-vim.opt.expandtab = true   -- Use spaces instead of tabs
+vim.opt.tabstop = 4 -- Number of spaces for a tab
+vim.opt.shiftwidth = 4 -- Number of spaces for autoindent
+vim.opt.expandtab = true -- Use spaces instead of tabs
 vim.opt.smartindent = true -- Automatically indent new lines
 
 -- Highlight the current line
