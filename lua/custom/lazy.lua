@@ -63,6 +63,7 @@ require("lazy").setup({
 		{ import = "custom.lazy-plugins.nvim-lspconfig" },
 		{ import = "custom.lazy-plugins.pipeline" },
 		{ import = "custom.lazy-plugins.live-server" },
+		{ import = "custom.lazy-plugins.otter" },
 		{ import = "custom.lazy-plugins.theme" }, -- pulls every file in that folder
 	},
 	install = { colorscheme = { "auto" } },
