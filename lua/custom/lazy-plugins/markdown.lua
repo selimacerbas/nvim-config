@@ -302,4 +302,91 @@ return {
 			end
 		end,
 	},
+
+	-- lua/plugins/livepreview.lua
+	{
+		"brianhuster/live-preview.nvim",
+		cmd = { "LivePreview", "CheckHealth" },
+		ft = { "markdown", "html", "asciidoc", "svg" },
+		config = function()
+			-- Keep plugin defaults (they're sane)
+			require("livepreview.config").set({})
+
+			-- Make HTML feel "live" by saving on edit events (Markdown/AsciiDoc/SVG already live-update)
+			vim.o.autowriteall = true
+			vim.api.nvim_create_autocmd({ "InsertLeavePre", "TextChanged", "TextChangedP" }, {
+				pattern = "*.html",
+				callback = function()
+					pcall(vim.cmd.write)
+				end,
+				desc = "LivePreview: autosave HTML to refresh browser",
+			})
+
+			-- Keymaps via which-key, conflict-safe
+			local wk_ok, wk = pcall(require, "which-key")
+			local function has_map(mode, lhs)
+				return vim.fn.maparg(lhs, mode) ~= ""
+			end
+			local function sm(mode, lhs, rhs, desc)
+				if not has_map(mode, lhs) then
+					vim.keymap.set(mode, lhs, rhs, { silent = true, desc = desc })
+					return lhs
+				end
+			end
+
+			-- Commands wrapped as Lua fns
+			local function start()
+				vim.cmd("LivePreview start")
+			end
+			local function stop()
+				pcall(vim.cmd, "LivePreview stop")
+			end
+			local function restart()
+				stop()
+				start()
+			end
+			local function pick()
+				pcall(vim.cmd, "LivePreview pick")
+			end
+			local function open_()
+				pcall(vim.cmd, "silent! LivePreview open")
+			end
+			local function health()
+				vim.cmd("checkhealth livepreview")
+			end
+
+			-- Prefix requested: <leader>ml
+			local prefix = "<leader>ml"
+
+			-- Set maps (only if free)
+			local set_lhs = {
+				group = sm("n", prefix, function() end, "+Live Preview"),
+				s = sm("n", prefix .. "s", start, "Start live preview"),
+				q = sm("n", prefix .. "q", stop, "Stop live preview"),
+				r = sm("n", prefix .. "r", restart, "Restart live preview"),
+				o = sm("n", prefix .. "o", open_, "Open in browser"),
+				p = sm("n", prefix .. "p", pick, "Pick file to preview"),
+				h = sm("n", prefix .. "h", health, "Check health/status"),
+			}
+
+			-- Register labels in which-key for whatever actually got set
+			if wk_ok then
+				local regs = {}
+				if set_lhs.group then
+					table.insert(regs, { prefix, group = "Live Preview" })
+				end
+				for k, lhs in pairs(set_lhs) do
+					if k ~= "group" and lhs then
+						local info = vim.fn.maparg(lhs, "n", false, true)
+						if type(info) == "table" and info.desc then
+							table.insert(regs, { lhs, desc = info.desc })
+						end
+					end
+				end
+				if #regs > 0 then
+					wk.add(regs)
+				end
+			end
+		end,
+	},
 }
