@@ -10,7 +10,7 @@ return {
 			diagram_name = "diagram.mmd",
 			overwrite_index_on_start = false, -- don't clobber your customized index.html
 			auto_refresh = true,
-			auto_refresh_events = { "InsertLeave", "TextChanged", "TextChangedI", "BufWritePost" },
+			auto_refresh_events = { "InsertLeave", "TextChanged", "BufWritePost" },
 			debounce_ms = 450,
 			notify_on_refresh = false,
 		})
