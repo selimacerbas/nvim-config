@@ -53,7 +53,6 @@ require("lazy").setup({
         { import = "custom.lazy-plugins.lsp-signature" },
         { import = "custom.lazy-plugins.bufferline" },
         { import = "custom.lazy-plugins.smear-cursor" },
-        { import = "custom.lazy-plugins.key-analyzer" },
         { import = "custom.lazy-plugins.nvim-dap" },
         { import = "custom.lazy-plugins.nvim-lspconfig" },
         { import = "custom.lazy-plugins.pipeline" },

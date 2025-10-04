@@ -3,7 +3,6 @@ return {
         "lukas-reineke/indent-blankline.nvim",
         main = "ibl",
         event = { "BufReadPre", "BufNewFile" },
-        dependencies = { "folke/which-key.nvim" },
 
         opts = function()
             -- Recommended hooks from ibl
@@ -36,18 +35,7 @@ return {
 
         config = function(_, opts)
             require("ibl").setup(opts)
-
-            -- which-key group and actions (v2/v3 compatible)
-            local ok, wk = pcall(require, "which-key")
-            if ok then
-                local register = wk.add or wk.register
-                register({
-                    -- { "<leader>ui",  group = "Indent Guides" },
-                    { "<leader>uit", "<cmd>IBLToggle<CR>",   desc = "Toggle Guides" },
-                    { "<leader>uie", "<cmd>IBLEnable<CR>",   desc = "Enable Guides" },
-                    { "<leader>uid", "<cmd>IBLDisable<CR>",  desc = "Disable Guides" },
-                }, { mode = "n", silent = true, noremap = true })
-            end
+            -- ⛔️ Removed: all keymaps / which-key registrations for this plugin.
         end,
     },
 }
