@@ -19,13 +19,13 @@ return {
         end,
 
         keys = {
-            { "<leader>op", "<cmd>Pipeline toggle<CR>",                               desc = "Pipeline: Toggle panel",               mode = "n", silent = true, noremap = true },
-            { "<leader>oo", "<cmd>Pipeline open<CR>",                                 desc = "Pipeline: Open panel",                 mode = "n", silent = true, noremap = true },
-            { "<leader>oc", "<cmd>Pipeline close<CR>",                                desc = "Pipeline: Close panel",                mode = "n", silent = true, noremap = true },
+            { "<leader>pp", "<cmd>Pipeline toggle<CR>",                               desc = "Pipeline: Toggle panel",               mode = "n", silent = true, noremap = true },
+            { "<leader>po", "<cmd>Pipeline open<CR>",                                 desc = "Pipeline: Open panel",                 mode = "n", silent = true, noremap = true },
+            { "<leader>pc", "<cmd>Pipeline close<CR>",                                desc = "Pipeline: Close panel",                mode = "n", silent = true, noremap = true },
 
             -- Themed Telescope pickers
-            { "<leader>or", function() require("pipeline.telescope").runs() end,      desc = "Pipeline: Runs (Telescope)",           mode = "n", silent = true, noremap = true },
-            { "<leader>ow", function() require("pipeline.telescope").workflows() end, desc = "Pipeline: Dispatch workflow/pipeline", mode = "n", silent = true, noremap = true },
+            { "<leader>pr", function() require("pipeline.telescope").runs() end,      desc = "Pipeline: Runs (Telescope)",           mode = "n", silent = true, noremap = true },
+            { "<leader>pw", function() require("pipeline.telescope").workflows() end, desc = "Pipeline: Dispatch workflow/pipeline", mode = "n", silent = true, noremap = true },
         },
 
         ---@type pipeline.Config
