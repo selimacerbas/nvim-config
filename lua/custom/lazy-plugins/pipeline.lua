@@ -1,4 +1,4 @@
--- pipeline.nvim + Telescope pickers (+ themed) + lualine badge
+-- pipeline.nvim + Telescope pickers (+ themed)
 return {
     {
         "topaxi/pipeline.nvim",
@@ -8,23 +8,24 @@ return {
             "folke/which-key.nvim",
             "nvim-telescope/telescope.nvim",
         },
-        build = "make", -- or install `yq` instead (see README)
+        build = "make", -- or install `yq` (see plugin README)
+
+        -- which-key v3 group in init (no v2 fallback anywhere)
         init = function()
             local ok, wk = pcall(require, "which-key")
-            if ok then
-                if wk.add then
-                    wk.add({ { "<leader>p", group = "Pipeline" } })
-                end
+            if ok and wk.add then
+                wk.add({ { "<leader>p", group = "Pipeline" } })
             end
         end,
+
         keys = {
-            { "<leader>op", "<cmd>Pipeline toggle<CR>",                               desc = "Pipeline: Toggle panel" },
-            { "<leader>oo", "<cmd>Pipeline open<CR>",                                 desc = "Pipeline: Open panel" },
-            { "<leader>oc", "<cmd>Pipeline close<CR>",                                desc = "Pipeline: Close panel" },
+            { "<leader>op", "<cmd>Pipeline toggle<CR>",                               desc = "Pipeline: Toggle panel",               mode = "n", silent = true, noremap = true },
+            { "<leader>oo", "<cmd>Pipeline open<CR>",                                 desc = "Pipeline: Open panel",                 mode = "n", silent = true, noremap = true },
+            { "<leader>oc", "<cmd>Pipeline close<CR>",                                desc = "Pipeline: Close panel",                mode = "n", silent = true, noremap = true },
 
             -- Themed Telescope pickers
-            { "<leader>or", function() require("pipeline.telescope").runs() end,      desc = "Pipeline: Runs (Telescope)" },
-            { "<leader>ow", function() require("pipeline.telescope").workflows() end, desc = "Pipeline: Dispatch workflow/pipeline" },
+            { "<leader>or", function() require("pipeline.telescope").runs() end,      desc = "Pipeline: Runs (Telescope)",           mode = "n", silent = true, noremap = true },
+            { "<leader>ow", function() require("pipeline.telescope").workflows() end, desc = "Pipeline: Dispatch workflow/pipeline", mode = "n", silent = true, noremap = true },
         },
 
         ---@type pipeline.Config
@@ -37,36 +38,26 @@ return {
                 gitlab = { default_host = "gitlab.com", resolve_host = function(h) return h end },
             },
 
-            -- 🔧 our wrapper option (used only by the Telescope helpers below)
-            telescope_theme  = "ivy", -- change to "dropdown" if you prefer
+            -- used only by the Telescope helpers below
+            telescope_theme  = "ivy", -- or "dropdown"
         },
 
         config = function(_, opts)
             require("pipeline").setup(opts)
 
-            -- which-key buffer hints inside Pipeline panel
+            -- which-key buffer hints inside Pipeline panel (v3 only)
             local ok_wk, wk = pcall(require, "which-key")
-            if ok_wk then
+            if ok_wk and wk.add then
                 vim.api.nvim_create_autocmd("BufEnter", {
                     callback = function(ev)
                         if vim.bo[ev.buf].filetype ~= "pipeline" then return end
-                        if wk.add then
-                            wk.add({
-                                { "q",  desc = "Close panel",                           mode = "n", buffer = ev.buf },
-                                { "gp", desc = "Open pipeline in browser",              mode = "n", buffer = ev.buf },
-                                { "gr", desc = "Open run in browser",                   mode = "n", buffer = ev.buf },
-                                { "gj", desc = "Open job of run in browser",            mode = "n", buffer = ev.buf },
-                                { "d",  desc = "Dispatch workflow (workflow_dispatch)", mode = "n", buffer = ev.buf },
-                            })
-                        else
-                            wk.register({
-                                q = "Close panel",
-                                gp = "Open pipeline in browser",
-                                gr = "Open run in browser",
-                                gj = "Open job in browser",
-                                d = "Dispatch workflow",
-                            }, { mode = "n", buffer = ev.buf })
-                        end
+                        wk.add({
+                            { "q",  desc = "Close panel",                           mode = "n", buffer = ev.buf },
+                            { "gp", desc = "Open pipeline in browser",              mode = "n", buffer = ev.buf },
+                            { "gr", desc = "Open run in browser",                   mode = "n", buffer = ev.buf },
+                            { "gj", desc = "Open job of run in browser",            mode = "n", buffer = ev.buf },
+                            { "d",  desc = "Dispatch workflow (workflow_dispatch)", mode = "n", buffer = ev.buf },
+                        })
                     end,
                 })
             end
@@ -111,20 +102,20 @@ return {
 
             local M = {}
 
-            -- Runs picker (GitHub: gh run list --json … ; GitLab: glab ci list --output json)
+            -- Runs picker (GitHub via `gh run list`; GitLab via `glab ci list`)
             function M.runs()
-                local repo = detect_repo()
+                local repo  = detect_repo()
                 local is_gh = repo and repo.host:find("github")
                 local cmd, parse
 
                 if is_gh then
                     local fields = table.concat({
-                        "databaseId", "displayTitle", "conclusion", "status",
-                        "headBranch", "headSha", "startedAt", "updatedAt",
-                        "url", "workflowName", "number"
+                        "databaseId", "displayTitle", "conclusion", "status", "headBranch", "headSha",
+                        "startedAt", "updatedAt", "url", "workflowName", "number"
                     }, ",")
                     cmd = { "gh", "run", "list", "--json", fields, "-L", "50", "-R",
                         string.format("%s/%s/%s", repo.host, repo.owner, repo.repo) }
+
                     parse = function(stdout)
                         local ok, arr = pcall(vim.json.decode, stdout); if not ok then return {} end
                         local out = {}
@@ -135,8 +126,8 @@ return {
                                 or (r.status == "in_progress" and "●")
                                 or "○"
                             table.insert(out, {
-                                value = r,
-                                url = r.url,
+                                value   = r,
+                                url     = r.url,
                                 ordinal = string.format("%s %s [%s] #%s", icon, r.workflowName or "workflow",
                                     r.headBranch or "-", r.number or ""),
                                 display = string.format("%s  %-18s  %-12s  %s", icon, r.workflowName or "workflow",
@@ -157,8 +148,8 @@ return {
                                 or (p.status == "running" and "●")
                                 or "○"
                             table.insert(out, {
-                                value = p,
-                                url = p.web_url,
+                                value   = p,
+                                url     = p.web_url,
                                 ordinal = string.format("%s Pipeline #%s [%s]", icon, p.id or "?", p.ref or "-"),
                                 display = string.format("%s  %-18s  %-12s  %s", icon, "pipeline", p.ref or "-",
                                     "Pipeline #" .. (p.id or "?")),
@@ -170,7 +161,7 @@ return {
 
                 Job:new({
                     command = cmd[1],
-                    args = vim.list_slice(cmd, 2),
+                    args    = vim.list_slice(cmd, 2),
                     on_exit = function(j, code)
                         vim.schedule(function()
                             if code ~= 0 then
@@ -203,7 +194,7 @@ return {
 
             -- Workflows (GitHub) / Pipelines (GitLab) dispatcher
             function M.workflows()
-                local repo = detect_repo()
+                local repo  = detect_repo()
                 local is_gh = repo and repo.host:find("github")
                 if is_gh then
                     local cmd = {
@@ -212,7 +203,7 @@ return {
                     }
                     Job:new({
                         command = cmd[1],
-                        args = vim.list_slice(cmd, 2),
+                        args    = vim.list_slice(cmd, 2),
                         on_exit = function(j, code)
                             vim.schedule(function()
                                 if code ~= 0 then
@@ -225,8 +216,8 @@ return {
                                 local entries = {}
                                 for _, w in ipairs(arr or {}) do
                                     table.insert(entries, {
-                                        value = w,
-                                        url = w.url,
+                                        value   = w,
+                                        url     = w.url,
                                         ordinal = (w.name or w.path or ("#" .. tostring(w.id))),
                                         display = string.format("%-32s  %-8s  %s",
                                             w.name or w.path or ("#" .. tostring(w.id)), w.state or "-", w.path or ""),
