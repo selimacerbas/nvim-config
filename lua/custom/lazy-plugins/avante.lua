@@ -186,14 +186,6 @@ return {
                 end
             end
 
-            -------------------------------------------------------------------
-            -- ❌ Removed sections (sizing now handled by your global us*/uh*):
-            -- - windows.width default
-            -- - :AvanteWidth command + resize logic + autocmds
-            -- - :AvanteInputHeight command + height persistence
-            -- - winfixwidth on Avante windows
-            -- - equalalways overrides
-            -------------------------------------------------------------------
         end,
     },
 }
