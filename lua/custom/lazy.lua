@@ -58,6 +58,11 @@ require("lazy").setup({
         { import = "custom.lazy-plugins.pipeline" },
         { import = "custom.lazy-plugins.live-server" },
         { import = "custom.lazy-plugins.sniprun" },
+        { import = "custom.lazy-plugins.nui" },
+        { import = "custom.lazy-plugins.mini" },
+        { import = "custom.lazy-plugins.fzf" },
+        { import = "custom.lazy-plugins.snacks" },
+        { import = "custom.lazy-plugins.copilot" },
         { import = "custom.lazy-plugins.theme" }, -- pulls every file in that folder
     },
     install = { colorscheme = { "auto" } },

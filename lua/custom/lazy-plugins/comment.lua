@@ -8,7 +8,7 @@ return {
     init = function()
       local ok, wk = pcall(require, "which-key")
       if ok and wk.add then
-        wk.add({ { "<leader>c", group = "Comment" } })
+        wk.add({ { "<leader>C", group = "Comment" } })
       end
     end,
 
@@ -29,19 +29,19 @@ return {
     keys = {
       -- NORMAL
       {
-        "<leader>cc",
+        "<leader>Cc",
         function() require("Comment.api").toggle.linewise.current() end,
         mode = "n", silent = true, noremap = true, desc = "Comment: toggle line",
       },
       {
-        "<leader>cB",
+        "<leader>CB",
         function() require("Comment.api").toggle.blockwise.current() end,
         mode = "n", silent = true, noremap = true, desc = "Comment: toggle block",
       },
 
       -- VISUAL (preserve selection, then operate)
       {
-        "<leader>cc",
+        "<leader>Cc",
         function()
           local esc = vim.api.nvim_replace_termcodes("<ESC>", true, false, true)
           vim.api.nvim_feedkeys(esc, "nx", false)
@@ -50,7 +50,7 @@ return {
         mode = "v", silent = true, noremap = true, desc = "Comment: toggle line (visual)",
       },
       {
-        "<leader>cB",
+        "<leader>CB",
         function()
           local esc = vim.api.nvim_replace_termcodes("<ESC>", true, false, true)
           vim.api.nvim_feedkeys(esc, "nx", false)
