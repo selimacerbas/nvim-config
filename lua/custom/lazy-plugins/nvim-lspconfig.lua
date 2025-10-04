@@ -3,13 +3,10 @@ return {
         "neovim/nvim-lspconfig",
         dependencies = { "folke/which-key.nvim" },
         config = function()
-            local lspconfig = require("lspconfig")
-
             -- ===== Global LSP UI =====
-            ---- ===== Diagnostic signs (0.11+ API, with 0.10 fallback) =====
+            ---- Diagnostic signs (0.11+ API, with 0.10 fallback)
             local icons = { Error = " ", Warn = " ", Hint = " ", Info = " " }
             if vim.fn.has("nvim-0.11") == 1 then
-                -- Neovim 0.11+: configure signs via vim.diagnostic.config
                 vim.diagnostic.config({
                     signs = {
                         text = {
@@ -18,13 +15,6 @@ return {
                             [vim.diagnostic.severity.HINT]  = icons.Hint,
                             [vim.diagnostic.severity.INFO]  = icons.Info,
                         },
-                        -- you can also set numhl/texthl here if you want:
-                        -- numhl = {
-                        --   [vim.diagnostic.severity.ERROR] = "DiagnosticSignError",
-                        --   [vim.diagnostic.severity.WARN]  = "DiagnosticSignWarn",
-                        --   [vim.diagnostic.severity.HINT]  = "DiagnosticSignHint",
-                        --   [vim.diagnostic.severity.INFO]  = "DiagnosticSignInfo",
-                        -- },
                     },
                     virtual_text = { spacing = 2, prefix = "●" },
                     underline = true,
@@ -33,7 +23,6 @@ return {
                     float = { border = "rounded", source = "if_many" },
                 })
             else
-                -- Neovim 0.10.x: define DiagnosticSign* groups explicitly
                 for t, icon in pairs(icons) do
                     local hl = "DiagnosticSign" .. t
                     vim.fn.sign_define(hl, { text = icon, texthl = hl, numhl = "" })
@@ -47,15 +36,24 @@ return {
                     float = { border = "rounded", source = "if_many" },
                 })
             end
+
             local border = "rounded"
             vim.lsp.handlers["textDocument/hover"] =
                 vim.lsp.with(vim.lsp.handlers.hover, { border = border })
             vim.lsp.handlers["textDocument/signatureHelp"] =
                 vim.lsp.with(vim.lsp.handlers.signature_help, { border = border })
 
-            -- ===== Capabilities (with cmp if present) =====
+            -- ===== Capabilities (augment via cmp if present) =====
+            -- If you configure servers with the new API (vim.lsp.config), you can
+            -- optionally merge these into the global defaults below.
             local capabilities = vim.lsp.protocol.make_client_capabilities()
-            pcall(function() capabilities = require("cmp_nvim_lsp").default_capabilities(capabilities) end)
+            pcall(function()
+                capabilities = require("cmp_nvim_lsp").default_capabilities(capabilities)
+            end)
+            if type(vim.lsp.config) == "table" then
+                vim.lsp.config.capabilities =
+                    vim.tbl_deep_extend("force", vim.lsp.config.capabilities or {}, capabilities)
+            end
 
             -- ===== Inlay hints compat (0.10 function vs 0.11+ table) =====
             local function ih_enable(buf, enable)
@@ -64,8 +62,6 @@ return {
                     -- Neovim 0.10
                     pcall(ih, buf, enable)
                 elseif type(ih) == "table" and ih.enable then
-                    -- Neovim 0.11+
-                    -- common signature: enable(bufnr, true/false)
                     local ok = pcall(ih.enable, buf, enable)
                     if not ok then
                         -- some nightlies used enable(true, { bufnr = N })
@@ -73,7 +69,6 @@ return {
                     end
                 end
             end
-
             local function ih_is_enabled(buf)
                 local ih = vim.lsp.inlay_hint
                 if type(ih) == "table" and ih.is_enabled then
@@ -129,17 +124,14 @@ return {
                     map("n", "]d", vim.diagnostic.goto_next, "Next Diagnostic")
                     map("n", "<C-W>d", vim.diagnostic.open_float, "Line Diagnostics")
 
-
                     -- Insert-mode which-key hints
                     local ok, wk = pcall(require, "which-key")
                     if ok then
                         if wk.add then
-                            -- which-key v3 style (array of specs)
                             wk.add({
                                 { "<C-n>",      desc = "Next Completion",   mode = "i", buffer = bufnr },
                                 { "<C-p>",      desc = "Prev Completion",   mode = "i", buffer = bufnr },
 
-                                -- Group header so <C-x> shows a menu in insert mode
                                 { "<C-x>",      group = "Complete (<C-x>)", mode = "i", buffer = bufnr },
                                 { "<C-x><C-o>", desc = "Omni (LSP)",        mode = "i", buffer = bufnr },
                                 { "<C-x><C-f>", desc = "File Name",         mode = "i", buffer = bufnr },
@@ -148,12 +140,10 @@ return {
                                 { "<C-x>=",     desc = "Spelling",          mode = "i", buffer = bufnr },
                             })
                         else
-                            -- which-key v2 fallback (table + prefix)
                             wk.register({
                                 ["<C-n>"] = "Next Completion",
                                 ["<C-p>"] = "Prev Completion",
                             }, { mode = "i", buffer = bufnr })
-
                             wk.register({
                                 name  = "Complete (<C-x>)",
                                 o     = { "<C-x><C-o>", "Omni (LSP)" },
@@ -176,7 +166,8 @@ return {
                 vim.notify("Inlay hints: " .. ((not enabled) and "ON" or "OFF"))
             end, {})
 
-            -- NOTE: server setup is handled in your Mason config; no lspconfig.setup calls here.
+            -- NOTE: Server setup is handled elsewhere (e.g. mason-lspconfig).
+            -- With the 0.11+ API, prefer populating `vim.lsp.config[SERVER] = {...}` there.
         end,
     },
 }
