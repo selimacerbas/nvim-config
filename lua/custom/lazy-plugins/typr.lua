@@ -7,25 +7,23 @@ return {
             "folke/which-key.nvim",
         },
         cmd = { "Typr", "TyprStats" },
-        keys = {
-            { "<leader>wt", "<cmd>Typr<CR>",      desc = "Typr: Start practice" },
-            { "<leader>ws", "<cmd>TyprStats<CR>", desc = "Typr: Stats dashboard" },
-        },
 
-        -- 🔧 Make the <leader>w "Typr" group visible immediately
+        -- which-key v3: show the group in the menu immediately
         init = function()
             local ok, wk = pcall(require, "which-key")
-            if not ok then return end
-            if wk.add then
-                -- which-key v3
-                -- wk.add({ { "<leader>w", group = "Typr" } })
-            elseif wk.register then
-                -- which-key v2
-                -- wk.register({ w = { name = "Typr" } }, { prefix = "<leader>" })
+            if ok and wk.add then
+                wk.add({ { "<leader>w", group = "Typer / Vim" } })
             end
         end,
 
+        -- v3-friendly real mappings (so Lazy can load on press)
+        keys = {
+            { "<leader>wt", "<cmd>Typr<CR>",      desc = "Typr: Start practice",  mode = "n", silent = true, noremap = true },
+            { "<leader>ws", "<cmd>TyprStats<CR>", desc = "Typr: Stats dashboard", mode = "n", silent = true, noremap = true },
+        },
+
         opts = {},
+
         config = function(_, opts)
             require("typr").setup(opts)
 
@@ -36,8 +34,10 @@ return {
                 cmp.setup.filetype("typrstats", { enabled = false })
             end
 
-            -- Buffer-local which-key hints inside Typr
-            local ok, wk = pcall(require, "which-key"); if not ok then return end
+            -- Buffer-local which-key hints inside Typr UIs
+            local ok, wk = pcall(require, "which-key")
+            if not ok or not wk.add then return end
+
             vim.api.nvim_create_autocmd("FileType", {
                 pattern = "typr",
                 callback = function(ev)

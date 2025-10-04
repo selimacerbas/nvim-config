@@ -9,38 +9,38 @@ return {
             "nvim-telescope/telescope.nvim",
         },
 
-        -- Basics:
-        --  • VISUAL: select code → <leader>re Extract Fn · <leader>rv Extract Var · <leader>ri Inline Var
-        --  • NORMAL: cursor on variable → <leader>ri Inline · <leader>rp Print · <leader>rP Cleanup prints
+        -- which-key v3: groups belong in `init`, not `keys`
+        init = function()
+            local ok, wk = pcall(require, "which-key")
+            if ok and wk.add then
+                wk.add({ { "<leader>r", group = "Refactor" } })
+            end
+        end,
+
+        -- VISUAL: select code → <leader>re Extract Fn · <leader>rv Extract Var · <leader>ri Inline Var
+        -- NORMAL: cursor on variable → <leader>ri Inline · <leader>rp Print · <leader>rP Cleanup prints
         keys = {
-            -- Visual mode refactors
-            { "<leader>re", "<Esc><Cmd>lua require('refactoring').refactor('Extract Function')<CR>", mode = "v", desc = "Extract Function" },
-            { "<leader>rf", "<Esc><Cmd>lua require('refactoring').refactor('Extract Function To File')<CR>", mode = "v", desc = "Extract Function → File" },
-            { "<leader>rv", "<Esc><Cmd>lua require('refactoring').refactor('Extract Variable')<CR>", mode = "v", desc = "Extract Variable" },
-            { "<leader>ri", "<Esc><Cmd>lua require('refactoring').refactor('Inline Variable')<CR>", mode = "v", desc = "Inline Variable" },
-            { "<leader>rb", "<Esc><Cmd>lua require('refactoring').refactor('Extract Block')<CR>", mode = "v", desc = "Extract Block" },
-            { "<leader>rr", "<Esc><Cmd>lua require('refactoring').refactor('Extract Block To File')<CR>", mode = "v", desc = "Extract Block → File" },
-            { "<leader>rp", "<Esc><Cmd>lua require('refactoring').debug.print_var({})<CR>", mode = "v", desc = "Debug: Print Var(s)" },
-            -- { "<leader>rR", "<Esc><Cmd>lua require('telescope').extensions.refactoring.refactors()<CR>",      mode = "v", desc = "Telescope: Refactor…" }, -- optional
+            -- Visual mode refactors (no <Esc>; keep selection active)
+            { "<leader>re", function() require("refactoring").refactor("Extract Function") end, mode = "v", desc = "Extract Function", silent = true, noremap = true },
+            { "<leader>rf", function() require("refactoring").refactor("Extract Function To File") end, mode = "v", desc = "Extract Function → File", silent = true, noremap = true },
+            { "<leader>rv", function() require("refactoring").refactor("Extract Variable") end, mode = "v", desc = "Extract Variable", silent = true, noremap = true },
+            { "<leader>ri", function() require("refactoring").refactor("Inline Variable") end, mode = "v", desc = "Inline Variable", silent = true, noremap = true },
+            { "<leader>rb", function() require("refactoring").refactor("Extract Block") end, mode = "v", desc = "Extract Block", silent = true, noremap = true },
+            { "<leader>rr", function() require("refactoring").refactor("Extract Block To File") end, mode = "v", desc = "Extract Block → File", silent = true, noremap = true },
+            { "<leader>rp", function() require("refactoring").debug.print_var({}) end, mode = "v", desc = "Debug: Print Var(s)", silent = true, noremap = true },
+            -- optional Telescope UI (uncomment if you want it)
+            -- { "<leader>rR", function() require("telescope").extensions.refactoring.refactors() end,    mode = "v", desc = "Telescope: Refactor…",      silent = true, noremap = true },
 
             -- Normal mode helpers
-            { "<leader>ri", "<Cmd>lua require('refactoring').refactor('Inline Variable')<CR>", mode = "n", desc = "Inline Variable (cursor)" },
-            { "<leader>rp", "<Cmd>lua require('refactoring').debug.print_var({})<CR>", mode = "n", desc = "Debug: Print Var" },
-            { "<leader>rP", "<Cmd>lua require('refactoring').debug.cleanup({})<CR>", mode = "n", desc = "Debug: Cleanup Prints" },
-            -- { "<leader>rR", "<Cmd>lua require('telescope').extensions.refactoring.refactors()<CR>",           mode = "n", desc = "Telescope: Refactor…" },  -- optional
+            { "<leader>ri", function() require("refactoring").refactor("Inline Variable") end, mode = "n", desc = "Inline Variable (cursor)", silent = true, noremap = true },
+            { "<leader>rp", function() require("refactoring").debug.print_var({}) end, mode = "n", desc = "Debug: Print Var", silent = true, noremap = true },
+            { "<leader>rP", function() require("refactoring").debug.cleanup({}) end, mode = "n", desc = "Debug: Cleanup Prints", silent = true, noremap = true },
+            -- { "<leader>rR", function() require("telescope").extensions.refactoring.refactors() end,    mode = "n", desc = "Telescope: Refactor…",      silent = true, noremap = true },
         },
 
         config = function()
             require("refactoring").setup({})
             pcall(function() require("telescope").load_extension("refactoring") end)
-
-            -- which-key v3 group label
-            local ok, wk = pcall(require, "which-key")
-            if ok then
-                (wk.add or wk.register)({
-                        -- { "<leader>r", group = "Refactor" },
-                    })
-            end
         end,
     },
 }

@@ -4,11 +4,18 @@ return {
         dependencies = {
             "nvim-lua/plenary.nvim",
             "folke/which-key.nvim",
-            -- Optional: show todos inside Trouble if installed
-            -- "folke/trouble.nvim",
+            { "folke/trouble.nvim", optional = true }, -- optional: open results in Trouble
         },
+
+        -- which-key v3: declare the group here (never inside `keys`)
+        init = function()
+            local ok, wk = pcall(require, "which-key")
+            if ok and wk.add then
+                wk.add({ { "<leader>z", group = "Todos" } })
+            end
+        end,
+
         opts = {
-            -- keep your icons/colors
             keywords = {
                 TODO    = { icon = " ", color = "info" },
                 NOTE    = { icon = " ", color = "hint" },
@@ -17,7 +24,7 @@ return {
                 HACK    = { icon = " ", color = "warning" },
                 PERF    = { icon = " ", color = "hint" },
             },
-            merge_keywords = true, -- keep default synonyms like BUG/FIX/WARN/ISSUE…
+            merge_keywords = true,
             signs = true,
             sign_priority = 8,
             gui_style = { fg = "NONE", bg = "BOLD" },
@@ -25,7 +32,7 @@ return {
                 before = "fg",
                 keyword = "bg",
                 after = "fg",
-                pattern = [[.*<(KEYWORDS)\s*:]], -- default; keeps noise low
+                pattern = [[.*<(KEYWORDS)\s*:]],
                 comments_only = true,
             },
             search = {
@@ -33,53 +40,53 @@ return {
                 args = {
                     "--color=never", "--no-heading", "--with-filename",
                     "--line-number", "--column", "--smart-case",
-                    "--hidden",   -- see dotfiles
-                    "--glob", "!**/.git/*", -- but ignore VCS + heavy dirs
+                    "--hidden",
+                    "--glob", "!**/.git/*",
                     "--glob", "!**/node_modules/*",
                 },
             },
         },
-        config = function(_, opts)
-            local tc = require("todo-comments")
-            tc.setup(opts)
 
-            -- safe_map: only set map if nothing else uses it
-            local function safe_map(mode, lhs, rhs, desc)
-                if vim.fn.maparg(lhs, mode) == "" then
-                    vim.keymap.set(mode, lhs, rhs, { desc = desc, silent = true, noremap = true })
-                end
-            end
+        -- v3 which-key friendly: real mappings in `keys{}` (no safe_map wrapper needed)
+        keys = {
+            -- quick jumps (non-leader)
+            { "]t",         function() require("todo-comments").jump_next() end, desc = "Next TODO",                mode = "n", silent = true, noremap = true },
+            { "[t",         function() require("todo-comments").jump_prev() end, desc = "Prev TODO",                mode = "n", silent = true, noremap = true },
 
-            -- Jumps (kept off <leader> for speed; guarded against conflicts)
-            safe_map("n", "]t", function() tc.jump_next() end, "Next TODO comment")
-            safe_map("n", "[t", function() tc.jump_prev() end, "Prev TODO comment")
-
-            -- Leader group for discoverability
-            safe_map("n", "<leader>zj", "<cmd>TodoNext<CR>", "Next TODO")
-            safe_map("n", "<leader>zk", "<cmd>TodoPrev<CR>", "Prev TODO")
-            safe_map("n", "<leader>zq", "<cmd>TodoQuickFix<CR>", "Send to QuickFix")
-            safe_map("n", "<leader>zl", "<cmd>TodoLocList<CR>", "Send to Location List")
-            safe_map("n", "<leader>zs", "<cmd>TodoTelescope<CR>", "Search TODOs")
-            safe_map("n", "<leader>zS",
+            -- leader actions
+            { "<leader>zj", "<cmd>TodoNext<CR>",                                 desc = "Next TODO",                mode = "n", silent = true, noremap = true },
+            { "<leader>zk", "<cmd>TodoPrev<CR>",                                 desc = "Prev TODO",                mode = "n", silent = true, noremap = true },
+            { "<leader>zq", "<cmd>TodoQuickFix<CR>",                             desc = "Send to QuickFix",         mode = "n", silent = true, noremap = true },
+            { "<leader>zl", "<cmd>TodoLocList<CR>",                              desc = "Send to Location List",    mode = "n", silent = true, noremap = true },
+            { "<leader>zs", "<cmd>TodoTelescope<CR>",                            desc = "Search TODOs (Telescope)", mode = "n", silent = true, noremap = true },
+            {
+                "<leader>zS",
                 function()
                     vim.cmd("TodoTelescope keywords=TODO,FIX,FIXME,BUG,WARN,WARNING,PERF,HACK,NOTE")
                 end,
-                "Search all keywords"
-            )
-            -- Trouble integration (if present)
-            if pcall(require, "trouble") then
-                safe_map("n", "<leader>zt", "<cmd>TodoTrouble<CR>", "Open in Trouble")
-            end
+                desc = "Search all keywords",
+                mode = "n",
+                silent = true,
+                noremap = true,
+            },
+            {
+                "<leader>zt",
+                function()
+                    if pcall(require, "trouble") then
+                        vim.cmd("TodoTrouble")
+                    else
+                        vim.notify("Trouble not installed: skipping TodoTrouble", vim.log.levels.INFO)
+                    end
+                end,
+                desc = "Open in Trouble",
+                mode = "n",
+                silent = true,
+                noremap = true,
+            },
+        },
 
-            -- Which-Key labels (group header; entries already have desc via keymaps)
-            local ok, wk = pcall(require, "which-key")
-            if ok then
-                wk.add({
-                    -- { "<leader>z", group = "Todos" },
-                    { "]t",        desc = "Next TODO", mode = "n" },
-                    { "[t",        desc = "Prev TODO", mode = "n" },
-                })
-            end
+        config = function(_, opts)
+            require("todo-comments").setup(opts)
         end,
     },
 }

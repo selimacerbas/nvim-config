@@ -4,31 +4,26 @@ return {
         cmd = "VimBeGood",
         dependencies = { "folke/which-key.nvim" },
 
-        -- Make the <leader>v group visible right away
+        -- Show the group in WhichKey (v3) as soon as possible
         init = function()
-            local function register_group()
+            local function add_group()
                 local ok, wk = pcall(require, "which-key")
-                if not ok then return end
-                if wk.add then
-                    -- wk.add({ { "<leader>v", group = "Vim training" } })                     -- which-key v3
-                else
-                    wk.register({ v = { name = "Vim training" } }, { prefix = "<leader>" }) -- v2
+                if ok and wk.add then
+                    wk.add({ { "<leader>w", group = " Typer / Vim" } })
                 end
             end
             if package.loaded["which-key"] then
-                register_group()
+                add_group()
             else
-                vim.api.nvim_create_autocmd("User", { pattern = "VeryLazy", callback = register_group })
+                vim.api.nvim_create_autocmd("User", { pattern = "VeryLazy", callback = add_group })
             end
         end,
 
+        -- v3-friendly real mapping (so Lazy loads on press)
         keys = {
-            { "<leader>vb", "<cmd>VimBeGood<CR>", desc = "Play Vim Be Good" },
+            { "<leader>vb", "<cmd>VimBeGood<CR>", desc = "Play Vim Be Good", mode = "n", silent = true, noremap = true },
         },
 
-        -- No setup function for this plugin; it’s pure Vimscript commands
-        config = function()
-            -- nothing to configure
-        end,
+        config = function() end,
     },
 }

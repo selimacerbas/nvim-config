@@ -22,10 +22,10 @@
 return {
     {
         "lervag/vimtex",
-        ft = { "tex", "plaintex" }, -- load only for TeX buffers (faster startup)
+        ft = { "tex", "plaintex" }, -- load only for TeX buffers
         dependencies = { "folke/which-key.nvim" },
 
-        -- Global opts must be set BEFORE the plugin loads → put them in init
+        -- Global opts must be set BEFORE the plugin loads
         init = function()
             -- Viewer: Skim (macOS)
             vim.g.vimtex_view_method        = "skim"
@@ -48,39 +48,34 @@ return {
                 },
             }
 
-            -- Optional: don’t auto-open quickfix on warnings (open via <leader>ve)
+            -- Don’t auto-open quickfix (open with <leader>ve)
             vim.g.vimtex_quickfix_mode      = 0
 
-            -- Make the <leader>v group visible immediately
+            -- Which-Key v3 group (do not put groups under keys)
             local ok, wk                    = pcall(require, "which-key")
-            if ok then
-                if wk.add then
-                    -- wk.add({ { "<leader>v", group = "VimTeX / Vim" } })
-                else
-                    wk.register({ v = { name = "VimTeX / Vim" } }, { prefix = "<leader>" })
-                end
+            if ok and wk.add then
+                wk.add({ { "<leader>v", group = "VimTeX" } })
             end
         end,
 
-        -- Leader keys (show up in Which-Key; trigger plugin on use)
+        -- Leader keymaps (real maps so Lazy loads on press)
         keys = {
-            { "<leader>vc", "<cmd>VimtexCompile<CR>",         desc = "Compile (latexmk -xelatex)" },
-            { "<leader>vs", "<cmd>VimtexStop<CR>",            desc = "Stop compile" },
-            { "<leader>vv", "<cmd>VimtexView<CR>",            desc = "View PDF (Skim)" },
-            { "<leader>vC", "<cmd>VimtexClean<CR>",           desc = "Clean aux files" },
-            { "<leader>vt", "<cmd>VimtexTocToggle<CR>",       desc = "Toggle ToC" },
-            { "<leader>vr", "<cmd>VimtexCompileSelected<CR>", desc = "Compile selection" },
-            { "<leader>vi", "<cmd>VimtexInfo<CR>",            desc = "VimTeX info" },
-            { "<leader>ve", "<cmd>VimtexErrors<CR>",          desc = "Show errors (quickfix)" },
-            { "<leader>vw", "<cmd>VimtexCountWords!<CR>",     desc = "Count words" },
+            { "<leader>vc", "<cmd>VimtexCompile<CR>",         desc = "Compile (latexmk -xelatex)", mode = "n", silent = true, noremap = true },
+            { "<leader>vs", "<cmd>VimtexStop<CR>",            desc = "Stop compile",               mode = "n", silent = true, noremap = true },
+            { "<leader>vv", "<cmd>VimtexView<CR>",            desc = "View PDF (Skim)",            mode = "n", silent = true, noremap = true },
+            { "<leader>vC", "<cmd>VimtexClean<CR>",           desc = "Clean aux files",            mode = "n", silent = true, noremap = true },
+            { "<leader>vt", "<cmd>VimtexTocToggle<CR>",       desc = "Toggle ToC",                 mode = "n", silent = true, noremap = true },
+            { "<leader>vr", "<cmd>VimtexCompileSelected<CR>", desc = "Compile selection",          mode = "n", silent = true, noremap = true },
+            { "<leader>vi", "<cmd>VimtexInfo<CR>",            desc = "VimTeX info",                mode = "n", silent = true, noremap = true },
+            { "<leader>ve", "<cmd>VimtexErrors<CR>",          desc = "Show errors (quickfix)",     mode = "n", silent = true, noremap = true },
+            { "<leader>vw", "<cmd>VimtexCountWords!<CR>",     desc = "Count words",                mode = "n", silent = true, noremap = true },
         },
 
         config = function()
-            -- Small per-buffer niceties for TeX
+            -- TeX buffer niceties
             vim.api.nvim_create_autocmd("FileType", {
                 pattern = { "tex", "plaintex" },
                 callback = function()
-                    -- Comfortable math conceal; tweak if you dislike hiding markers
                     vim.opt_local.conceallevel  = 2
                     vim.opt_local.concealcursor = "nc"
                 end,

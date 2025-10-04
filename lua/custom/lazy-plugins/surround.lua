@@ -4,32 +4,40 @@ return {
         version = "*",
         event = "VeryLazy",
         dependencies = { "folke/which-key.nvim" },
+
+        -- which-key v3: declare the group in `init` (not in `keys`)
+        init = function()
+            local ok, wk = pcall(require, "which-key")
+            if ok and wk.add then
+                wk.add({ { "<leader>S", group = "Treesitter/Surround" } })
+            end
+        end,
+
+        -- only real leader mapping we add: a quick help opener
+        keys = {
+            { "<leader>Sh", "<cmd>h nvim-surround.usage<CR>", desc = "Surround: Help / usage", mode = "n", silent = true, noremap = true },
+        },
+
         config = function()
-            -- 1) Use plugin defaults (ys / ds / cs / S / yS / gS ...)
+            -- 1) Keep plugin defaults (ys / ds / cs / S / yS / gS ...)
             require("nvim-surround").setup()
 
-            -- 2) Describe *existing* non-leader maps with Which-Key (no new maps!)
-            local ok, wk = pcall(require, "which-key")
-            if not ok then return end
+            -- 2) Label existing (non-leader) maps for which-key (no extra mappings created)
 
-            -- Which-Key v3 style: add specs for mappings that aren't ours (plugin-defined)
-            -- This makes Which-Key show proper labels when you hit these keys.
+            if not ok or not wk.add then return end
+
             wk.add({
-                -- Normal mode "operators" from nvim-surround
-                { "ys",         desc = "Surround add (ys{motion}{char})",         mode = "n" },
-                { "yS",         desc = "Surround line (yS{char})",                mode = "n" },
-                { "yss",        desc = "Surround current line (yss{char})",       mode = "n" },
-                { "ySS",        desc = "Surround current line (ySS{char})",       mode = "n" },
-                { "ds",         desc = "Surround delete (ds{char})",              mode = "n" },
-                { "cs",         desc = "Surround change (cs{old}{new})",          mode = "n" },
+                -- Normal mode operators
+                { "ys",  desc = "Surround add (ys{motion}{char})",         mode = "n" },
+                { "yS",  desc = "Surround line (yS{char})",                mode = "n" },
+                { "yss", desc = "Surround current line (yss{char})",       mode = "n" },
+                { "ySS", desc = "Surround current line (ySS{char})",       mode = "n" },
+                { "ds",  desc = "Surround delete (ds{char})",              mode = "n" },
+                { "cs",  desc = "Surround change (cs{old}{new})",          mode = "n" },
 
                 -- Visual mode
-                { "S",          desc = "Surround selection (S{char})",            mode = "x" },
-                { "gS",         desc = "Surround selection (line-wise gS{char})", mode = "x" },
-
-                -- 3) A tiny leader group so the plugin shows up in <leader> menus too
-                -- { "<leader>s",  group = "Surround" },
-                { "<leader>sh", "<cmd>h nvim-surround.usage<cr>",                 desc = "Help / usage" },
+                { "S",   desc = "Surround selection (S{char})",            mode = "x" },
+                { "gS",  desc = "Surround selection (line-wise gS{char})", mode = "x" },
             })
         end,
     },
