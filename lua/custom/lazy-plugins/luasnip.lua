@@ -7,13 +7,27 @@ return {
         },
         build = "make install_jsregexp",
         event = "InsertEnter",
+
+        -- which-key group goes here (v3-friendly)
+        init = function()
+            local ok, wk = pcall(require, "which-key")
+            if ok then
+                if wk.add then
+                    wk.add({ { "<leader>s", group = "Snippets" } })
+                else
+                    wk.register({ s = { name = "Snippets" } }, { prefix = "<leader>" })
+                end
+            end
+        end,
+
         opts = {
             history = true,
             updateevents = "TextChanged,TextChangedI",
             enable_autosnippets = false,
         },
+
         keys = {
-            -- Insert/Select: expand & navigate snippets (Alt keys to avoid conflicts)
+            -- Insert/Select: expand & navigate
             {
                 "<M-k>",
                 function()
@@ -65,36 +79,18 @@ return {
                 desc = "Snippets: Reload",
             },
         },
+
         config = function(_, opts)
             local ls = require("luasnip")
             ls.config.set_config(opts)
 
-            -- Load community VSCode snippets
+            -- Community VSCode snippets
             require("luasnip.loaders.from_vscode").lazy_load()
 
-            -- Optionally load user Lua snippets if you have ~/.config/nvim/lua/snippets
+            -- Optional: user Lua snippets at ~/.config/nvim/lua/snippets
             local user_snips = vim.fn.stdpath("config") .. "/lua/snippets"
             if vim.loop.fs_stat(user_snips) then
                 require("luasnip.loaders.from_lua").lazy_load({ paths = user_snips })
-            end
-
-            -- which-key labels (normal + insert/select)
-            local ok, wk = pcall(require, "which-key")
-            if ok then
-                local add = wk.add or wk.register
-                add({
-                    -- { "<leader>s",  group = "Snippets" },
-                    { "<leader>se", desc = "Expand (normal)" },
-                    { "<leader>su", desc = "Unlink current" },
-                    { "<leader>sr", desc = "Reload snippets" },
-                }, { mode = "n" })
-
-                add({
-                    { "<M-k>", desc = "Snippet: Expand / Jump" },
-                    { "<M-j>", desc = "Snippet: Jump Back" },
-                    { "<M-l>", desc = "Snippet: Next Choice" },
-                    { "<M-h>", desc = "Snippet: Prev Choice" },
-                }, { mode = { "i", "s" } })
             end
         end,
     },
