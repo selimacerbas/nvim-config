@@ -50,7 +50,6 @@ require("lazy").setup({
         { import = "custom.lazy-plugins.surround" },
         { import = "custom.lazy-plugins.refactor" },
         { import = "custom.lazy-plugins.typr" },
-        { import = "custom.lazy-plugins.lsp-signature" },
         { import = "custom.lazy-plugins.bufferline" },
         { import = "custom.lazy-plugins.smear-cursor" },
         { import = "custom.lazy-plugins.nvim-dap" },
