@@ -24,6 +24,7 @@ require("lazy").setup({
     spec = {
         -- Import custom plugin configurations
         { import = "custom.lazy-plugins.telescope" },
+        { import = "custom.lazy-plugins.image" },
         { import = "custom.lazy-plugins.lspsaga" },
         { import = "custom.lazy-plugins.treesitter" },
         { import = "custom.lazy-plugins.nvim-cmp" },
@@ -56,8 +57,6 @@ require("lazy").setup({
         { import = "custom.lazy-plugins.nvim-lspconfig" },
         { import = "custom.lazy-plugins.pipeline" },
         { import = "custom.lazy-plugins.live-server" },
-        { import = "custom.lazy-plugins.otter" },
-        { import = "custom.lazy-plugins.mermaid-playground" },
         { import = "custom.lazy-plugins.sniprun" },
         { import = "custom.lazy-plugins.theme" }, -- pulls every file in that folder
     },
