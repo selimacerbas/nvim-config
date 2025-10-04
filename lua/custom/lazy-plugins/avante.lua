@@ -35,54 +35,40 @@ return {
                 ft   = { "markdown", "Avante" },
                 opts = { file_types = { "markdown", "Avante" }, latex = { enabled = false } },
             },
+            -- which-key is already in your setup; keeping it as a dep reference is harmless.
             "folke/which-key.nvim",
         },
 
-        -- show <leader>a group immediately
+        -- which-key v3 group (no re-declare of plugin)
         init = function()
             local ok, wk = pcall(require, "which-key")
-            if ok then
-                if wk.add then
-                    wk.add({ { "<leader>a", group = "Avante" } })
-                else
-                    wk.register({ a = { name = "Avante" } }, { prefix = "<leader>" })
-                end
+            if ok and wk.add then
+                wk.add({ { "<leader>a", group = "Avante" } })
             end
         end,
 
-        -- keys kept as commands (lazy.nvim will load & then run config -> setup)
+        -- Keymaps (normal mode), silent & described; sizing-related keys removed
         keys = {
-            { "<leader>aa", "<cmd>AvanteAsk<CR>",                    desc = "Ask AI" },
-            { "<leader>a?", "<cmd>AvanteModels<CR>",                 desc = "Select Model" },
-            { "<leader>aB", "<cmd>AvanteBuild<CR>",                  desc = "Build Dependencies" },
-            { "<leader>ac", "<cmd>AvanteChat<CR>",                   desc = "Chat Session" },
-            { "<leader>an", "<cmd>AvanteChatNew<CR>",                desc = "New Chat" },
-            { "<leader>ah", "<cmd>AvanteHistory<CR>",                desc = "Chat History" },
-            { "<leader>aC", "<cmd>AvanteClear<CR>",                  desc = "Clear Chat History" },
-            { "<leader>ae", "<cmd>AvanteEdit<CR>",                   desc = "Edit Response" },
-            { "<leader>af", "<cmd>AvanteFocus<CR>",                  desc = "Focus Sidebar" },
-            { "<leader>ar", "<cmd>AvanteRefresh<CR>",                desc = "Refresh Sidebar" },
-            { "<leader>at", "<cmd>AvanteToggle<CR>",                 desc = "Toggle Sidebar" },
-            { "<leader>aS", "<cmd>AvanteStop<CR>",                   desc = "Stop AI Request" },
-            { "<leader>ap", "<cmd>AvanteSwitchProvider<CR>",         desc = "Switch Provider" },
-            { "<leader>aR", "<cmd>AvanteShowRepoMap<CR>",            desc = "Show Repo Map" },
-            { "<leader>as", "<cmd>AvanteSwitchSelectorProvider<CR>", desc = "Switch Selector" },
-
-            -- 👇 new: quick width presets
-            -- ✅ safe width presets (no AvanteFocus calls)
-            { "<leader>a0", "<cmd>AvanteWidth 40<CR>",               desc = "Sidebar 40%" },
-            { "<leader>a1", "<cmd>AvanteWidth 50<CR>",               desc = "Sidebar 50%" },
-            { "<leader>a2", "<cmd>AvanteWidth 60<CR>",               desc = "Sidebar 60%" },
-
-            { "<leader>a3", "<cmd>AvanteInputHeight 20<CR>",         desc = "Ask Height 20%" },
-            { "<leader>a4", "<cmd>AvanteInputHeight 40<CR>",         desc = "Ask Height 40%" },
-            { "<leader>a5", "<cmd>AvanteInputHeight 60<CR>",         desc = "Ask Height 60%" },
+            { "<leader>aa", "<cmd>AvanteAsk<CR>",                    desc = "Ask AI",             mode = "n", silent = true },
+            { "<leader>a?", "<cmd>AvanteModels<CR>",                 desc = "Select Model",       mode = "n", silent = true },
+            { "<leader>aB", "<cmd>AvanteBuild<CR>",                  desc = "Build Dependencies", mode = "n", silent = true },
+            { "<leader>ac", "<cmd>AvanteChat<CR>",                   desc = "Chat Session",       mode = "n", silent = true },
+            { "<leader>an", "<cmd>AvanteChatNew<CR>",                desc = "New Chat",           mode = "n", silent = true },
+            { "<leader>ah", "<cmd>AvanteHistory<CR>",                desc = "Chat History",       mode = "n", silent = true },
+            { "<leader>aC", "<cmd>AvanteClear<CR>",                  desc = "Clear Chat History", mode = "n", silent = true },
+            { "<leader>ae", "<cmd>AvanteEdit<CR>",                   desc = "Edit Response",      mode = "n", silent = true },
+            { "<leader>af", "<cmd>AvanteFocus<CR>",                  desc = "Focus Sidebar",      mode = "n", silent = true },
+            { "<leader>ar", "<cmd>AvanteRefresh<CR>",                desc = "Refresh Sidebar",    mode = "n", silent = true },
+            { "<leader>at", "<cmd>AvanteToggle<CR>",                 desc = "Toggle Sidebar",     mode = "n", silent = true },
+            { "<leader>aS", "<cmd>AvanteStop<CR>",                   desc = "Stop AI Request",    mode = "n", silent = true },
+            { "<leader>ap", "<cmd>AvanteSwitchProvider<CR>",         desc = "Switch Provider",    mode = "n", silent = true },
+            { "<leader>aR", "<cmd>AvanteShowRepoMap<CR>",            desc = "Show Repo Map",      mode = "n", silent = true },
+            { "<leader>as", "<cmd>AvanteSwitchSelectorProvider<CR>", desc = "Switch Selector",    mode = "n", silent = true },
         },
 
         opts = {
             provider  = "openai",
-            -- 👇 new: default width = 40% (Avante reads this as a percentage)
-            windows   = { width = 40 },
+            -- ❌ removed: windows.width (let your global UI sizing control it)
             providers = {
                 openai = {
                     endpoint           = "https://api.openai.com/v1",
@@ -144,10 +130,10 @@ return {
         },
 
         config = function(_, opts)
-            -- Always load core + setup (do NOT return early)
+            -- core load
             require("avante_lib").load()
 
-            -- If templates missing, kick off a build – but still continue to setup.
+            -- Build templates on first run if missing
             local function templates_missing()
                 local ok_path, path = pcall(require, "avante.path")
                 if not ok_path or type(path.get_templates_dir) ~= "function" then return true end
@@ -156,7 +142,6 @@ return {
                 local fs = vim.uv or vim.loop
                 return fs.fs_stat(dir) == nil
             end
-
             if templates_missing() then
                 vim.schedule(function()
                     vim.notify("Avante: building templates (running :AvanteBuild)…", vim.log.levels.WARN)
@@ -164,7 +149,7 @@ return {
                 end)
             end
 
-            -- (Optional) MCP Hub integration – safe if mcphub isn’t installed
+            -- Optional MCP Hub integration (safe if not installed)
             local function mcp_system_prompt()
                 local ok, hubmod = pcall(require, "mcphub"); if not ok then return "" end
                 local hub = hubmod.get_hub_instance and hubmod.get_hub_instance()
@@ -185,152 +170,30 @@ return {
 
             require("avante").setup(merged)
 
-            ----------------------------- INPUT HEIGHT ------------------------------------
+            -------------------------------------------------------------------
+            -- Layout/UX tweaks (non-sizing)
+            -------------------------------------------------------------------
 
-            -- --- Ask input height via official config (percent presets) ------------------
-            -- Avante uses windows.input.height (in *lines*) for vertical layout.
-            -- We'll compute it from a percent and write into the live config, then refresh.
-            -- ---- Ask input height: % presets -> persist -> rebuild -> restore input ----
-            vim.g._avante_input_height_pct = vim.g._avante_input_height_pct or 20
-
-            local function _usable_rows()
-                -- rows available to the UI (rough; avoids statusline/cmdline jitter)
-                return math.max(3, vim.o.lines - vim.o.cmdheight - (vim.o.laststatus > 0 and 1 or 0))
-            end
-
-            local function _pct_to_lines(pct)
-                return math.max(1, math.floor(_usable_rows() * (tonumber(pct) or 20) / 100))
-            end
-
-            -- Persist into Avante's live config (Avante reads this in *lines*)
-            local function _persist_input_height_lines(lines)
-                local ok, C = pcall(require, "avante.config"); if not ok then return end
-                C.windows = C.windows or {}
-                C.windows.input = C.windows.input or {}
-                C.windows.input.height = lines
-            end
-
-            -- Detect whether the sidebar is currently open
-            local function _sidebar_is_open()
-                for _, win in ipairs(vim.api.nvim_list_wins()) do
-                    if vim.api.nvim_win_is_valid(win) then
-                        local okb, buf = pcall(vim.api.nvim_win_get_buf, win)
-                        if okb and buf and vim.bo[buf].filetype == "Avante" then
-                            return true
-                        end
-                    end
-                end
-                return false
-            end
-
-            -- Safely rebuild the sidebar (close -> reopen) to apply layout changes
-            local function _rebuild_sidebar()
-                if not _sidebar_is_open() then return end
-                -- close
-                pcall(vim.cmd, "AvanteToggle")
-                -- reopen shortly after (avoid WinNew races from Avante popups)
-                vim.defer_fn(function() pcall(vim.cmd, "AvanteToggle") end, 120)
-            end
-
-            -- :AvanteInputHeight {percent} – set 20/40/60% etc.
-            vim.api.nvim_create_user_command("AvanteInputHeight", function(o)
-                local pct = tonumber(o.args) or vim.g._avante_input_height_pct
-                vim.g._avante_input_height_pct = pct
-                _persist_input_height_lines(_pct_to_lines(pct))
-                -- Rebuild so the Ask panel height takes effect immediately
-                vim.defer_fn(_rebuild_sidebar, 50)
-            end, { nargs = "?" })
-
-            -- Apply default (20%) for first open in this session
-            _persist_input_height_lines(_pct_to_lines(vim.g._avante_input_height_pct))
-
-
-            ----------------------------------- SIDEBAR----------------------------------
-            -- 1) Layout stability
+            -- Keep splits visually stable while opening sidebars/popups
             vim.opt.splitkeep = "screen"
 
-            -- Make Avante sidebar not participate in equalization/resizes
-            local aug_fix = vim.api.nvim_create_augroup("AvanteWinFix", { clear = true })
-            vim.api.nvim_create_autocmd({ "FileType", "BufWinEnter" }, {
-                group = aug_fix,
-                pattern = "Avante",
-                callback = function()
-                    -- lock width of the Avante split
-                    pcall(function() vim.api.nvim_win_set_option(0, "winfixwidth", true) end)
-                end,
-                desc = "Lock Avante sidebar split width",
-            })
-
-            -- 3) Disable the fragile input hint popup that was crashing on WinNew
+            -- Disable fragile input hint popup to avoid WinNew timing issues
             do
                 local ok, sidebar = pcall(require, "avante.sidebar")
                 if ok and type(sidebar.show_input_hint) == "function" then
-                    -- Keep a reference in case you ever want to restore it
                     vim.g._avante_orig_show_input_hint = sidebar.show_input_hint
-                    sidebar.show_input_hint = function(_) -- no-op to avoid Invalid window id races
-                        -- comment the next line and uncomment the pcall if you want to keep it but guard:
-                        --  pcall(vim.schedule, function() vim.g._avante_orig_show_input_hint(_) end)
-                    end
+                    sidebar.show_input_hint = function(_) end
                 end
             end
 
-            -- --- Fixed width enforcement & presets ---------------------------------
-            -- Avante’s sidebar uses filetype "Avante". We resize that window to a
-            -- percentage of the total columns whenever it appears or the UI resizes.
-            -- --- Fixed width enforcement & presets (safe) --------------------------
-
-            -- --- Fixed width enforcement (debounced & safe) ------------------------
-            local function resize_avante(pct)
-                pct = tonumber(pct) or vim.g._avante_width_preset or (merged.windows and merged.windows.width) or 40
-                local target = math.max(1, math.floor(vim.o.columns * (pct / 100)))
-                for _, win in ipairs(vim.api.nvim_list_wins()) do
-                    local ok_buf, buf = pcall(vim.api.nvim_win_get_buf, win)
-                    if ok_buf and buf and vim.api.nvim_win_is_valid(win) then
-                        local ft = vim.bo[buf].filetype
-                        if ft == "Avante" then
-                            pcall(vim.api.nvim_win_set_width, win, target)
-                        end
-                    end
-                end
-            end
-
-            -- default preset mirrors config
-            vim.g._avante_width_preset = (merged.windows and merged.windows.width) or 40
-
-            -- Debouncer so we don't collide with Avante's WinNew popups
-            local _avante_resize_pending = false
-            local function schedule_resize(pct)
-                if _avante_resize_pending then return end
-                _avante_resize_pending = true
-                vim.defer_fn(function()
-                    _avante_resize_pending = false
-                    resize_avante(pct)
-                end, 100) -- 100ms is enough; feel free to adjust
-            end
-
-            -- :AvanteWidth {percent} – set preset + schedule resize
-            vim.api.nvim_create_user_command("AvanteWidth", function(opts2)
-                local pct = tonumber(opts2.args) or vim.g._avante_width_preset
-                vim.g._avante_width_preset = pct
-                schedule_resize(pct)
-            end, { nargs = "?" })
-
-            -- Re-apply when Avante buffer appears and on UI resize (no WinEnter)
-            local aug = vim.api.nvim_create_augroup("AvanteFixedWidth", { clear = true })
-            vim.api.nvim_create_autocmd({ "FileType", "BufWinEnter" }, {
-                group = aug,
-                pattern = "Avante",
-                callback = function() schedule_resize() end,
-                desc = "Keep Avante sidebar at fixed percentage",
-            })
-            vim.api.nvim_create_autocmd("VimResized", {
-                group = aug,
-                callback = function() schedule_resize() end,
-                desc = "Re-apply Avante width on terminal resize",
-            })
-
-            -- Avoid split equalization fighting fixed widths
-            vim.o.equalalways = false
+            -------------------------------------------------------------------
+            -- ❌ Removed sections (sizing now handled by your global us*/uh*):
+            -- - windows.width default
+            -- - :AvanteWidth command + resize logic + autocmds
+            -- - :AvanteInputHeight command + height persistence
+            -- - winfixwidth on Avante windows
+            -- - equalalways overrides
+            -------------------------------------------------------------------
         end,
     },
 }
