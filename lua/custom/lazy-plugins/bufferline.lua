@@ -1,63 +1,118 @@
 return {
-    {
-        "akinsho/bufferline.nvim",
-        version = "*",
-        event = "VeryLazy",
-        dependencies = {
-            "nvim-tree/nvim-web-devicons",
-            "folke/which-key.nvim",
-        },
-        opts = {
-            options = {
-                mode = "tabs",            -- show Neovim *tabpages* instead of buffers
-                numbers = "none",
-                diagnostics = "nvim_lsp", -- show LSP counts on tabs
-                separator_style = "slant",
-                show_buffer_close_icons = true,
-                show_close_icon = false,
-                always_show_bufferline = false, -- hide when only one tab
-                -- keep sidebars tidy so the tabline doesn't jump around
-                offsets = {
-                    { filetype = "neo-tree", text = "Explorer",  highlight = "Directory", separator = true },
-                    { filetype = "NvimTree", text = "Explorer",  highlight = "Directory", separator = true },
-                    { filetype = "undotree", text = "Undo Tree", highlight = "Directory", separator = true },
-                },
-                -- optional hover UI (requires Neovim ≥0.8)
-                hover = { enabled = true, delay = 200, reveal = { "close" } },
-            },
-        },
-        keys = {
-            -- Put everything under <leader>t… (Tabs) to avoid <leader>b… (Bookmarks) conflicts
-            { "<leader>en", "<cmd>BufferLineCycleNext<CR>",   desc = "Tabs: Next" },
-            { "<leader>ep", "<cmd>BufferLineCyclePrev<CR>",   desc = "Tabs: Prev" },
-            { "<leader>ek", "<cmd>BufferLinePick<CR>",        desc = "Tabs: Pick" },
-            { "<leader>eK", "<cmd>BufferLinePickClose<CR>",   desc = "Tabs: Pick to Close" },
-            { "<leader>eo", "<cmd>BufferLineCloseOthers<CR>", desc = "Tabs: Close Others" },
-            { "<leader>el", "<cmd>BufferLineCloseLeft<CR>",   desc = "Tabs: Close Left" },
-            { "<leader>er", "<cmd>BufferLineCloseRight<CR>",  desc = "Tabs: Close Right" },
-            { "<leader>em", "<cmd>BufferLineMoveNext<CR>",    desc = "Tabs: Move Next" },
-            { "<leader>eM", "<cmd>BufferLineMovePrev<CR>",    desc = "Tabs: Move Prev" },
-        },
-        config = function(_, opts)
-            require("bufferline").setup(opts)
+	{
+		"akinsho/bufferline.nvim",
+		version = "*",
+		event = "VeryLazy",
+		dependencies = {
+			"nvim-tree/nvim-web-devicons",
+			"folke/which-key.nvim",
+		},
 
-            -- which-key group (v2/v3 compatible)
-            local ok, wk = pcall(require, "which-key")
-            if ok then
-                local register = wk.add or wk.register
-                register({
-                    -- { "<leader>e",  group = "Tabs" },
-                    { "<leader>en", desc = "Tabs: Next" },
-                    { "<leader>ep", desc = "Tabs: Prev" },
-                    { "<leader>ek", desc = "Tabs: Pick" },
-                    { "<leader>eK", desc = "Tabs: Pick to Close" },
-                    { "<leader>eo", desc = "Tabs: Close Others" },
-                    { "<leader>el", desc = "Tabs: Close Left" },
-                    { "<leader>er", desc = "Tabs: Close Right" },
-                    { "<leader>em", desc = "Tabs: Move Next" },
-                    { "<leader>eM", desc = "Tabs: Move Prev" },
-                }, { mode = "n", silent = true, noremap = true })
-            end
-        end,
-    },
+		-- Register the top-level group early so which-key shows it before the plugin loads
+		init = function()
+			local ok, wk = pcall(require, "which-key")
+			if ok and wk.add then
+				wk.add({ { "<leader>e", group = "Tabs" } })
+			end
+		end,
+
+		opts = {
+			options = {
+				mode = "tabs", -- show Neovim *tabpages* instead of buffers
+				numbers = "none",
+				diagnostics = "nvim_lsp", -- show LSP counts on tabs
+				separator_style = "slant",
+				show_buffer_close_icons = true,
+				show_close_icon = false,
+				always_show_bufferline = false, -- hide when only one tab
+				offsets = {
+					{ filetype = "neo-tree", text = "Explorer", highlight = "Directory", separator = true },
+					{ filetype = "NvimTree", text = "Explorer", highlight = "Directory", separator = true },
+					{ filetype = "undotree", text = "Undo Tree", highlight = "Directory", separator = true },
+				},
+				hover = { enabled = true, delay = 200, reveal = { "close" } },
+			},
+		},
+
+		-- v3 which-key friendly keymaps
+		keys = {
+			{
+				"<leader>en",
+				"<cmd>BufferLineCycleNext<CR>",
+				desc = "Tabs: Next",
+				mode = "n",
+				silent = true,
+				noremap = true,
+			},
+			{
+				"<leader>ep",
+				"<cmd>BufferLineCyclePrev<CR>",
+				desc = "Tabs: Prev",
+				mode = "n",
+				silent = true,
+				noremap = true,
+			},
+			{
+				"<leader>ek",
+				"<cmd>BufferLinePick<CR>",
+				desc = "Tabs: Pick",
+				mode = "n",
+				silent = true,
+				noremap = true,
+			},
+			{
+				"<leader>eK",
+				"<cmd>BufferLinePickClose<CR>",
+				desc = "Tabs: Pick to Close",
+				mode = "n",
+				silent = true,
+				noremap = true,
+			},
+			{
+				"<leader>eo",
+				"<cmd>BufferLineCloseOthers<CR>",
+				desc = "Tabs: Close Others",
+				mode = "n",
+				silent = true,
+				noremap = true,
+			},
+			{
+				"<leader>el",
+				"<cmd>BufferLineCloseLeft<CR>",
+				desc = "Tabs: Close Left",
+				mode = "n",
+				silent = true,
+				noremap = true,
+			},
+			{
+				"<leader>er",
+				"<cmd>BufferLineCloseRight<CR>",
+				desc = "Tabs: Close Right",
+				mode = "n",
+				silent = true,
+				noremap = true,
+			},
+			{
+				"<leader>em",
+				"<cmd>BufferLineMoveNext<CR>",
+				desc = "Tabs: Move Next",
+				mode = "n",
+				silent = true,
+				noremap = true,
+			},
+			{
+				"<leader>eM",
+				"<cmd>BufferLineMovePrev<CR>",
+				desc = "Tabs: Move Prev",
+				mode = "n",
+				silent = true,
+				noremap = true,
+			},
+		},
+
+		config = function(_, opts)
+			require("bufferline").setup(opts)
+			-- no extra which-key calls needed; group was registered in init, and key descs come from keys{}
+		end,
+	},
 }
