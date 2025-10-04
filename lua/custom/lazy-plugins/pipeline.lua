@@ -13,9 +13,7 @@ return {
             local ok, wk = pcall(require, "which-key")
             if ok then
                 if wk.add then
-                    -- wk.add({ { "<leader>p", group = "Pipeline" } })
-                else
-                    -- wk.register({ p = { name = "Pipeline" } }, { prefix = "<leader>" })
+                    wk.add({ { "<leader>p", group = "Pipeline" } })
                 end
             end
         end,
