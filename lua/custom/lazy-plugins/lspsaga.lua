@@ -98,9 +98,9 @@ return {
             return {
                 bind = true,
                 doc_lines = 5,
-                wrap = true,
                 max_height = 12,
-                max_width = function() return math.floor(fn(0) * 0.8) end,
+                wrap = true,
+                max_width = function() return math.floor(vim.api.nvim_win_get_width(0) * 0.6) end,
 
                 floating_window = true,
                 floating_window_above_cur_line = true,
@@ -112,6 +112,7 @@ return {
                 hint_prefix = " ",
                 hint_scheme = "String",
                 hi_parameter = "LspSignatureActiveParameter",
+                fix_pos = true, -- prevents the window from jumping as you type
 
                 hint_inline = function() return "eol" end,
 
