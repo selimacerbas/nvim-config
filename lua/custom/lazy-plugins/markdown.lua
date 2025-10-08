@@ -393,11 +393,32 @@ return {
             local otter = require("otter")
             otter.setup(opts)
 
-            -- Auto-activate in Markdown-like buffers (no keymaps here; keys[] handles those)
+            -- Auto-activate Otter only in "real" markdown-like buffers
             vim.api.nvim_create_autocmd("FileType", {
                 pattern = { "markdown", "rmd", "quarto", "qmd" },
-                callback = function()
-                    otter.activate(nil, true, true) -- completion + diagnostics for fenced langs
+                callback = function(args)
+                    local bufnr = args.buf
+
+                    -- skip unlisted/special buffers (help, nofile, prompt, quickfix, etc.)
+                    local bt = vim.bo[bufnr].buftype
+                    if bt ~= "" then return end
+
+                    -- skip unnamed buffers
+                    if vim.api.nvim_buf_get_name(bufnr) == "" then return end
+
+                    -- skip floating windows (LSP hover/signature markdown previews)
+                    local win = vim.fn.bufwinid(bufnr)
+                    if win ~= -1 then
+                        local cfg = vim.api.nvim_win_get_config(win)
+                        if cfg and cfg.relative and cfg.relative ~= "" then return end
+                    end
+
+                    -- run only once per buffer
+                    if vim.b[bufnr].otter_activated then return end
+                    vim.b[bufnr].otter_activated = true
+
+                    -- be defensive (avoid throwing inside temporary buffers)
+                    pcall(function() require("otter").activate(nil, true, true) end)
                 end,
             })
         end,
