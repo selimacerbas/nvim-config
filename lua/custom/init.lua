@@ -81,7 +81,11 @@ vim.opt.splitright = true
 vim.o.equalalways = false
 
 
--- === UI Sizing (global) ===
+
+-- === Terminal Related(global) ===
+
+-- Leave terminal (Job) mode with Esc
+vim.keymap.set('t', '<Esc>', [[<C-\><C-n>]], { silent = true })
 
 -- === UI Sizing (global) ===
 do
