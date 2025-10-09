@@ -46,7 +46,6 @@ require("lazy").setup({
         { import = "custom.lazy-plugins.bookmarks" },
         { import = "custom.lazy-plugins.vimtex" },
         { import = "custom.lazy-plugins.mcphub" },
-        { import = "custom.lazy-plugins.avante" },
         { import = "custom.lazy-plugins.luasnip" },
         { import = "custom.lazy-plugins.surround" },
         { import = "custom.lazy-plugins.refactor" },
