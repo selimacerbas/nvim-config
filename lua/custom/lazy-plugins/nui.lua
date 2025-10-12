@@ -18,20 +18,20 @@ return {
         -- Keymaps live here so pressing one will lazy-load nui.nvim
         keys = {
             -- --- UI/Toggles (plain Neovim options) ---
-            { "<leader>uw",  function() require("my_nui_ui").toggle_wrap() end,              desc = "Toggle wrap" },
-            { "<leader>un",  function() require("my_nui_ui").toggle_number() end,            desc = "Toggle line numbers" },
-            { "<leader>ur",  function() require("my_nui_ui").toggle_relativenumber() end,    desc = "Toggle relative numbers" },
-            { "<leader>ul",  function() require("my_nui_ui").toggle_list() end,              desc = "Toggle listchars" },
-            { "<leader>us",  function() require("my_nui_ui").toggle_spell() end,             desc = "Toggle spell" },
-            { "<leader>uc",  function() require("my_nui_ui").toggle_colorcolumn() end,       desc = "Toggle colorcolumn 80" },
-            { "<leader>ug",  function() require("my_nui_ui").toggle_signcolumn() end,        desc = "Toggle signcolumn" },
-            { "<leader>ud",  function() require("my_nui_ui").toggle_diag_virtual_text() end, desc = "Toggle diagnostics virtual text" },
+            { "<leader>uiw",  function() require("my_nui_ui").toggle_wrap() end,              desc = "Toggle wrap" },
+            { "<leader>uin",  function() require("my_nui_ui").toggle_number() end,            desc = "Toggle line numbers" },
+            { "<leader>uir",  function() require("my_nui_ui").toggle_relativenumber() end,    desc = "Toggle relative numbers" },
+            { "<leader>uil",  function() require("my_nui_ui").toggle_list() end,              desc = "Toggle listchars" },
+            { "<leader>uis",  function() require("my_nui_ui").toggle_spell() end,             desc = "Toggle spell" },
+            { "<leader>uic",  function() require("my_nui_ui").toggle_colorcolumn() end,       desc = "Toggle colorcolumn 80" },
+            { "<leader>uig",  function() require("my_nui_ui").toggle_signcolumn() end,        desc = "Toggle signcolumn" },
+            { "<leader>uid",  function() require("my_nui_ui").toggle_diag_virtual_text() end, desc = "Toggle diagnostics virtual text" },
 
             -- --- Nui demos (ui<key>) ---
             { "<leader>uip", function() require("my_nui_ui").popup_scratch() end,            desc = "Nui: popup scratch buffer" },
             { "<leader>uii", function() require("my_nui_ui").input_prompt() end,             desc = "Nui: input prompt" },
             { "<leader>uim", function() require("my_nui_ui").menu_toggles() end,             desc = "Nui: toggles menu" },
-            { "<leader>uil", function() require("my_nui_ui").layout_demo() end,              desc = "Nui: 2-pane layout demo" },
+            { "<leader>uiy", function() require("my_nui_ui").layout_demo() end,              desc = "Nui: 2-pane layout demo" },
         },
 
         -- Define small helpers that use Nui components
