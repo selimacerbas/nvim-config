@@ -63,6 +63,7 @@ require("lazy").setup({
         { import = "custom.lazy-plugins.snacks" },
         { import = "custom.lazy-plugins.copilot" },
         { import = "custom.lazy-plugins.gemini" },
+        { import = "custom.lazy-plugins.claudecode" },
         { import = "custom.lazy-plugins.theme" }, -- pulls every file in that folder
     },
     install = { colorscheme = { "auto" } },
