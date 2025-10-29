@@ -1,6 +1,6 @@
 return {
     {
-        "williamboman/mason.nvim",
+        "mason-org/mason.nvim",
         dependencies = {
             -- LSP Core
             "mason-org/mason-lspconfig.nvim",
