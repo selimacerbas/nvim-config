@@ -90,13 +90,16 @@ vim.keymap.set('t', '<Esc>', [[<C-\><C-n>]], { silent = true })
 -- === UI Sizing (global) ===
 do
     local sizing = require("custom.ui-sizing")
-    sizing.setup()
+    sizing.setup({
+        -- flip this to true if you want per-filetype auto reapply (recommended only for sidebars)
+        enable_ft_fallback = false,
+    })
 
     local function map(lhs, fn, desc)
         vim.keymap.set({ "n", "t" }, lhs, fn, { silent = true, desc = desc })
     end
 
-    -- Width presets (you already had these)
+    -- Width presets
     map("uw1", function() sizing.set_width_ratio(0.15) end, "UI Sizing: Width → 15%")
     map("uw2", function() sizing.set_width_ratio(0.25) end, "UI Sizing: Width → 25%")
     map("uw3", function() sizing.set_width_ratio(0.35) end, "UI Sizing: Width → 35%")
@@ -107,7 +110,7 @@ do
     map("<leader>uw3", function() sizing.set_width_ratio(0.35) end, "UI Sizing: Width → 35%")
     map("<leader>uw4", function() sizing.set_width_ratio(0.45) end, "UI Sizing: Width → 45%")
 
-    -- Height presets (new)
+    -- Height presets
     map("uh1", function() sizing.set_height_ratio(0.15) end, "UI Sizing: Height → 15%")
     map("uh2", function() sizing.set_height_ratio(0.25) end, "UI Sizing: Height → 25%")
     map("uh3", function() sizing.set_height_ratio(0.35) end, "UI Sizing: Height → 35%")
@@ -118,36 +121,9 @@ do
     map("<leader>uh3", function() sizing.set_height_ratio(0.35) end, "UI Sizing: Height → 35%")
     map("<leader>uh4", function() sizing.set_height_ratio(0.45) end, "UI Sizing: Height → 45%")
 
-    -- which-key labels (use your existing folke/which-key if present)
-    local ok, wk = pcall(require, "which-key")
-    if ok then
-        wk.add({
-            { "uw", group = "UI Sizing (Width)", mode = { "n", "t" } },
-            { "uw1", desc = "Width → 15%", mode = { "n", "t" } },
-            { "uw2", desc = "Width → 25%", mode = { "n", "t" } },
-            { "uw3", desc = "Width → 35%", mode = { "n", "t" } },
-            { "uw4", desc = "Width → 45%", mode = { "n", "t" } },
-
-            { "uh", group = "UI Sizing (Height)", mode = { "n", "t" } },
-            { "uh1", desc = "Height → 15%", mode = { "n", "t" } },
-            { "uh2", desc = "Height → 25%", mode = { "n", "t" } },
-            { "uh3", desc = "Height → 35%", mode = { "n", "t" } },
-            { "uh4", desc = "Height → 45%", mode = { "n", "t" } },
-        })
-        wk.add({
-            { "<leader>uw", group = "UI Sizing (Width)" },
-            { "<leader>uw1", desc = "Width → 15%" },
-            { "<leader>uw2", desc = "Width → 25%" },
-            { "<leader>uw3", desc = "Width → 35%" },
-            { "<leader>uw4", desc = "Width → 45%" },
-
-            { "<leader>uh", group = "UI Sizing (Height)" },
-            { "<leader>uh1", desc = "Height → 15%" },
-            { "<leader>uh2", desc = "Height → 25%" },
-            { "<leader>uh3", desc = "Height → 35%" },
-            { "<leader>uh4", desc = "Height → 45%" },
-        })
-    end
+    -- Handy controls
+    map("<leader>uto", function() vim.cmd("UISizeOff") end, "UI Sizing: OFF")
+    map("<leader>utO", function() vim.cmd("UISizeOn") end, "UI Sizing: ON")
+    map("<leader>utc", function() vim.cmd("UISizeClear") end, "UI Sizing: Clear current")
+    map("<leader>utR", function() vim.cmd("UISizeResetAll") end, "UI Sizing: Reset ALL")
 end
-
--- UI SIZING --
