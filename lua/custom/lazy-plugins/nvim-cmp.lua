@@ -1,41 +1,55 @@
 return {
     'hrsh7th/nvim-cmp',
-    -- event = 'InsertEnter',
     dependencies = {
         'hrsh7th/cmp-nvim-lsp',
         'hrsh7th/cmp-buffer',
         'hrsh7th/cmp-path',
         'saadparwaiz1/cmp_luasnip',
-        {
-            'L3MON4D3/LuaSnip',
-            build = 'make install_jsregexp',
-        },
+        { 'L3MON4D3/LuaSnip', build = 'make install_jsregexp' },
         'folke/which-key.nvim',
     },
+
+    -- which-key v3: define groups/labels here (no keymaps)
+    init = function()
+        local ok, wk = pcall(require, 'which-key')
+        if not ok or not wk.add then return end
+        wk.add({
+            { '<leader>UC', group = 'Completion bias' }, -- group header
+            -- optional insert-mode hints (pure labels, not mappings)
+            { '<C-Space>',  desc = 'Completion: trigger',      mode = 'i' },
+            { '<C-e>',      desc = 'Completion: abort',        mode = 'i' },
+            { '<CR>',       desc = 'Completion: confirm',      mode = 'i' },
+            { '<Tab>',      desc = 'Completion/Snippet: next', mode = 'i' },
+            { '<S-Tab>',    desc = 'Completion/Snippet: prev', mode = 'i' },
+            { '<C-b>',      desc = 'Docs: scroll up',          mode = 'i' },
+            { '<C-f>',      desc = 'Docs: scroll down',        mode = 'i' },
+        })
+    end,
+
+    -- lazy.nvim-managed mappings (will load plugin on first press)
+    keys = {
+        { '<leader>UCc', '<cmd>CmpBiasClasses<CR>',   mode = 'n', desc = 'CMP bias: Classes first' },
+        { '<leader>UCv', '<cmd>CmpBiasVariables<CR>', mode = 'n', desc = 'CMP bias: Variables first' },
+        { '<leader>UCf', '<cmd>CmpBiasFunctions<CR>', mode = 'n', desc = 'CMP bias: Functions first' },
+        { '<leader>UC0', '<cmd>CmpBiasDefault<CR>',   mode = 'n', desc = 'CMP bias: Reset default' },
+    },
+
     opts = function()
         local cmp = require('cmp')
         local luasnip = require('luasnip')
         local compare = cmp.config.compare
 
-        -- kind-priority comparator (yours, unchanged)
+        -- your existing comparators (unchanged)
         local lspkind_comparator = function(conf)
             local lsp_types = require('cmp.types').lsp
             return function(entry1, entry2)
                 if entry1.source.name ~= 'nvim_lsp' then
-                    if entry2.source.name == 'nvim_lsp' then
-                        return false
-                    else
-                        return nil
-                    end
+                    if entry2.source.name == 'nvim_lsp' then return false else return nil end
                 end
                 local kind1 = lsp_types.CompletionItemKind[entry1:get_kind()]
                 local kind2 = lsp_types.CompletionItemKind[entry2:get_kind()]
-                if kind1 == 'Variable' and entry1:get_completion_item().label:match('%w*=') then
-                    kind1 = 'Parameter'
-                end
-                if kind2 == 'Variable' and entry2:get_completion_item().label:match('%w*=') then
-                    kind2 = 'Parameter'
-                end
+                if kind1 == 'Variable' and entry1:get_completion_item().label:match('%w*=') then kind1 = 'Parameter' end
+                if kind2 == 'Variable' and entry2:get_completion_item().label:match('%w*=') then kind2 = 'Parameter' end
                 local prio1 = conf.kind_priority[kind1] or 0
                 local prio2 = conf.kind_priority[kind2] or 0
                 if prio1 == prio2 then return nil end
@@ -43,12 +57,9 @@ return {
             end
         end
 
-        -- NEW: push names with leading underscores lower (e.g. _foo, __bar)
-        -- If you started typing an underscore, we don't penalize.
         local underscore_comparator = function(entry1, entry2)
             local function leading_uscore_count(label)
-                local m = (label or ''):match('^_+')
-                return m and #m or 0
+                local m = (label or ''):match('^_+'); return m and #m or 0
             end
             local function typed_prefix()
                 local line   = vim.api.nvim_get_current_line()
@@ -56,21 +67,12 @@ return {
                 local before = line:sub(1, col)
                 return (before:match('[_%w]*$') or '')
             end
-
-            -- don't penalize if the current prefix begins with "_"
-            if typed_prefix():match('^_') then
-                return nil
-            end
-
+            if typed_prefix():match('^_') then return nil end
             local l1 = entry1.completion_item.label or ''
             local l2 = entry2.completion_item.label or ''
             local c1 = leading_uscore_count(l1)
             local c2 = leading_uscore_count(l2)
-
-            if c1 ~= c2 then
-                -- fewer leading underscores wins
-                return c1 < c2
-            end
+            if c1 ~= c2 then return c1 < c2 end
             return nil
         end
 
@@ -83,6 +85,49 @@ return {
             if col == 0 then return false end
             local text = vim.api.nvim_buf_get_lines(0, line - 1, line, true)[1]
             return text:sub(col, col):match('%s') == nil
+        end
+
+        -- default priorities (yours)
+        local KIND_PRIORITY_DEFAULT = {
+            Parameter = 14,
+            Variable = 12,
+            Field = 11,
+            Property = 11,
+            Constant = 10,
+            Enum = 10,
+            EnumMember = 10,
+            Event = 10,
+            Function = 10,
+            Method = 10,
+            Operator = 10,
+            Reference = 10,
+            Struct = 10,
+            File = 8,
+            Folder = 8,
+            Class = 5,
+            Color = 5,
+            Module = 5,
+            Keyword = 2,
+            Constructor = 1,
+            Interface = 1,
+            Snippet = 0,
+            Text = 1,
+            TypeParameter = 1,
+            Unit = 1,
+            Value = 1,
+        }
+
+        local function make_comparators(kind_prio)
+            return {
+                compare.exact,
+                underscore_comparator,
+                lspkind_comparator({ kind_priority = kind_prio }),
+                compare.score,
+                compare.recently_used,
+                compare.locality,
+                label_comparator,
+                compare.order,
+            }
         end
 
         return {
@@ -142,67 +187,49 @@ return {
                     return vim_item
                 end,
             },
-            sorting = {
-                comparators = {
-                    compare.exact,         -- keep exact matches on top
-                    underscore_comparator, -- 👈 push _foo / __bar lower
-                    lspkind_comparator({
-                        kind_priority = {
-                            Parameter     = 14,
-                            Variable      = 12,
-                            Field         = 11,
-                            Property      = 11,
-                            Constant      = 10,
-                            Enum          = 10,
-                            EnumMember    = 10,
-                            Event         = 10,
-                            Function      = 10,
-                            Method        = 10,
-                            Operator      = 10,
-                            Reference     = 10,
-                            Struct        = 10,
-                            File          = 8,
-                            Folder        = 8,
-                            Class         = 5,
-                            Color         = 5,
-                            Module        = 5,
-                            Keyword       = 2,
-                            Constructor   = 1,
-                            Interface     = 1,
-                            Snippet       = 0,
-                            Text          = 1,
-                            TypeParameter = 1,
-                            Unit          = 1,
-                            Value         = 1,
-                        },
-                    }),
-                    compare.score, -- baseline LSP scoring
-                    compare.recently_used,
-                    compare.locality,
-                    label_comparator, -- alpha as a final tiebreaker
-                    compare.order,    -- stable order
-                },
+            sorting = { comparators = make_comparators(KIND_PRIORITY_DEFAULT) },
+
+            -- expose helpers for config()
+            __cmp_bias = {
+                default_kind_priority = KIND_PRIORITY_DEFAULT,
+                make_comparators = make_comparators,
             },
+
             experimental = { ghost_text = true },
             completion = { completeopt = 'menu,menuone,noinsert' },
         }
     end,
-    config = function(_, opts)
-        require('cmp').setup(opts)
 
-        -- which-key (insert-mode) discoverability; no remaps
-        local ok, wk = pcall(require, 'which-key')
-        if ok then
-            local add = wk.add or wk.register
-            add({
-                { '<C-Space>', desc = 'Completion: trigger' },
-                { '<C-e>',     desc = 'Completion: abort' },
-                { '<CR>',      desc = 'Completion: confirm' },
-                { '<Tab>',     desc = 'Completion/Snippet: next' },
-                { '<S-Tab>',   desc = 'Completion/Snippet: prev' },
-                { '<C-b>',     desc = 'Docs: scroll up' },
-                { '<C-f>',     desc = 'Docs: scroll down' },
-            }, { mode = 'i' })
+    config = function(_, opts)
+        local cmp = require('cmp')
+        cmp.setup(opts)
+
+        -- bias overlays + user commands
+        local helpers = opts.__cmp_bias or {}
+        local default_prio = vim.deepcopy(helpers.default_kind_priority or {})
+        local make_comparators = helpers.make_comparators
+
+        local presets = {
+            classes   = { Class = 200, Struct = 195, Interface = 190, Module = 150, TypeParameter = 120, Constructor = 110 },
+            variables = { Variable = 200, Field = 195, Property = 195, Parameter = 190, Constant = 180, EnumMember = 175, Value = 160 },
+            functions = { Function = 200, Method = 195, Constructor = 190 },
+            default   = {},
+        }
+
+        local function apply_bias(overlay, label)
+            local prio = vim.deepcopy(default_prio)
+            for k, v in pairs(overlay) do prio[k] = v end
+            cmp.setup({ sorting = { comparators = make_comparators(prio) } })
+            vim.notify('CMP bias: ' .. label, vim.log.levels.INFO, { title = 'nvim-cmp' })
         end
+
+        vim.api.nvim_create_user_command('CmpBiasClasses',
+            function() apply_bias(presets.classes, 'Classes first') end, {})
+        vim.api.nvim_create_user_command('CmpBiasVariables',
+            function() apply_bias(presets.variables, 'Variables first') end, {})
+        vim.api.nvim_create_user_command('CmpBiasFunctions',
+            function() apply_bias(presets.functions, 'Functions first') end, {})
+        vim.api.nvim_create_user_command('CmpBiasDefault',
+            function() apply_bias(presets.default, 'Default') end, {})
     end,
 }
