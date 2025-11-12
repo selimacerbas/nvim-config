@@ -45,7 +45,7 @@ return {
             local servers = {
                 "rust_analyzer", "clangd", "terraformls", "pyright", "jsonls", "yamlls",
                 "ts_ls", "lua_ls", "gopls", "dockerls", "bashls", "helm_ls", "html",
-                "lemminx", "cmake", "texlab",
+                "lemminx", "cmake", "texlab", "css-lsp",
                 "ruff",
             }
 
