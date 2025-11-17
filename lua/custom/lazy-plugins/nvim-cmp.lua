@@ -5,7 +5,7 @@ return {
         'hrsh7th/cmp-buffer',
         'hrsh7th/cmp-path',
         'saadparwaiz1/cmp_luasnip',
-        { 'L3MON4D3/LuaSnip', build = 'make install_jsregexp' },
+        'L3MON4D3/LuaSnip',
         'folke/which-key.nvim',
     },
 
