@@ -86,18 +86,18 @@ return {
                 end,
             })
 
-            -- ✅ ADD: block Ctrl-D (EOF) only in ToggleTerm terminals; keep Normal-mode <C-d> intact
-            vim.api.nvim_create_autocmd("TermOpen", {
-                pattern = "term://*toggleterm#*",
-                callback = function(ev)
-                    -- Don't send EOF on Ctrl-D
-                    vim.keymap.set("t", "<C-d>", "<Nop>",
-                        { buffer = ev.buf, silent = true, desc = "ToggleTerm: block Ctrl-D" })
-                    -- Optional: a deliberate way to send EOF when you really want it
-                    vim.keymap.set("t", "<M-d>", "<C-d>",
-                        { buffer = ev.buf, noremap = true, silent = true, desc = "ToggleTerm: send EOF" })
-                end,
-            })
+            -- -- ✅ ADD: block Ctrl-D (EOF) only in ToggleTerm terminals; keep Normal-mode <C-d> intact
+            -- vim.api.nvim_create_autocmd("TermOpen", {
+            --     pattern = "term://*toggleterm#*",
+            --     callback = function(ev)
+            --         -- Don't send EOF on Ctrl-D
+            --         vim.keymap.set("t", "<C-d>", "<Nop>",
+            --             { buffer = ev.buf, silent = true, desc = "ToggleTerm: block Ctrl-D" })
+            --         -- Optional: a deliberate way to send EOF when you really want it
+            --         vim.keymap.set("t", "<M-d>", "<C-d>",
+            --             { buffer = ev.buf, noremap = true, silent = true, desc = "ToggleTerm: send EOF" })
+            --     end,
+            -- })
         end,
     },
 }
