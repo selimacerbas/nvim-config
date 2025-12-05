@@ -65,7 +65,12 @@ require("lazy").setup({
         { import = "custom.lazy-plugins.gemini" },
         { import = "custom.lazy-plugins.claudecode" },
         { import = "custom.lazy-plugins.snippets" },
+        { import = "custom.lazy-plugins.dadbod" },
         { import = "custom.lazy-plugins.theme" }, -- pulls every file in that folder
     },
     install = { colorscheme = { "auto" } },
+    git = {
+        -- this is the important line:
+        url_format = "https://github.com/%s.git",
+    },
 })

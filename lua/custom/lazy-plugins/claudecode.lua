@@ -25,7 +25,7 @@ return {
 
         -- Keys from the repo’s Installation example
         keys = {
-            { "<leader>Ac", "<cmd>ClaudeCode<cr>",            desc = "Toggle Claude" },
+            { "<leader>At", "<cmd>ClaudeCode<cr>",            desc = "Toggle Claude" },
             { "<leader>Af", "<cmd>ClaudeCodeFocus<cr>",       desc = "Focus Claude" },
             { "<leader>Ar", "<cmd>ClaudeCode --resume<cr>",   desc = "Resume Claude" },
             { "<leader>AC", "<cmd>ClaudeCode --continue<cr>", desc = "Continue Claude" },
