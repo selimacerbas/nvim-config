@@ -25,6 +25,9 @@ return {
             "folke/which-key.nvim",
         },
 
+        -- Load after UI is ready but before user interaction
+        event = "VeryLazy",
+
         -- only the two keymaps you asked for
         keys = {
             { "<leader>lc", "<cmd>LspDedupeHere<CR>",  desc = "LSP: Dedupe (buf)", mode = "n", silent = true, noremap = true },
@@ -45,7 +48,7 @@ return {
             local servers = {
                 "rust_analyzer", "clangd", "terraformls", "pyright", "jsonls", "yamlls",
                 "ts_ls", "lua_ls", "gopls", "dockerls", "bashls", "helm_ls", "html",
-                "lemminx", "cmake", "texlab", "css-lsp",
+                "lemminx", "cmake", "texlab", "cssls",
                 "ruff",
             }
 
