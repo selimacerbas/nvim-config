@@ -26,8 +26,14 @@ return {
                 "markdown", "markdown_inline",
             },
             auto_install = true,
-            highlight = { enable = true, additional_vim_regex_highlighting = false },
-            indent = { enable = true },
+            -- Parsers that fail to compile or are handled by other plugins
+            ignore_install = { "latex" },
+            highlight = {
+                enable = true,
+                additional_vim_regex_highlighting = { "latex" },  -- let vimtex handle LaTeX
+                disable = { "latex" },
+            },
+            indent = { enable = true, disable = { "latex" } },
 
             -- enable the playground module here
             playground = { enable = true },
