@@ -11,17 +11,26 @@ return {
   end,
   opts = {
     default_port = 4070,
-    live_reload = { enabled = true, inject_script = true, debounce = 120 },
+    open_on_start = true,
+    notify = true,
+    notify_on_reload = false,
+    cors = false,
+    live_reload = {
+      enabled = true,
+      inject_script = true,
+      debounce = 120,
+      css_inject = true,
+    },
     directory_listing = { enabled = true, show_hidden = false },
   },
-  -- ⬇️ Use Ex-commands, not require(...) at spec time
   keys = {
-    { "<leader>Ls", "<cmd>LiveServerStart<cr>",     desc = "Start (pick path & port)" },
-    { "<leader>Lo", "<cmd>LiveServerOpen<cr>",      desc = "Open existing port in browser" },
-    { "<leader>Lr", "<cmd>LiveServerReload<cr>",    desc = "Force reload (pick port)" },
-    { "<leader>Lt", "<cmd>LiveServerToggleLive<cr>",desc = "Toggle live-reload (pick port)" },
-    { "<leader>LS", "<cmd>LiveServerStop<cr>",      desc = "Stop one (pick port)" },
-    { "<leader>LA", "<cmd>LiveServerStopAll<cr>",   desc = "Stop all" },
+    { "<leader>Ls", "<cmd>LiveServerStart<cr>",      desc = "Start (pick path & port)" },
+    { "<leader>Lo", "<cmd>LiveServerOpen<cr>",        desc = "Open in browser" },
+    { "<leader>Lr", "<cmd>LiveServerReload<cr>",      desc = "Force reload" },
+    { "<leader>Lt", "<cmd>LiveServerToggleLive<cr>",  desc = "Toggle live-reload" },
+    { "<leader>Li", "<cmd>LiveServerStatus<cr>",      desc = "Status" },
+    { "<leader>LS", "<cmd>LiveServerStop<cr>",        desc = "Stop one" },
+    { "<leader>LA", "<cmd>LiveServerStopAll<cr>",     desc = "Stop all" },
   },
   config = function(_, opts)
     require("live_server").setup(opts)

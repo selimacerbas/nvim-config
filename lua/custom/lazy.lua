@@ -66,6 +66,7 @@ require("lazy").setup({
         { import = "custom.lazy-plugins.claudecode" },
         { import = "custom.lazy-plugins.snippets" },
         { import = "custom.lazy-plugins.dadbod" },
+        { import = "custom.lazy-plugins.opencode" },
         { import = "custom.lazy-plugins.theme" }, -- pulls every file in that folder
     },
     install = { colorscheme = { "auto" } },

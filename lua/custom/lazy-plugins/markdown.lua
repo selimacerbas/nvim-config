@@ -108,6 +108,16 @@ return {
         },
 
         config = function(_, opts)
+            -- Ensure image.nvim is set up before diagram.nvim uses it
+            local ok_img, img = pcall(require, "image")
+            if ok_img and img.setup then
+                -- Check if already setup by looking for internal state
+                local status, _ = pcall(function() return img.get_images end)
+                if not status or not package.loaded["image"] then
+                    pcall(img.setup, {})
+                end
+            end
+
             require("diagram").setup(opts)
 
             -- ===== Tooling checks =====
