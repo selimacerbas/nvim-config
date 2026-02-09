@@ -166,7 +166,7 @@ return {
     -- Preview: browser-based markdown preview (uses live-server)
     ---------------------------------------------------------------------------
     {
-        dir = "/Users/selimacerbas/Repositories/Personal/Github/mermaid-playground.nvim",
+        dir = "/Users/selimacerbas/Repositories/Personal/Github/markdown-preview.nvim",
         ft = { "markdown", "mdx", "mermaid" },
         dependencies = { "selimacerbas/live-server.nvim", "folke/which-key.nvim" },
 
