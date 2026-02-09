@@ -26,10 +26,7 @@ return {
             pcall(function()
                 capabilities = require("cmp_nvim_lsp").default_capabilities(capabilities)
             end)
-            if type(vim.lsp.config) == "table" then
-                vim.lsp.config.capabilities =
-                    vim.tbl_deep_extend("force", vim.lsp.config.capabilities or {}, capabilities)
-            end
+            vim.lsp.config("*", { capabilities = capabilities })
 
             -- ===== Buffer-local on LspAttach =====
             -- Only sets buffer options and inlay hints.
@@ -44,8 +41,14 @@ return {
                     vim.bo[bufnr].formatexpr = "v:lua.vim.lsp.formatexpr()"
 
                     -- Override Neovim 0.10+ default K so Lspsaga hover_doc runs instead
-                    vim.keymap.set("n", "K", "<cmd>Lspsaga hover_doc<CR>",
+                    vim.keymap.set("n", "K", "<cmd>Lspsaga hover_doc ++silent<CR>",
                         { buffer = bufnr, desc = "Hover doc", silent = true })
+
+                    -- Disable hover for linter/formatter-only servers so Lspsaga
+                    -- doesn't show "No information available" from them
+                    if client and vim.tbl_contains({ "ruff", "copilot" }, client.name) then
+                        client.server_capabilities.hoverProvider = false
+                    end
 
                     -- Inlay hints if supported
                     if client and client.server_capabilities.inlayHintProvider then

@@ -55,102 +55,85 @@ return {
             mlsp.setup({
                 ensure_installed = servers,
                 automatic_installation = true,
+                automatic_enable = false, -- we configure & enable servers below
             })
 
             ----------------------------------------------------------------
-            -- Shared capabilities / helpers (0.11+ API with 0.10 fallback)
+            -- Shared capabilities / helpers
             ----------------------------------------------------------------
             local schemastore = require("schemastore")
             local caps = require("cmp_nvim_lsp").default_capabilities()
-            local use_new = (vim.fn.has("nvim-0.11") == 1) and (type(vim.lsp.config) == "table")
-
-            vim.g._lsp_configured = vim.g._lsp_configured or {}
-            local function mark_configured(server) vim.g._lsp_configured[server] = true end
-            local function already(server)
-                if vim.g._lsp_configured[server] then return true end
-                return use_new and (vim.lsp.config[server] ~= nil) or false
-            end
 
             local function apply_server(server, conf)
-                if use_new then
-                    vim.lsp.config[server] = vim.tbl_deep_extend("force", vim.lsp.config[server] or {}, conf)
-                else
-                    require("lspconfig")[server].setup(conf)
-                end
-                mark_configured(server)
+                vim.lsp.config[server] = vim.tbl_deep_extend("force", vim.lsp.config[server] or {}, conf)
+                vim.lsp.enable(server)
             end
 
-            local function setup_server(server)
-                if already(server) then return end
-
-                local opts = {
-                    capabilities = caps,
-                }
-
-                if server == "jsonls" then
-                    opts.settings = {
+            local server_overrides = {
+                jsonls = {
+                    settings = {
                         json = {
                             schemas = schemastore.json.schemas(),
                             validate = { enable = true },
                         },
-                    }
-                elseif server == "yamlls" then
-                    opts.settings = {
+                    },
+                },
+                yamlls = {
+                    settings = {
                         yaml = {
                             schemas = schemastore.yaml.schemas(),
                             keyOrdering = false,
                             format = { enable = true },
                         },
-                    }
-                elseif server == "lua_ls" then
-                    opts.settings = {
+                    },
+                },
+                lua_ls = {
+                    settings = {
                         Lua = {
                             workspace = { checkThirdParty = false },
                             telemetry = { enable = false },
                             diagnostics = { globals = { "vim" } },
                             format = { enable = false }, -- use conform
                         },
-                    }
-                elseif server == "gopls" then
-                    opts.settings = {
+                    },
+                },
+                gopls = {
+                    settings = {
                         gopls = {
                             gofumpt = true,
                             usePlaceholders = true,
                             analyses = { unusedparams = true, shadow = true },
                             staticcheck = true,
                         },
-                    }
-                elseif server == "tsserver" or server == "ts_ls" then
-                    opts.single_file_support = true
-                    opts.settings = {
+                    },
+                },
+                ts_ls = {
+                    single_file_support = true,
+                    settings = {
                         typescript = { format = { enable = false } },
                         javascript = { format = { enable = false } },
-                    }
-                elseif server == "clangd" then
-                    opts.cmd = { "clangd", "--background-index", "--header-insertion=never", "--clang-tidy" }
-                elseif server == "terraformls" then
-                    opts.filetypes = { "terraform", "terraform-vars", "tf", "tfvars", "hcl" }
-                elseif server == "html" then
-                    opts.filetypes = { "html", "templ" }
-                elseif server == "ruff" then
-                    opts.init_options = { settings = { args = {} } }
-                end
+                    },
+                },
+                clangd = {
+                    cmd = { "clangd", "--background-index", "--header-insertion=never", "--clang-tidy" },
+                },
+                terraformls = {
+                    filetypes = { "terraform", "terraform-vars", "tf", "tfvars", "hcl" },
+                },
+                html = {
+                    filetypes = { "html", "templ" },
+                },
+                ruff = {
+                    init_options = { settings = { args = {} } },
+                },
+            }
 
+            for _, server in ipairs(servers) do
+                local opts = { capabilities = caps }
+                if server_overrides[server] then
+                    opts = vim.tbl_deep_extend("force", opts, server_overrides[server])
+                end
                 apply_server(server, opts)
-            end
-
-            if type(mlsp.setup_handlers) == "function" then
-                mlsp.setup_handlers({
-                    function(server) setup_server(server) end,
-                })
-            elseif type(mlsp.get_installed_servers) == "function" then
-                for _, server in ipairs(mlsp.get_installed_servers()) do
-                    setup_server(server)
-                end
-            else
-                for _, server in ipairs(servers) do
-                    setup_server(server)
-                end
             end
 
             ----------------------------------------------------------------

@@ -51,7 +51,7 @@ return {
             { "gh", "<cmd>Lspsaga finder<CR>",                desc = "Finder (refs+impl)",     mode = "n", silent = true, noremap = true },
             { "gi", vim.lsp.buf.implementation,                desc = "Go to implementation",   mode = "n", silent = true, noremap = true },
             { "gr", vim.lsp.buf.references,                    desc = "List references",        mode = "n", silent = true, noremap = true },
-            { "K",  "<cmd>Lspsaga hover_doc<CR>",             desc = "Hover doc",              mode = "n", silent = true, noremap = true },
+            { "K",  "<cmd>Lspsaga hover_doc ++silent<CR>",     desc = "Hover doc",              mode = "n", silent = true, noremap = true },
 
             -- Diagnostics navigation (Saga UI)
             { "]e", "<cmd>Lspsaga diagnostic_jump_next<CR>",  desc = "Next diagnostic",        mode = "n", silent = true, noremap = true },
