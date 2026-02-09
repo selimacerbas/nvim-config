@@ -81,10 +81,20 @@ vim.o.equalalways = false
 -- === Terminal Related(global) ===
 
 -- Leave terminal (Job) mode with Esc
-vim.keymap.set('t', '<Esc>', [[<C-\><C-n>]], { silent = true })
+vim.keymap.set('t', '<Esc>', [[<C-\><C-n>]], { silent = true, desc = "Terminal: normal mode" })
 
 -- === UI Sizing (global) ===
 do
+    -- Register which-key sub-groups for UI sizing
+    local ok, wk = pcall(require, "which-key")
+    if ok and wk.add then
+        wk.add({
+            { "<leader>uw", group = "Width presets" },
+            { "<leader>uh", group = "Height presets" },
+            { "<leader>ut", group = "UI controls" },
+        })
+    end
+
     local sizing = require("custom.ui-sizing")
     sizing.setup({
         -- flip this to true if you want per-filetype auto reapply (recommended only for sidebars)
@@ -96,20 +106,20 @@ do
     end
 
     -- Width presets
-    map("<leader>uw1", function() sizing.set_width_ratio(0.15) end, "UI Sizing: Width → 15%")
-    map("<leader>uw2", function() sizing.set_width_ratio(0.25) end, "UI Sizing: Width → 25%")
-    map("<leader>uw3", function() sizing.set_width_ratio(0.35) end, "UI Sizing: Width → 35%")
-    map("<leader>uw4", function() sizing.set_width_ratio(0.45) end, "UI Sizing: Width → 45%")
+    map("<leader>uw1", function() sizing.set_width_ratio(0.15) end, "Width → 15%")
+    map("<leader>uw2", function() sizing.set_width_ratio(0.25) end, "Width → 25%")
+    map("<leader>uw3", function() sizing.set_width_ratio(0.35) end, "Width → 35%")
+    map("<leader>uw4", function() sizing.set_width_ratio(0.45) end, "Width → 45%")
 
     -- Height presets
-    map("<leader>uh1", function() sizing.set_height_ratio(0.15) end, "UI Sizing: Height → 15%")
-    map("<leader>uh2", function() sizing.set_height_ratio(0.25) end, "UI Sizing: Height → 25%")
-    map("<leader>uh3", function() sizing.set_height_ratio(0.35) end, "UI Sizing: Height → 35%")
-    map("<leader>uh4", function() sizing.set_height_ratio(0.45) end, "UI Sizing: Height → 45%")
+    map("<leader>uh1", function() sizing.set_height_ratio(0.15) end, "Height → 15%")
+    map("<leader>uh2", function() sizing.set_height_ratio(0.25) end, "Height → 25%")
+    map("<leader>uh3", function() sizing.set_height_ratio(0.35) end, "Height → 35%")
+    map("<leader>uh4", function() sizing.set_height_ratio(0.45) end, "Height → 45%")
 
     -- Handy controls
-    map("<leader>uto", function() vim.cmd("UISizeOff") end, "UI Sizing: OFF")
-    map("<leader>utO", function() vim.cmd("UISizeOn") end, "UI Sizing: ON")
-    map("<leader>utc", function() vim.cmd("UISizeClear") end, "UI Sizing: Clear current")
-    map("<leader>utR", function() vim.cmd("UISizeResetAll") end, "UI Sizing: Reset ALL")
+    map("<leader>uto", function() vim.cmd("UISizeOff") end, "OFF")
+    map("<leader>utO", function() vim.cmd("UISizeOn") end, "ON")
+    map("<leader>utc", function() vim.cmd("UISizeClear") end, "Clear current")
+    map("<leader>utR", function() vim.cmd("UISizeResetAll") end, "Reset ALL")
 end

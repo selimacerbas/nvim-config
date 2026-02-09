@@ -21,7 +21,7 @@ return {
 
         -- v3-friendly real mapping (so Lazy loads on press)
         keys = {
-            { "<leader>vb", "<cmd>VimBeGood<CR>", desc = "Play Vim Be Good", mode = "n", silent = true, noremap = true },
+            { "<leader>wg", "<cmd>VimBeGood<CR>", desc = "Play Vim Be Good", mode = "n", silent = true, noremap = true },
         },
 
         config = function() end,

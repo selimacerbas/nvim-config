@@ -74,7 +74,7 @@ return {
                 enable = true,
                 keymaps = {
                     init_selection = "gnn",
-                    node_incremental = "grn",
+                    node_incremental = "gRn",  -- avoid grn (Neovim 0.11 LSP rename)
                     scope_incremental = "grc",
                     node_decremental = "grm",
                 },
@@ -115,7 +115,7 @@ return {
                 { "<leader>Sa", desc = "Swap parameter → next" },
                 { "<leader>SA", desc = "Swap parameter → prev" },
                 { "gnn", desc = "TS: init selection", mode = "n" },
-                { "grn", desc = "TS: grow node", mode = "n" },
+                { "gRn", desc = "TS: grow node", mode = "n" },
                 { "grm", desc = "TS: shrink node", mode = "n" },
                 { "grc", desc = "TS: grow scope", mode = "n" },
             })

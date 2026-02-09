@@ -64,16 +64,6 @@ return {
             -- Normal-mode helpers under <leader>s
             { "<leader>se", function() require("luasnip").expand() end,         desc = "Snippets: Expand (if available)" },
             { "<leader>su", function() require("luasnip").unlink_current() end, desc = "Snippets: Unlink current" },
-            {
-                "<leader>sr",
-                function()
-                    local ls = require("luasnip")
-                    ls.cleanup()
-                    require("luasnip.loaders.from_vscode").lazy_load()
-                    vim.notify("LuaSnip: snippets reloaded")
-                end,
-                desc = "Snippets: Reload",
-            },
         },
 
         config = function(_, opts)

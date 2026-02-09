@@ -42,23 +42,15 @@ return {
 
         keys = {
             ---------------------------------------------------------------
-            -- g-motions: core navigation (no leader needed)
+            -- Diagnostics navigation (Saga UI) — global, works without LSP
             ---------------------------------------------------------------
-            { "gd", "<cmd>Lspsaga goto_definition<CR>",       desc = "Go to definition",      mode = "n", silent = true, noremap = true },
-            { "gD", "<cmd>Lspsaga goto_declaration<CR>",      desc = "Go to declaration",      mode = "n", silent = true, noremap = true },
-            { "gp", "<cmd>Lspsaga peek_definition<CR>",       desc = "Peek definition",        mode = "n", silent = true, noremap = true },
-            { "gt", "<cmd>Lspsaga peek_type_definition<CR>",  desc = "Peek type definition",   mode = "n", silent = true, noremap = true },
-            { "gh", "<cmd>Lspsaga finder<CR>",                desc = "Finder (refs+impl)",     mode = "n", silent = true, noremap = true },
-            { "gi", vim.lsp.buf.implementation,                desc = "Go to implementation",   mode = "n", silent = true, noremap = true },
-            { "gr", vim.lsp.buf.references,                    desc = "List references",        mode = "n", silent = true, noremap = true },
-            { "K",  "<cmd>Lspsaga hover_doc ++silent<CR>",     desc = "Hover doc",              mode = "n", silent = true, noremap = true },
-
-            -- Diagnostics navigation (Saga UI)
             { "]e", "<cmd>Lspsaga diagnostic_jump_next<CR>",  desc = "Next diagnostic",        mode = "n", silent = true, noremap = true },
             { "[e", "<cmd>Lspsaga diagnostic_jump_prev<CR>",  desc = "Prev diagnostic",        mode = "n", silent = true, noremap = true },
 
             ---------------------------------------------------------------
-            -- <leader>l: LSP actions (unique, no duplicates of g-motions)
+            -- <leader>l: LSP actions
+            -- g-motions (gd, gD, gi, gr, gh, K) are buffer-local in
+            -- nvim-lspconfig.lua LspAttach — not here.
             ---------------------------------------------------------------
 
             -- Actions
@@ -66,6 +58,10 @@ return {
             { "<leader>lA", "<cmd>Lspsaga code_action<CR>",   desc = "Code action (range)",    mode = "v", silent = true, noremap = true },
             { "<leader>lr", "<cmd>Lspsaga rename<CR>",        desc = "Rename symbol",          mode = "n", silent = true, noremap = true },
             { "<leader>lF", function() require("conform").format({ async = true, lsp_format = "fallback" }) end, desc = "Format buffer", mode = "n", silent = true, noremap = true },
+
+            -- Peek (moved from gp/gt to avoid shadowing Neovim builtins)
+            { "<leader>lp", "<cmd>Lspsaga peek_definition<CR>",      desc = "Peek definition",      mode = "n", silent = true, noremap = true },
+            { "<leader>lP", "<cmd>Lspsaga peek_type_definition<CR>", desc = "Peek type definition", mode = "n", silent = true, noremap = true },
 
             -- Hover / docs
             { "<leader>lh", "<cmd>Lspsaga hover_doc ++keep<CR>", desc = "Hover doc (pin)",     mode = "n", silent = true, noremap = true },

@@ -29,8 +29,7 @@ return {
             vim.lsp.config("*", { capabilities = capabilities })
 
             -- ===== Buffer-local on LspAttach =====
-            -- Only sets buffer options and inlay hints.
-            -- All keymaps are owned by lspsaga.lua.
+            -- Sets buffer options, LSP g-motion keymaps, and inlay hints.
             vim.api.nvim_create_autocmd("LspAttach", {
                 callback = function(args)
                     local bufnr  = args.buf
@@ -40,9 +39,16 @@ return {
                     vim.bo[bufnr].tagfunc    = "v:lua.vim.lsp.tagfunc"
                     vim.bo[bufnr].formatexpr = "v:lua.vim.lsp.formatexpr()"
 
-                    -- Override Neovim 0.10+ default K so Lspsaga hover_doc runs instead
-                    vim.keymap.set("n", "K", "<cmd>Lspsaga hover_doc ++silent<CR>",
-                        { buffer = bufnr, desc = "Hover doc", silent = true })
+                    -- Buffer-local LSP navigation (only active when LSP is attached)
+                    local function bmap(lhs, rhs, desc)
+                        vim.keymap.set("n", lhs, rhs, { buffer = bufnr, desc = desc, silent = true })
+                    end
+                    bmap("gd", "<cmd>Lspsaga goto_definition<CR>",  "Go to definition")
+                    bmap("gD", "<cmd>Lspsaga goto_declaration<CR>", "Go to declaration")
+                    bmap("gh", "<cmd>Lspsaga finder<CR>",           "Finder (refs+impl)")
+                    bmap("gi", vim.lsp.buf.implementation,          "Go to implementation")
+                    bmap("gr", vim.lsp.buf.references,              "List references")
+                    bmap("K",  "<cmd>Lspsaga hover_doc ++silent<CR>", "Hover doc")
 
                     -- Disable hover for linter/formatter-only servers so Lspsaga
                     -- doesn't show "No information available" from them
