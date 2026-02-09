@@ -11,10 +11,12 @@ return {
             if ok and wk.add then
                 wk.add({ { "<leader>n", group = "NvimTree" } })
             end
-            -- Auto-open tree on startup
+            -- Auto-open tree on startup (only when no file arguments)
             vim.api.nvim_create_autocmd("VimEnter", {
                 callback = function()
-                    vim.schedule(function() vim.cmd("NvimTreeOpen") end)
+                    if vim.fn.argc() == 0 then
+                        vim.schedule(function() vim.cmd("NvimTreeOpen") end)
+                    end
                 end,
             })
         end,

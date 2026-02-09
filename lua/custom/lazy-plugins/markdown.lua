@@ -216,7 +216,7 @@ return {
                 diagnostic_update_events = { "BufWritePost", "InsertLeave" },
                 root_dir = function(_, bufnr)
                     return vim.fs.root(bufnr or 0, { ".git", "pyproject.toml", "package.json", "_quarto.yml" })
-                        or vim.loop.cwd()
+                        or vim.uv.cwd()
                 end,
             },
             buffers = { set_filetype = true, write_to_disk = false },

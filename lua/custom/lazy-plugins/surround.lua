@@ -23,7 +23,7 @@ return {
             require("nvim-surround").setup()
 
             -- 2) Label existing (non-leader) maps for which-key (no extra mappings created)
-
+            local ok, wk = pcall(require, "which-key")
             if not ok or not wk.add then return end
 
             wk.add({

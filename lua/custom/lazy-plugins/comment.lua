@@ -66,18 +66,13 @@ return {
       -- which-key discoverability for native 'gc'/'gb' trees
       local ok, wk = pcall(require, "which-key")
       if ok and wk.add then
-        -- Show native Comment.nvim maps under the normal `g` prefix
         wk.add({
-          { "gc", group = "Linewise comment" },
-          { "gb", group = "Blockwise comment" },
-        }, { mode = { "n", "v" }, prefix = "g" })
-
-        -- Extra hints after `gc` (labels only; mappings already provided by Comment.nvim)
-        wk.add({
-          { "A", desc = "Comment end of line (gcA)" },
-          { "o", desc = "Comment below (gco)" },
-          { "O", desc = "Comment above (gcO)" },
-        }, { mode = "n", prefix = "gc" })
+          { "gc",  group = "Linewise comment",             mode = { "n", "v" } },
+          { "gb",  group = "Blockwise comment",            mode = { "n", "v" } },
+          { "gcA", desc = "Comment end of line",           mode = "n" },
+          { "gco", desc = "Comment below",                 mode = "n" },
+          { "gcO", desc = "Comment above",                 mode = "n" },
+        })
       end
     end,
   },

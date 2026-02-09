@@ -65,7 +65,7 @@ return {
             { "<leader>la", "<cmd>Lspsaga code_action<CR>",   desc = "Code action",            mode = "n", silent = true, noremap = true },
             { "<leader>lA", "<cmd>Lspsaga code_action<CR>",   desc = "Code action (range)",    mode = "v", silent = true, noremap = true },
             { "<leader>lr", "<cmd>Lspsaga rename<CR>",        desc = "Rename symbol",          mode = "n", silent = true, noremap = true },
-            { "<leader>lF", function() require("conform").format({ async = true, lsp_fallback = true }) end, desc = "Format buffer", mode = "n", silent = true, noremap = true },
+            { "<leader>lF", function() require("conform").format({ async = true, lsp_format = "fallback" }) end, desc = "Format buffer", mode = "n", silent = true, noremap = true },
 
             -- Hover / docs
             { "<leader>lh", "<cmd>Lspsaga hover_doc ++keep<CR>", desc = "Hover doc (pin)",     mode = "n", silent = true, noremap = true },

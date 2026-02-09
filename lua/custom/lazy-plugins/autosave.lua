@@ -26,7 +26,7 @@ return {
           end
 
           local function bopt(opt, default)
-            local ok, val = pcall(vim.api.nvim_buf_get_option, buf, opt)
+            local ok, val = pcall(vim.api.nvim_get_option_value, opt, { buf = buf })
             return ok and val or default
           end
 

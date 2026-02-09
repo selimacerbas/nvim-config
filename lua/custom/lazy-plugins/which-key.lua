@@ -8,17 +8,16 @@ return {
 
             wk.setup({
                 plugins = {
-                    spelling = { enabled = true, suggestions = 20 }, -- shows z= suggestions nicely
+                    spelling = { enabled = true, suggestions = 20 },
                 },
-                -- Show prettier labels for these keys in the popup
-                replace = {
-                    ["<space>"] = "SPC",
-                    ["<cr>"]    = "RET",
-                    ["<tab>"]   = "TAB",
+                -- v3: key label replacements live under `keys`
+                keys = {
+                    scroll_down = "<c-d>",
+                    scroll_up = "<c-u>",
                 },
                 win = {
                     border = "rounded",
-                    no_overlap = true, -- avoid covering the statusline/cmdline if possible
+                    no_overlap = true,
                 },
                 layout = {
                     align = "center",
@@ -28,7 +27,7 @@ return {
                     separator  = "➜",
                     group      = "+",
                 },
-                show_help = false, -- popup stays clean; use :h which-key for docs
+                show_help = false,
             })
 
         end,

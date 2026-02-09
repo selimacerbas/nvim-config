@@ -159,8 +159,8 @@ end
 function M.reset_all()
   M.state.ft_w, M.state.ft_h = {}, {}
   for _, win in ipairs(vim.api.nvim_list_wins()) do
-    pcall(vim.api.nvim_win_set_option, win, "winfixwidth", false)
-    pcall(vim.api.nvim_win_set_option, win, "winfixheight", false)
+    pcall(vim.api.nvim_set_option_value, "winfixwidth", false, { win = win })
+    pcall(vim.api.nvim_set_option_value, "winfixheight", false, { win = win })
     vim.api.nvim_win_call(win, function()
       vim.w.ui_sizing_wratio = nil
       vim.w.ui_sizing_hratio = nil

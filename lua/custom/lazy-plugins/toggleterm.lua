@@ -7,12 +7,8 @@ return {
         -- which-key v3: groups live here (not in keys)
         init = function()
             local ok, wk = pcall(require, "which-key")
-            if ok then
-                if wk.add then
-                    wk.add({ { "<leader>t", group = "Terminal" } })
-                else
-                    wk.register({ t = { name = "Terminal" } }, { prefix = "<leader>" })
-                end
+            if ok and wk.add then
+                wk.add({ { "<leader>t", group = "Terminal" } })
             end
         end,
 
@@ -78,8 +74,7 @@ return {
                                     "SignColumn:ToggleTermTransparent",
                                     "EndOfBuffer:ToggleTermTransparent",
                                 }, ",")
-                                local ok = pcall(vim.api.nvim_set_option_value, "winhighlight", hl, { win = win })
-                                if not ok then pcall(vim.api.nvim_win_set_option, win, "winhighlight", hl) end
+                                pcall(vim.api.nvim_set_option_value, "winhighlight", hl, { win = win })
                             end
                         end
                     end

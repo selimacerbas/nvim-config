@@ -62,7 +62,6 @@ return {
             -- Shared capabilities / helpers
             ----------------------------------------------------------------
             local schemastore = require("schemastore")
-            local caps = require("cmp_nvim_lsp").default_capabilities()
 
             local function apply_server(server, conf)
                 vim.lsp.config[server] = vim.tbl_deep_extend("force", vim.lsp.config[server] or {}, conf)
@@ -90,7 +89,11 @@ return {
                 lua_ls = {
                     settings = {
                         Lua = {
-                            workspace = { checkThirdParty = false },
+                            runtime = { version = "LuaJIT" },
+                            workspace = {
+                                checkThirdParty = false,
+                                library = vim.api.nvim_get_runtime_file("", true),
+                            },
                             telemetry = { enable = false },
                             diagnostics = { globals = { "vim" } },
                             format = { enable = false }, -- use conform
@@ -129,7 +132,7 @@ return {
             }
 
             for _, server in ipairs(servers) do
-                local opts = { capabilities = caps }
+                local opts = {}
                 if server_overrides[server] then
                     opts = vim.tbl_deep_extend("force", opts, server_overrides[server])
                 end
@@ -148,7 +151,7 @@ return {
                     local seen = {}
                     for _, client in ipairs(vim.lsp.get_clients({ bufnr = bufnr })) do
                         local key = client.name .. "::" .. (client.config.root_dir or "")
-                        if seen[key] then client.stop(true) else seen[key] = true end
+                        if seen[key] then client:stop() else seen[key] = true end
                     end
                 end,
             })
@@ -160,7 +163,7 @@ return {
                 for _, c in ipairs(vim.lsp.get_clients({ bufnr = bufnr })) do
                     local key = c.name .. "::" .. (c.config.root_dir or "")
                     if seen[key] then
-                        c.stop(true); table.insert(killed, c.name)
+                        c:stop(); table.insert(killed, c.name)
                     else
                         seen[key] = true
                     end

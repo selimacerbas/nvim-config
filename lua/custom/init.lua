@@ -43,11 +43,7 @@ vim.api.nvim_create_autocmd({ "BufRead", "BufNewFile" }, {
     end,
 })
 
--- Map leader as space.
-vim.g.mapleader = " "
-
--- Map localleader.
-vim.g.maplocalleader = ","
+-- Leader keys are set in lazy.lua (before lazy.nvim setup).
 
 -- Cell delimeter for molten
 vim.g.molten_cell_delimiter = "# %%"
@@ -100,22 +96,12 @@ do
     end
 
     -- Width presets
-    map("uw1", function() sizing.set_width_ratio(0.15) end, "UI Sizing: Width → 15%")
-    map("uw2", function() sizing.set_width_ratio(0.25) end, "UI Sizing: Width → 25%")
-    map("uw3", function() sizing.set_width_ratio(0.35) end, "UI Sizing: Width → 35%")
-    map("uw4", function() sizing.set_width_ratio(0.45) end, "UI Sizing: Width → 45%")
-
     map("<leader>uw1", function() sizing.set_width_ratio(0.15) end, "UI Sizing: Width → 15%")
     map("<leader>uw2", function() sizing.set_width_ratio(0.25) end, "UI Sizing: Width → 25%")
     map("<leader>uw3", function() sizing.set_width_ratio(0.35) end, "UI Sizing: Width → 35%")
     map("<leader>uw4", function() sizing.set_width_ratio(0.45) end, "UI Sizing: Width → 45%")
 
     -- Height presets
-    map("uh1", function() sizing.set_height_ratio(0.15) end, "UI Sizing: Height → 15%")
-    map("uh2", function() sizing.set_height_ratio(0.25) end, "UI Sizing: Height → 25%")
-    map("uh3", function() sizing.set_height_ratio(0.35) end, "UI Sizing: Height → 35%")
-    map("uh4", function() sizing.set_height_ratio(0.45) end, "UI Sizing: Height → 45%")
-
     map("<leader>uh1", function() sizing.set_height_ratio(0.15) end, "UI Sizing: Height → 15%")
     map("<leader>uh2", function() sizing.set_height_ratio(0.25) end, "UI Sizing: Height → 25%")
     map("<leader>uh3", function() sizing.set_height_ratio(0.35) end, "UI Sizing: Height → 35%")

@@ -9,7 +9,7 @@ return {
         init = function()
             local ok, wk = pcall(require, "which-key")
             if ok and wk.add then
-                wk.add({ { "<leader>r", group = "Run/REPL (SnipRun)" } })
+                wk.add({ { "<leader>x", group = "Run/REPL (SnipRun)" } })
             end
         end,
 
@@ -21,18 +21,18 @@ return {
             end
             return {
                 -- Run
-                { "<leader>rr", "<Plug>SnipRun",                mode = { "n", "x" }, desc = "Run line/selection",         remap = true, silent = true },
-                { "<leader>ro", "<Plug>SnipRunOperator",        mode = "n",          desc = "Run with motion (operator)", remap = true, silent = true },
-                { "<leader>rR", run_buffer,                     mode = "n",          desc = "Run entire file (%)",        silent = true },
+                { "<leader>xr", "<Plug>SnipRun",                mode = { "n", "x" }, desc = "Run line/selection",         remap = true, silent = true },
+                { "<leader>xo", "<Plug>SnipRunOperator",        mode = "n",          desc = "Run with motion (operator)", remap = true, silent = true },
+                { "<leader>xR", run_buffer,                     mode = "n",          desc = "Run entire file (%)",        silent = true },
 
                 -- Info / control
-                { "<leader>ri", "<cmd>SnipInfo<CR>",            mode = "n",          desc = "SnipInfo (current ft)",      silent = true },
-                { "<leader>rs", "<cmd>SnipReset<CR>",           mode = "n",          desc = "Stop/Reset runners",         silent = true },
-                { "<leader>rc", "<cmd>SnipClose<CR>",           mode = "n",          desc = "Close SnipRun windows",      silent = true },
+                { "<leader>xi", "<cmd>SnipInfo<CR>",            mode = "n",          desc = "SnipInfo (current ft)",      silent = true },
+                { "<leader>xs", "<cmd>SnipReset<CR>",           mode = "n",          desc = "Stop/Reset runners",         silent = true },
+                { "<leader>xc", "<cmd>SnipClose<CR>",           mode = "n",          desc = "Close SnipRun windows",      silent = true },
 
                 -- Live mode toggle (we enable the feature below)
-                { "<leader>rl", "<cmd>SnipLive<CR>",            mode = "n",          desc = "Toggle Live mode",           silent = true },
-                { "<leader>rm", "<cmd>SnipReplMemoryClean<CR>", mode = "n",          desc = "Clean REPL memory",          silent = true },
+                { "<leader>xl", "<cmd>SnipLive<CR>",            mode = "n",          desc = "Toggle Live mode",           silent = true },
+                { "<leader>xm", "<cmd>SnipReplMemoryClean<CR>", mode = "n",          desc = "Clean REPL memory",          silent = true },
             }
         end,
 

@@ -11,12 +11,8 @@ return {
         -- which-key group goes here (v3-friendly)
         init = function()
             local ok, wk = pcall(require, "which-key")
-            if ok then
-                if wk.add then
-                    wk.add({ { "<leader>s", group = "Snippets" } })
-                else
-                    wk.register({ s = { name = "Snippets" } }, { prefix = "<leader>" })
-                end
+            if ok and wk.add then
+                wk.add({ { "<leader>s", group = "Snippets" } })
             end
         end,
 
@@ -89,7 +85,7 @@ return {
 
             -- Optional: user Lua snippets at ~/.config/nvim/lua/snippets
             local user_snips = vim.fn.stdpath("config") .. "/lua/snippets"
-            if vim.loop.fs_stat(user_snips) then
+            if vim.uv.fs_stat(user_snips) then
                 require("luasnip.loaders.from_lua").lazy_load({ paths = user_snips })
             end
         end,

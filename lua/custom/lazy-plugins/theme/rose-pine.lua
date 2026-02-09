@@ -256,8 +256,7 @@ return {
             --------------------------------------------------------------------------
             local aug = vim.api.nvim_create_augroup("FloatsWinblend", { clear = true })
             local function set_winblend_safe(win, val)
-                local ok = pcall(vim.api.nvim_set_option_value, "winblend", val, { win = win })
-                if not ok then pcall(vim.api.nvim_win_set_option, win, "winblend", val) end
+                pcall(vim.api.nvim_set_option_value, "winblend", val, { win = win })
             end
             vim.api.nvim_create_autocmd({ "WinNew", "WinEnter" }, {
                 group = aug,
@@ -267,14 +266,9 @@ return {
                     local ok, cfg = pcall(vim.api.nvim_win_get_config, win)
                     if not ok or not cfg or cfg.relative == "" then return end
                     local cur
-                    local ok_get = pcall(function()
+                    pcall(function()
                         cur = vim.api.nvim_get_option_value("winblend", { win = win })
-                        return true
                     end)
-                    if not ok_get then
-                        local ok2, cur2 = pcall(vim.api.nvim_win_get_option, win, "winblend")
-                        if ok2 then cur = cur2 end
-                    end
                     if type(cur) == "number" and cur > 0 then return end
                     set_winblend_safe(win, 10)
                 end,

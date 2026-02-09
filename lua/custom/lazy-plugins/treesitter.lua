@@ -122,23 +122,13 @@ return {
         end,
     },
 
-    -- Treesitter Playground (map real keys so Lazy loads on press)
+    -- Treesitter inspection (built-in in Neovim 0.11+)
     {
-        "nvim-treesitter/playground",
-        cmd = { "TSHighlightCapturesUnderCursor", "TSPlaygroundToggle" },
+        "nvim-treesitter/nvim-treesitter",
         dependencies = { "folke/which-key.nvim" },
-
-        -- v3 which-key group in init
-        init = function()
-            local ok, wk = pcall(require, "which-key")
-            if ok and wk.add then
-                wk.add({ { "<leader>S", group = "Treesitter/Surround" } })
-            end
-        end,
-
         keys = {
-            { "<leader>Sp", "<cmd>TSPlaygroundToggle<CR>",             desc = "Playground toggle",  mode = "n", silent = true, noremap = true },
-            { "<leader>Sc", "<cmd>TSHighlightCapturesUnderCursor<CR>", desc = "Highlight captures", mode = "n", silent = true, noremap = true },
+            { "<leader>Sp", "<cmd>InspectTree<CR>", desc = "Inspect Tree (playground)",  mode = "n", silent = true, noremap = true },
+            { "<leader>Sc", "<cmd>Inspect<CR>",     desc = "Inspect highlights at cursor", mode = "n", silent = true, noremap = true },
         },
     },
 
