@@ -41,6 +41,9 @@ return {
             { "<leader>Tk", function() require("telescope.builtin").keymaps() end,                          desc = "Keymaps" },
             { "<leader>Tc", function() require("telescope.builtin").commands() end,                         desc = "Commands" },
             { "<leader>Th", function() require("telescope.builtin").help_tags() end,                        desc = "Help tags" },
+            { "<leader>Td", function() require("telescope.builtin").diagnostics() end,                      desc = "Diagnostics" },
+            { "<leader>Tw", function() require("telescope.builtin").lsp_dynamic_workspace_symbols() end,    desc = "Workspace symbols" },
+            { "<leader>T/", function() require("telescope.builtin").current_buffer_fuzzy_find() end,        desc = "Fuzzy find (buffer)" },
         },
 
         config = function()

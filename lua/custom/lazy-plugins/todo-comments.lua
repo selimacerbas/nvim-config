@@ -54,8 +54,8 @@ return {
             { "[t",         function() require("todo-comments").jump_prev() end, desc = "Prev TODO",                mode = "n", silent = true, noremap = true },
 
             -- leader actions
-            { "<leader>zj", "<cmd>TodoNext<CR>",                                 desc = "Next TODO",                mode = "n", silent = true, noremap = true },
-            { "<leader>zk", "<cmd>TodoPrev<CR>",                                 desc = "Prev TODO",                mode = "n", silent = true, noremap = true },
+            { "<leader>zj", function() require("todo-comments").jump_next() end, desc = "Next TODO",                mode = "n", silent = true, noremap = true },
+            { "<leader>zk", function() require("todo-comments").jump_prev() end, desc = "Prev TODO",                mode = "n", silent = true, noremap = true },
             { "<leader>zq", "<cmd>TodoQuickFix<CR>",                             desc = "Send to QuickFix",         mode = "n", silent = true, noremap = true },
             { "<leader>zl", "<cmd>TodoLocList<CR>",                              desc = "Send to Location List",    mode = "n", silent = true, noremap = true },
             { "<leader>zs", "<cmd>TodoTelescope<CR>",                            desc = "Search TODOs (Telescope)", mode = "n", silent = true, noremap = true },

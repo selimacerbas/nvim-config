@@ -1,7 +1,7 @@
 return {
     {
         "windwp/nvim-autopairs",
-        -- event = "InsertEnter", -- keep commented lazy-load hint
+        event = "InsertEnter",
         dependencies = { "folke/which-key.nvim" },
         opts = function()
             -- Only turn on Treesitter-aware pairing if TS is installed

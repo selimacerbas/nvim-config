@@ -48,7 +48,7 @@ return {
       },
       current_line_blame = true,
       current_line_blame_opts = { delay = 400, virt_text_pos = "eol" },
-      preview_config = { border = "single" },
+      preview_config = { border = "rounded" },
 
       -- keep buffer-local nav & text objects here
       on_attach = function(bufnr)

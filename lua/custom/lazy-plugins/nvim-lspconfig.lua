@@ -43,6 +43,10 @@ return {
                     vim.bo[bufnr].tagfunc    = "v:lua.vim.lsp.tagfunc"
                     vim.bo[bufnr].formatexpr = "v:lua.vim.lsp.formatexpr()"
 
+                    -- Override Neovim 0.10+ default K so Lspsaga hover_doc runs instead
+                    vim.keymap.set("n", "K", "<cmd>Lspsaga hover_doc<CR>",
+                        { buffer = bufnr, desc = "Hover doc", silent = true })
+
                     -- Inlay hints if supported
                     if client and client.server_capabilities.inlayHintProvider then
                         vim.b[bufnr]._ih_enabled = true

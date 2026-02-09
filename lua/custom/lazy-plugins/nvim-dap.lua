@@ -7,8 +7,6 @@ return {
             "theHamsta/nvim-dap-virtual-text",
             "folke/which-key.nvim",
         },
-        event = "VeryLazy",
-
         -- which-key v3 group label (no v2 fallback, no group entries in `keys`)
         init = function()
             local ok, wk = pcall(require, "which-key")
@@ -37,6 +35,9 @@ return {
             { "<leader>du", function() require("dapui").toggle() end,         desc = "Toggle DAP UI",    mode = "n",          silent = true, noremap = true },
             { "<leader>de", function() require("dapui").eval() end,           desc = "Eval (hover/vis)", mode = { "n", "v" }, silent = true, noremap = true },
             { "<leader>dl", function() require("dap").list_breakpoints() end, desc = "List Breakpoints", mode = "n",          silent = true, noremap = true },
+            { "<leader>dR", function() require("dap").restart() end,          desc = "Restart",          mode = "n",          silent = true, noremap = true },
+            { "<leader>dp", function() require("dap").pause() end,            desc = "Pause",            mode = "n",          silent = true, noremap = true },
+            { "<leader>dC", function() require("dap").run_to_cursor() end,    desc = "Run to Cursor",    mode = "n",          silent = true, noremap = true },
         },
 
         config = function()

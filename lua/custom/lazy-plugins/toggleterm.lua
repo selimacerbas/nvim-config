@@ -46,7 +46,7 @@ return {
             tt.setup({
                 -- ❌ no size/persist_size here; let your global us*/uh* handle it
                 direction = "float",
-                float_opts = { border = "curved", winblend = 5 },
+                float_opts = { border = "rounded", winblend = 5 },
                 shade_terminals = false,
                 start_in_insert = true,
                 close_on_exit = true,
