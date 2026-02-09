@@ -23,7 +23,7 @@ return {
                 "yaml", "html", "xml", "dockerfile", "terraform", "hcl",
                 "starlark", "query", "dart",
                 -- editing QoL
-                "markdown", "markdown_inline",
+                "markdown", "markdown_inline", "regex",
             },
             auto_install = true,
             -- Parsers that fail to compile or are handled by other plugins
