@@ -177,12 +177,26 @@ return {
                 { name = 'path' },
             }),
             formatting = {
+                fields = { 'kind', 'abbr', 'menu' },
                 format = function(entry, vim_item)
+                    local kind_icons = {
+                        Text          = ' ', Method        = ' ', Function      = '󰊕 ',
+                        Constructor   = ' ', Field         = ' ', Variable      = '󰀫 ',
+                        Class         = ' ', Interface     = ' ', Module        = ' ',
+                        Property      = ' ', Unit          = ' ', Value         = '󰎠 ',
+                        Enum          = ' ', Keyword       = ' ', Snippet       = ' ',
+                        Color         = ' ', File          = ' ', Reference     = ' ',
+                        Folder        = ' ', EnumMember    = ' ', Constant      = ' ',
+                        Struct        = ' ', Event         = ' ', Operator      = ' ',
+                        TypeParameter = ' ',
+                    }
+                    vim_item.kind = (kind_icons[vim_item.kind] or '') .. vim_item.kind
                     vim_item.menu = ({
-                        nvim_lsp = "[LSP]",
-                        buffer   = "[Buffer]",
-                        path     = "[Path]",
-                        luasnip  = "[Snippet]",
+                        nvim_lsp = '[LSP]',
+                        buffer   = '[Buf]',
+                        path     = '[Path]',
+                        luasnip  = '[Snip]',
+                        copilot  = '[AI]',
                     })[entry.source.name]
                     return vim_item
                 end,
@@ -195,7 +209,8 @@ return {
                 make_comparators = make_comparators,
             },
 
-            experimental = { ghost_text = true },
+            -- ghost_text disabled: conflicts with Copilot inline suggestions
+            experimental = { ghost_text = false },
             completion = { completeopt = 'menu,menuone,noinsert' },
         }
     end,

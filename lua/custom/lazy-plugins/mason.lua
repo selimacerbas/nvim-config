@@ -71,8 +71,6 @@ return {
                 return use_new and (vim.lsp.config[server] ~= nil) or false
             end
 
-            local function on_attach(_, _) end
-
             local function apply_server(server, conf)
                 if use_new then
                     vim.lsp.config[server] = vim.tbl_deep_extend("force", vim.lsp.config[server] or {}, conf)
@@ -87,7 +85,6 @@ return {
 
                 local opts = {
                     capabilities = caps,
-                    on_attach = on_attach,
                 }
 
                 if server == "jsonls" then
