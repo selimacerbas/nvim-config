@@ -1,6 +1,7 @@
 return {
     {
         "nvim-treesitter/nvim-treesitter",
+        lazy = false,  -- must load eagerly for syntax highlighting (keys in 2nd spec would make it lazy)
         build = ":TSUpdate",
         dependencies = {
             "nvim-treesitter/nvim-treesitter-textobjects",
@@ -34,9 +35,6 @@ return {
                 disable = { "latex" },
             },
             indent = { enable = true, disable = { "latex" } },
-
-            -- enable the playground module here
-            playground = { enable = true },
 
             textobjects = {
                 select = {
