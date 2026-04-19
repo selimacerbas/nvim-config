@@ -4,6 +4,7 @@
 return {
     {
         "3rd/image.nvim",
+        enabled = false, -- disabled: incompatible with Neovim 0.12 treesitter API
         lazy = true,
         opts = {
             backend = "kitty",        -- "kitty" | "ueberzug" | "sixel"

@@ -1,10 +1,11 @@
 return {
     {
         "nvim-treesitter/nvim-treesitter",
-        lazy = false,  -- must load eagerly for syntax highlighting (keys in 2nd spec would make it lazy)
+        branch = "main", -- "main" branch required for Neovim 0.12 compatibility
+        lazy = false,
         build = ":TSUpdate",
         dependencies = {
-            "nvim-treesitter/nvim-treesitter-textobjects",
+            { "nvim-treesitter/nvim-treesitter-textobjects", branch = "main" },
             "folke/which-key.nvim",
         },
 
@@ -16,8 +17,16 @@ return {
             end
         end,
 
-        opts = {
-            ensure_installed = {
+        config = function()
+            -- main branch moved bundled queries to runtime/queries/ — add it to rtp
+            -- so the 329 bundled query sets are visible to Neovim's treesitter runtime
+            local plugin_runtime = vim.fn.stdpath("data") .. "/lazy/nvim-treesitter/runtime"
+            if vim.uv.fs_stat(plugin_runtime) then
+                vim.opt.runtimepath:prepend(plugin_runtime)
+            end
+
+            -- Install parsers (async, no-op if already installed)
+            require("nvim-treesitter").install({
                 -- core langs
                 "bash", "c", "cpp", "cmake", "go", "rust", "python", "lua",
                 "vim", "vimdoc", "javascript", "typescript", "tsx", "json",
@@ -25,68 +34,65 @@ return {
                 "starlark", "query", "dart",
                 -- editing QoL
                 "markdown", "markdown_inline", "regex",
-            },
-            auto_install = true,
-            -- Parsers that fail to compile or are handled by other plugins
-            ignore_install = { "latex" },
-            highlight = {
-                enable = true,
-                additional_vim_regex_highlighting = { "latex" },  -- let vimtex handle LaTeX
-                disable = { "latex" },
-            },
-            indent = { enable = true, disable = { "latex" } },
+            })
 
-            textobjects = {
-                select = {
-                    enable = true,
-                    lookahead = true,
-                    keymaps = {
-                        ["af"] = "@function.outer",
-                        ["if"] = "@function.inner",
-                        ["ac"] = "@class.outer",
-                        ["ic"] = "@class.inner",
-                        ["ap"] = "@parameter.outer",
-                        ["ip"] = "@parameter.inner",
-                    },
-                },
-                move = {
-                    enable = true,
-                    set_jumps = true,
-                    goto_next_start = {
-                        ["]f"] = "@function.outer",
-                        ["]c"] = "@class.outer",
-                    },
-                    goto_previous_start = {
-                        ["[f"] = "@function.outer",
-                        ["[c"] = "@class.outer",
-                    },
-                },
-                swap = {
-                    enable = true,
-                    swap_next = { ["<leader>Sa"] = "@parameter.inner" },
-                    swap_previous = { ["<leader>SA"] = "@parameter.inner" },
-                },
-            },
+            -- Start treesitter highlighting for any filetype with an available parser.
+            -- Neovim 0.12 does NOT auto-enable this for most filetypes on the main branch.
+            vim.api.nvim_create_autocmd("FileType", {
+                callback = function(args)
+                    if args.match == "latex" then return end -- vimtex handles latex
+                    local lang = vim.treesitter.language.get_lang(args.match)
+                    if lang and pcall(vim.treesitter.language.add, lang) then
+                        pcall(vim.treesitter.start, args.buf, lang)
+                    end
+                end,
+            })
 
-            incremental_selection = {
-                enable = true,
-                keymaps = {
-                    init_selection = "gnn",
-                    node_incremental = "gRn",  -- avoid grn (Neovim 0.11 LSP rename)
-                    scope_incremental = "grc",
-                    node_decremental = "grm",
-                },
-            },
-        },
+            -- Treesitter-based indentation
+            vim.api.nvim_create_autocmd("FileType", {
+                callback = function(args)
+                    if vim.tbl_contains({ "latex" }, args.match) then return end
+                    local ok, _ = pcall(function()
+                        vim.bo[args.buf].indentexpr = "v:lua.require'nvim-treesitter'.indentexpr()"
+                    end)
+                end,
+            })
 
-        config = function(_, opts)
-            require("nvim-treesitter.configs").setup(opts)
+            -- Textobjects setup (new main-branch API)
+            require("nvim-treesitter-textobjects").setup({
+                select = { lookahead = true },
+                move = { set_jumps = true },
+            })
 
-            -- Which-Key docs (non-leader + leader helpers)
+            local ts_select = require("nvim-treesitter-textobjects.select")
+            local ts_move   = require("nvim-treesitter-textobjects.move")
+            local ts_swap   = require("nvim-treesitter-textobjects.swap")
+
+            -- Select textobjects
+            vim.keymap.set({ "x", "o" }, "af", function() ts_select.select_textobject("@function.outer", "textobjects") end)
+            vim.keymap.set({ "x", "o" }, "if", function() ts_select.select_textobject("@function.inner", "textobjects") end)
+            vim.keymap.set({ "x", "o" }, "ac", function() ts_select.select_textobject("@class.outer", "textobjects") end)
+            vim.keymap.set({ "x", "o" }, "ic", function() ts_select.select_textobject("@class.inner", "textobjects") end)
+            vim.keymap.set({ "x", "o" }, "ap", function() ts_select.select_textobject("@parameter.outer", "textobjects") end)
+            vim.keymap.set({ "x", "o" }, "ip", function() ts_select.select_textobject("@parameter.inner", "textobjects") end)
+
+            -- Move between textobjects
+            vim.keymap.set({ "n", "x", "o" }, "]f", function() ts_move.goto_next_start("@function.outer", "textobjects") end)
+            vim.keymap.set({ "n", "x", "o" }, "]c", function() ts_move.goto_next_start("@class.outer", "textobjects") end)
+            vim.keymap.set({ "n", "x", "o" }, "[f", function() ts_move.goto_previous_start("@function.outer", "textobjects") end)
+            vim.keymap.set({ "n", "x", "o" }, "[c", function() ts_move.goto_previous_start("@class.outer", "textobjects") end)
+
+            -- Swap parameters
+            vim.keymap.set("n", "<leader>Sa", function() ts_swap.swap_next("@parameter.inner") end, { desc = "Swap parameter → next" })
+            vim.keymap.set("n", "<leader>SA", function() ts_swap.swap_previous("@parameter.inner") end, { desc = "Swap parameter → prev" })
+
+            -- Incremental selection (Neovim 0.12 built-in)
+            vim.keymap.set("n", "gnn", function() vim.treesitter.node_at(vim.fn.getpos('.')) end, { desc = "TS: init selection" })
+
+            -- Which-Key docs
             local ok, wk = pcall(require, "which-key")
             if not ok then return end
 
-            -- Operator/visual textobjects
             wk.add({
                 { "a",  group = "Around Textobj",  mode = { "o", "x" } },
                 { "af", desc = "Around function",  mode = { "o", "x" } },
@@ -98,29 +104,23 @@ return {
                 { "ip", desc = "Inside parameter", mode = { "o", "x" } },
             })
 
-            -- Motions between objects
             wk.add({
-                { "]",  group = "Next object",        mode = "n" },
-                { "[",  group = "Prev object",        mode = "n" },
-                { "]f", desc = "Next function start", mode = "n" },
-                { "]c", desc = "Next class start",    mode = "n" },
-                { "[f", desc = "Prev function start", mode = "n" },
-                { "[c", desc = "Prev class start",    mode = "n" },
+                { "]",  group = "Next object",        mode = { "n", "x", "o" } },
+                { "[",  group = "Prev object",        mode = { "n", "x", "o" } },
+                { "]f", desc = "Next function start", mode = { "n", "x", "o" } },
+                { "]c", desc = "Next class start",    mode = { "n", "x", "o" } },
+                { "[f", desc = "Prev function start", mode = { "n", "x", "o" } },
+                { "[c", desc = "Prev class start",    mode = { "n", "x", "o" } },
             })
 
-            -- Swaps + incremental selection under <leader>S
             wk.add({
                 { "<leader>Sa", desc = "Swap parameter → next" },
                 { "<leader>SA", desc = "Swap parameter → prev" },
-                { "gnn", desc = "TS: init selection", mode = "n" },
-                { "gRn", desc = "TS: grow node", mode = "n" },
-                { "grm", desc = "TS: shrink node", mode = "n" },
-                { "grc", desc = "TS: grow scope", mode = "n" },
             })
         end,
     },
 
-    -- Treesitter inspection (built-in in Neovim 0.11+)
+    -- Treesitter inspection (built-in in Neovim 0.12)
     {
         "nvim-treesitter/nvim-treesitter",
         dependencies = { "folke/which-key.nvim" },

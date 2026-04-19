@@ -31,6 +31,7 @@ return {
     ---------------------------------------------------------------------------
     {
         "3rd/diagram.nvim",
+        enabled = false, -- disabled: depends on image.nvim which is incompatible with Neovim 0.12
         ft = { "markdown" },
         dependencies = { "3rd/image.nvim", "folke/which-key.nvim" },
 
