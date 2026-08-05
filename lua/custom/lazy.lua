@@ -35,6 +35,7 @@ require("lazy").setup({
         { import = "custom.lazy-plugins.autopairs" },
         { import = "custom.lazy-plugins.blankline" },
         { import = "custom.lazy-plugins.autosave" },
+        { import = "custom.lazy-plugins.auto-session" },
         { import = "custom.lazy-plugins.flutter-tools-dart" },
         { import = "custom.lazy-plugins.nvim-web-icons" },
         { import = "custom.lazy-plugins.which-key" },
