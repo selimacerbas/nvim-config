@@ -1,7 +1,24 @@
 require("custom.lazy")
 
--- Session behaviour. Must be set before any session plugin loads, because
--- auto-session reads this at its VimEnter restore.
+-- Session behaviour. Must be set before any session can be SAVED.
+--
+-- Not "before the session plugin loads", which is what this comment used to say
+-- and is measurably not what happens: `require("custom.lazy")` on line 1 runs
+-- lazy.nvim's setup, which loads auto-session (it is `lazy = false`) before
+-- execution ever reaches the line below. Probed on 2026-08-05, `sessionoptions`
+-- at that moment is still Neovim's default, `terminal` included.
+--
+-- That is harmless, because auto-session never consults `sessionoptions` when it
+-- restores. It reads the value exactly once, in `Config.check` during its own
+-- setup, purely to warn about missing entries, and that warning is suppressed at
+-- the plugin's default `log_level = "error"`. The value that actually shapes a
+-- session file is read by `:mksession`, which auto-session invokes as `mks!`, at
+-- SAVE time. Every save happens long after init.lua has finished, so the line
+-- below is in force for all of them.
+--
+-- The practical consequence for anyone moving this line: it can sit anywhere
+-- that runs during startup, but it must never move into a plugin `config`
+-- callback or anywhere else that could fire after a save.
 --
 -- NOTE: auto-session's README recommends including `terminal`. We deliberately
 -- exclude it. claudecode.nvim spawns Claude with an argv LIST plus a custom env

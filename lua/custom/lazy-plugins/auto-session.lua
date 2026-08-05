@@ -26,10 +26,18 @@ return {
             -- $HOME accumulates a junk session for the home directory.
             suppressed_dirs = { "~/", "~/Downloads", "~/Desktop", "~/Documents", "/" },
 
-            -- Terminal and tree windows are not backed by a normal file. Closing
-            -- them before save is what keeps a restored layout free of dead
-            -- windows, and it pairs with excluding `terminal` from
-            -- sessionoptions in Task 1.
+            -- Closes windows whose buffer is not backed by a readable file
+            -- before autosaving, which keeps tree and picker windows out of a
+            -- restored layout.
+            --
+            -- It does NOT close terminals, whatever the name suggests. The
+            -- plugin's own lib.lua guards the close with
+            -- `filereadable(name) == 0 and buf_type ~= "terminal"`, so a
+            -- terminal window is explicitly exempt. The reason a restored
+            -- layout has no dead Claude pane is the `sessionoptions` exclusion
+            -- in lua/custom/init.lua, and that line alone. Deleting it because
+            -- this option looks like it covers the same ground would silently
+            -- bring the dead panes back.
             close_unsupported_windows = true,
 
             -- Do not save a session whose only buffer is a dashboard.
