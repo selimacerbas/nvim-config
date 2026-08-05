@@ -8,9 +8,15 @@ return {
         dependencies = { "folke/which-key.nvim" },
 
         init = function()
+            -- <leader>W, not <leader>S: treesitter.lua and surround.lua already
+            -- register <leader>S as "Treesitter/Surround", and which-key resolves
+            -- group labels last-write-wins, so a third claimant would relabel the
+            -- popup by import order. "Workspace" also names the wider job here,
+            -- since this is the Neovim half of a workspace-restore system that
+            -- rebuilds terminal tabs and Claude sessions too.
             local ok, wk = pcall(require, "which-key")
             if ok and wk.add then
-                wk.add({ { "<leader>S", group = "Session" } })
+                wk.add({ { "<leader>W", group = "Workspace" } })
             end
         end,
 
@@ -38,10 +44,10 @@ return {
         },
 
         keys = {
-            { "<leader>Ss", "<cmd>AutoSession save<cr>",    desc = "Save session" },
-            { "<leader>Sr", "<cmd>AutoSession restore<cr>", desc = "Restore session" },
-            { "<leader>Sd", "<cmd>AutoSession delete<cr>",  desc = "Delete session" },
-            { "<leader>Sl", "<cmd>AutoSession search<cr>",  desc = "Search sessions" },
+            { "<leader>Ws", "<cmd>AutoSession save<cr>",    desc = "Save session" },
+            { "<leader>Wr", "<cmd>AutoSession restore<cr>", desc = "Restore session" },
+            { "<leader>Wd", "<cmd>AutoSession delete<cr>",  desc = "Delete session" },
+            { "<leader>Wl", "<cmd>AutoSession search<cr>",  desc = "Search sessions" },
         },
     },
 }
