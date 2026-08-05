@@ -1,5 +1,17 @@
 require("custom.lazy")
 
+-- Session behaviour. Must be set before any session plugin loads, because
+-- auto-session reads this at its VimEnter restore.
+--
+-- NOTE: auto-session's README recommends including `terminal`. We deliberately
+-- exclude it. claudecode.nvim spawns Claude with an argv LIST plus a custom env
+-- (CLAUDE_CODE_SSE_PORT, ENABLE_IDE_INTEGRATION). Neovim serializes such a
+-- terminal as `term://<cwd>//<pid>:<argv[0]>` only, so everything after argv[0]
+-- and the whole env is lost. A restored pane would be a bare `claude` with a
+-- brand-new conversation and dead IDE integration. We relaunch Claude
+-- deliberately instead, via <leader>AC, which knows the right session id.
+vim.o.sessionoptions = "blank,buffers,curdir,folds,help,tabpages,winsize,winpos,localoptions"
+
 -- BREW BINARY DEPENDENCIES --
 -- brew install neovim
 -- brew install tree-sitter
